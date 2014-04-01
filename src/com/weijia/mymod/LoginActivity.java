@@ -1,7 +1,5 @@
 package com.weijia.mymod;
 
-import com.rqmod.util.HttpUtil;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -12,32 +10,32 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Toast;
+
+import com.rqmod.util.HttpUtil;
 
 public class LoginActivity extends Activity {
 	// 声明登录、取消按钮
-	private Button cancelBtn,loginBtn;
+	private Button cancelBtn,loginBtn,regBtn;
 	// 声明用户名、密码输入框
 	private EditText userEditText,pwdEditText;
-	//点击注册链接
-	private TextView tvRegister;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// 设置标题
-		setTitle("掌中宝无线订餐系统-用户登录");
+		setTitle("魏家凉皮-用户登录");
 		// 设置当前Activity界面布局
 		setContentView(R.layout.login_system);
 		// 通过findViewById方法实例化组件
 		cancelBtn = (Button)findViewById(R.id.cancelButton);
 		// 通过findViewById方法实例化组件
 		loginBtn = (Button)findViewById(R.id.loginButton);
+		
+		regBtn = (Button)findViewById(R.id.registerButton);
 		// 通过findViewById方法实例化组件
 		userEditText = (EditText)findViewById(R.id.userEditText);
 		// 通过findViewById方法实例化组件
 		pwdEditText = (EditText)findViewById(R.id.pwdEditText);
-		
-		tvRegister = (TextView)findViewById(R.id.tvRegister);
 		
 		cancelBtn.setOnClickListener(new OnClickListener() {
 			@Override
@@ -59,6 +57,14 @@ public class LoginActivity extends Activity {
 				}
 			}
 		});
+		
+		regBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
+				startActivity(intent);
+			}
+		});
 	}
 	// 登录方法
 	private boolean login(){
@@ -68,7 +74,7 @@ public class LoginActivity extends Activity {
 		String pwd = pwdEditText.getText().toString();
 		// 获得登录结果
 		String result=query(username,pwd);
-		
+		//result = "id=123;name=isnosky";
 		if(result!=null&&result.equals("0")){
 			return false;
 		}else{
