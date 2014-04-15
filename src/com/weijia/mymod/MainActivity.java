@@ -2,61 +2,61 @@ package com.weijia.mymod;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.TabActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import android.widget.TabHost;
+import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
 
-public class MainActivity extends Activity {
-	int [] Ids = {R.id.quanbu,R.id.zhushi,R.id.yinliao,R.id.zhou};
+public class MainActivity extends TabActivity {
+	private TabHost tabHost;
+	
+	private static final String HOME = "主页";    
+	private static final String BOX = "购物车";    
+	private static final String MY = "我的"; 
+	
+	private Intent homeIntent;
+	private Intent boxIntent;
+	private Intent myIntent;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		
-		//设置分类的监听器
-		OnClickListener lsnr = new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				TextView tv = (TextView)findViewById(v.getId());
-				tv.setTextColor(getResources().getColor(R.color.green));
-				for(int i = 0 ; i < Ids.length ; i++ )
-				{
-					if(v.getId() != Ids[i])
-					{
-						TextView tv1 = (TextView)findViewById(Ids[i]);
-						tv1.setTextColor(getResources().getColor(R.color.black));
-					}
-				}
-				
-			}
-		};
-		
-		for(int i = 0 ; i < Ids.length ; i++ )
-		{
-			TextView tv = (TextView)findViewById(Ids[i]);
-			tv.setOnClickListener(lsnr);
-		}
-		
-		//设置按钮的监听器
-		ImageView ivSet = (ImageView)findViewById(R.id.set);
-		ivSet.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(MainActivity.this,LoginActivity.class);
-				startActivity(intent);				
-			}
-		});
-	}
+		setContentView(R.layout.main);
+		tabHost=this.getTabHost();  
+		tabHost.setBackgroundColor(Color.argb(150, 20, 80, 150));
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+        tabHost.setFocusable(true);  
+		prepareIntent();  
+        setupIntent(); 
 	}
+	 private void setupIntent(){  
+	        tabHost.addTab(buildTabSpec(HOME,R.drawable.home_w, homeIntent));  
+	        tabHost.addTab(buildTabSpec(BOX,R.drawable.box, boxIntent));  
+	        tabHost.addTab(buildTabSpec(MY,R.drawable.my, myIntent));  
 
+	    }  
+	  
+	    private TabSpec buildTabSpec(String tag, int icon, Intent intent) {  
+	        View view = View.inflate(MainActivity.this, R.layout.tabs_bg, null);  
+	        ((ImageView)view.findViewById(R.id.icon)).setImageResource(icon);  
+	        ((TextView)view.findViewById(R.id.tabsText)).setText(tag);  
+	        
+	        TabHost.TabSpec spec = tabHost.newTabSpec(tag);
+	        
+	        spec.setContent(intent);  
+	        spec.setIndicator(view);
+            return spec;
+	    }  
+	  
+	    private void prepareIntent() {  
+	        homeIntent=new Intent(this, MenuActivity.class);  
+	        boxIntent=new Intent(this, ShoppingCarActivity.class);  
+	        myIntent=new Intent(this, PersonelActivity.class);  
+
+	    }
 }

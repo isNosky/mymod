@@ -10,7 +10,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/logo"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
@@ -27,6 +27,12 @@
         </activity>
         <activity android:name="LoginActivity"/>
         <activity android:name="RegisterActivity"/>
+        <activity android:name="MenuActivity"/>
+        <activity android:name="PersonelActivity"/>
+        <activity android:name="ShoppingCarActivity"/>
+        <activity android:name="AccountMgrActivity"/>
+        <activity android:name="MyOrderInfoListActivity"/>
+        <activity android:name="NewEasyBuyAddressListActivity"/>
     </application>
 
 </manifest>

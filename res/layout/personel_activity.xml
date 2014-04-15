@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:panel="http://schemas.android.com/apk/res/com.jingdong.app.mall">
+    <include android:id="@+id/common_title" layout="@layout/title" style="@style/title_include"/>
+    <RelativeLayout android:id="@id/order_drawer" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_below="@id/common_title">
+        <RelativeLayout android:id="@id/order_drawer_details" android:background="#ffffffff" android:padding="7.0dip" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="1.0dip">
+            <ImageView android:id="@id/order_drawer_arrow_right" android:background="@drawable/android_list_idex" android:clickable="true" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="2.0dip" android:layout_alignParentRight="true" android:layout_centerVertical="true" />
+            <ImageView android:id="@id/order_drawer_arrow_left" android:background="@drawable/index_icon2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="2.0dip" android:layout_alignParentLeft="true" android:layout_centerVertical="true" />
+            <Gallery android:gravity="left" android:id="@id/order_drawer_gallery" android:layout_width="fill_parent" android:layout_height="wrap_content" android:spacing="2.0dip" android:layout_toLeftOf="@id/order_drawer_arrow_right" android:layout_toRightOf="@id/order_drawer_arrow_left" />
+        </RelativeLayout>
+        <Button android:id="@id/order_drawer_handle" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="订单" android:layout_below="@id/order_drawer_details" android:layout_centerHorizontal="true" />
+    </RelativeLayout>
+    <ScrollView android:id="@id/persion_main_scroller" android:layout_width="fill_parent" android:layout_height="wrap_content" android:fillViewport="true" android:layout_below="@id/order_drawer">
+        <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <RelativeLayout android:id="@id/personal_header" android:background="@drawable/personel_user_head_bg" android:layout_width="wrap_content" android:layout_height="@dimen/personal_user_head_height">
+                <RelativeLayout android:id="@id/personal_for_login_info" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                    <LinearLayout android:orientation="horizontal" android:id="@id/personal_user_coupon_layout" android:background="@color/my_personal_label_bg" android:layout_width="fill_parent" android:layout_height="@dimen/personal_user_label_height" android:layout_alignParentBottom="true" />
+                    <RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_above="@id/personal_user_coupon_layout">
+                        <ImageView android:id="@id/user_img_view" android:background="@drawable/user_photo_background_corners" android:layout_width="@dimen/personal_user_img_view_width" android:layout_height="@dimen/personal_user_img_view_height" android:layout_marginLeft="@dimen/personal_user_photo_marginleft" android:layout_marginRight="@dimen/personal_user_photo_marginright" android:scaleType="fitCenter" android:layout_centerVertical="true" android:contentDescription="@string/none" />
+                        <RelativeLayout android:id="@id/name_balance_textview" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_toRightOf="@id/user_img_view" android:layout_alignTop="@id/user_img_view">
+                            <TextView android:textSize="15.0dip" android:textColor="@color/white" android:ellipsize="end" android:id="@id/who_and_say_hello" android:paddingBottom="3.0dip" android:layout_width="110.0dip" android:layout_height="wrap_content" android:singleLine="true" android:lineSpacingMultiplier="1.1" />
+                            <TextView android:textSize="15.0sp" android:textColor="@color/white" android:ellipsize="end" android:id="@id/user_level" android:layout_width="110.0dip" android:layout_height="wrap_content" android:singleLine="true" android:layout_below="@id/who_and_say_hello" android:lineSpacingMultiplier="1.1" />
+                            <TextView android:textSize="15.0sp" android:textColor="@color/white" android:ellipsize="end" android:id="@id/user_score" android:layout_width="110.0dip" android:layout_height="wrap_content" android:singleLine="true" android:layout_below="@id/user_level" android:lineSpacingMultiplier="1.1" />
+                        </RelativeLayout>
+                    </RelativeLayout>
+                </RelativeLayout>
+                <RelativeLayout android:id="@id/personal_for_not_login" android:background="@drawable/my_personal_not_login_bg" android:layout_width="fill_parent" android:layout_height="@dimen/personal_user_head_height">
+                    <LinearLayout android:gravity="center" android:orientation="vertical" android:id="@id/personal_click_to_login" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_centerInParent="true">
+                        <TextView android:textSize="15.0sp" android:textColor="@color/white" android:id="@id/personal_for_welcome" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/personal_for_welcome" android:shadowColor="@color/my_personal_login_shadow_color" android:shadowDx="0.0" android:shadowDy="3.0" android:shadowRadius="1.0" />
+                        <Button android:textSize="15.0sp" android:textColor="@color/my_personal_login_textcolor" android:id="@id/personal_click_for_login" android:background="@drawable/my_personal_click_login" android:layout_width="112.0dip" android:layout_height="38.0dip" android:layout_marginTop="7.0dip" android:text="@string/personal_click_for_login" />
+                    </LinearLayout>
+                </RelativeLayout>
+            </RelativeLayout>
+            <include android:id="@id/my_service_list" layout="@layout/personel_list_layout" />
+            <!--  
+            <RelativeLayout android:id="@id/crazy_guess_product_list" android:background="#fff5f5f5" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip">
+                <View android:id="@id/crazy_guess_divide_line" android:layout_alignParentTop="true" style="@style/line1" />
+                <LinearLayout android:orientation="vertical" android:id="@id/guess_taste" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_below="@id/crazy_guess_divide_line">
+                    <TextView android:textSize="15.0sp" android:gravity="center_vertical" android:id="@id/personal_guess_you_like" android:padding="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/pg_my_jd_guess_states" />
+                    <RelativeLayout android:id="@id/product_list_item" android:paddingTop="5.0dip" android:paddingBottom="10.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="1.0dip" android:layout_marginRight="1.0dip" android:minHeight="104.0dip" android:layout_centerHorizontal="true">
+                        <ImageView android:id="@id/arrow_rightt" android:clickable="true" android:layout_width="13.0dip" android:layout_height="13.0dip" android:layout_marginRight="1.0dip" android:src="@drawable/android_list_idex" android:layout_alignParentRight="true" android:layout_centerVertical="true" />
+                        <ImageView android:id="@id/arrow_left" android:layout_width="13.0dip" android:layout_height="13.0dip" android:layout_marginLeft="1.0dip" android:src="@drawable/android_list_idex_left" android:layout_alignParentLeft="true" android:layout_centerVertical="true" />
+                        <com.jingdong.common.ui.JDGallery android:gravity="left" android:id="@id/personel_recomand_gallery" android:drawingCacheQuality="high" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="2.0dip" android:layout_marginTop="5.0dip" android:layout_marginRight="2.0dip" android:layout_marginBottom="5.0dip" android:spacing="2.0dip" android:layout_toLeftOf="@id/arrow_rightt" android:layout_toRightOf="@id/arrow_left" android:unselectedAlpha="1.0" />
+                    </RelativeLayout>
+                    <RelativeLayout android:id="@id/personel_recomand_gallery_content" android:clickable="true" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="76.0dip">
+                        <TextView android:id="@id/personel_recomand_gallery_item_name" android:paddingLeft="@dimen/home_pg_crazy_content_padding_10" android:paddingRight="@dimen/home_pg_crazy_content_padding_10" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="52.0dip" android:maxLines="3" android:layout_alignParentTop="true" />
+                        <TextView android:textSize="24.0dip" android:textColor="#ffcc0000" android:id="@id/personel_recomand_gallery_jdPrice" android:paddingRight="10.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@id/personel_recomand_gallery_item_name" android:layout_alignParentRight="true" android:layout_alignParentBottom="true" />
+                    </RelativeLayout>
+                </LinearLayout>
+                <View android:id="@id/crazy_guess_divide_line_1" android:layout_alignParentBottom="true" style="@style/line1" />
+            </RelativeLayout>
+            -->
+            <Button android:textSize="19.0sp" android:textColor="@drawable/product_button_text_color_selector" android:id="@id/personel_logout_but" android:background="@drawable/product_add_to_car_button_selector" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="20.0dip" android:layout_marginRight="20.0dip" android:layout_marginBottom="10.0dip" android:text="@string/pg_my_jd_logout" />
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

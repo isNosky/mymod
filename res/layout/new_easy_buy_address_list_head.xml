@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip">
+        <RelativeLayout android:id="@id/layout_new_easy_buy_address_go_order" android:paddingTop="15.0dip" android:paddingBottom="15.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <TextView android:textSize="@dimen/new_easy_buy_address_text_size" android:textColor="@color/new_easy_buy_address_text_color_input" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:text="@string/new_easy_buy_address_list_top_title" android:singleLine="true" android:layout_centerVertical="true" />
+            <CheckBox android:id="@id/checkbox_new_easy_buy_address_go_order" android:background="@drawable/fill_order_virtual_check_selector" android:layout_width="100.0dip" android:layout_height="34.0dip" android:layout_marginRight="15.0dip" android:button="@null" android:layout_alignParentRight="true" android:layout_centerVertical="true" />
+        </RelativeLayout>
+        <View android:id="@id/line_new_easy_buy_address_go_order" android:layout_marginLeft="15.0dip" android:layout_marginRight="15.0dip" android:layout_below="@id/layout_new_easy_buy_address_go_order" style="@style/new_easy_buy_line" />
+        <TextView android:textSize="@dimen/new_easy_buy_address_text_size" android:textColor="@color/new_easy_buy_address_text_color" android:id="@id/textview_new_easy_buy_address_go_order_desc" android:paddingTop="15.0dip" android:paddingBottom="15.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:layout_marginRight="10.0dip" android:layout_below="@id/line_new_easy_buy_address_go_order" />
+    </RelativeLayout>
+</RelativeLayout>
