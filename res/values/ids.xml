@@ -3416,4 +3416,26 @@
     
     <item type="id" name="common_title_login"></item>
     <item type="id" name="common_title_personel"></item>
+    <item type="id" name="register_editor_layout"></item>
+    <item type="id" name="register_page_input_name_layout"></item>
+    <item type="id" name="register_page_input_name"></item>
+    <item type="id" name="register_input_name"></item>
+    <item type="id" name="register_page_input_password_layout"></item>
+    <item type="id" name="register_page_input_password"></item>
+    <item type="id" name="register_input_password"></item>
+    <item type="id" name="register_divider_line1"></item>
+    <item type="id" name="register_divider_line2"></item>
+    <item type="id" name="register_divider_line3"></item>
+    <item type="id" name="register_divider_line4"></item>
+    <item type="id" name="register_divider_line5"></item>
+    <item type="id" name="register_page_confirm_input_password_layout"></item>
+    <item type="id" name="register_page_confirm_input_password"></item>
+    <item type="id" name="register_user_icon"></item>
+    <item type="id" name="register_input_confirm_password"></item>
+    <item type="id" name="register_relative"></item>
+    <item type="id" name="menu_layout"></item>
+    <item type="id" name="food_class"></item>
+    <item type="id" name="product_checkbox"></item>
+    <item type="id" name="tabhost_main"></item>
+    
 </resources>

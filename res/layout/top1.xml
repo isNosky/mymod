@@ -39,12 +39,19 @@
             android:gravity="center"
             android:orientation="horizontal" >
 
-
+			<ImageView
+                android:id="@+id/shop_car_add"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15.0dip"
+                android:src="@drawable/product_detail_new_shoppingcart" />
+            <!--  
             <ImageView
                 android:id="@+id/set"
                 android:layout_width="30dp"
                 android:layout_height="wrap_content"
                 android:src="@drawable/actionbar_more_icon" />
+            -->
         </LinearLayout>
     </RelativeLayout>
 

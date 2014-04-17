@@ -518,4 +518,9 @@
     
     <dimen name="text_size_persional_info">15.0sp</dimen>
     <dimen name="text_size_dialog_option_btn">15.0sp</dimen>
+    <dimen name="pay_complete_margin_height">15.0sp</dimen>
+    <dimen name="pay_complete_info1_height">15.0sp</dimen>
+    <dimen name="pay_complete_info2_height">15.0sp</dimen>
+    <dimen name="text_size_tab_title">15.0sp</dimen>
+    
 </resources>

@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -15,6 +17,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -80,6 +84,8 @@ public class LoginActivity extends Activity {
     TextView passwordTextView;
     String sUserName;
     String sUserPassword;
+    EditText etName;
+    EditText etPasswd;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		
@@ -89,6 +95,7 @@ public class LoginActivity extends Activity {
 	        initBtn();
 	        initEditTxt();
 	        handleClickEvent();
+	        hideOrShowText();
 		}
 		catch(Exception e)
 		{
@@ -98,7 +105,7 @@ public class LoginActivity extends Activity {
 		}
 	}
 	private void initBtn() {
-        //nameTextView = (TextView)findViewById(R.id.name);
+        //nameTextView = (TextView)findViewById(R.id.login_input_name);
         //passwordTextView = (TextView)findViewById(0x7f0a04a1);
         mLoginConfirm = (Button)findViewById(R.id.login_comfirm_button);
         mRegLink = (Button)findViewById(R.id.register_link);
@@ -114,6 +121,23 @@ public class LoginActivity extends Activity {
         //mTitle.setText(0x7f0b03d4);
         historyUserNameLayout = (LinearLayout)findViewById(R.id.history_user_name_layout);
         loginDividerLine = findViewById(R.id.login_divider_line);
+        etName = (EditText)findViewById(R.id.login_input_name);
+        
+        mLoginConfirm.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				//1、首先检查各个参数的有效性
+				if(nameCheck())
+				{
+					showDialog(getResources().getString(R.string.must_login_use_phone_num));
+				}
+				
+				// TODO 向网络请求登录
+				
+			}
+        	
+        });
     }
 	private void initEditTxt() {
         mUserNameTxt = (EditText)findViewById(R.id.login_input_name);
@@ -256,7 +280,8 @@ public class LoginActivity extends Activity {
 	 private boolean nameCheck() {
 	        boolean checkFlag = false;
 	        String checkStr = mUserNameTxt.getText().toString();
-	        if(TextUtils.isEmpty(checkStr.trim())) {
+	        if(TextUtils.isEmpty(checkStr.trim())
+	        		&& !isPhoneNumberValid(checkStr.trim())) {
 	            checkFlag = true;
 	            //mUserNameTxt.setError(JDStringUtils.getErrorSpanned(getApplicationContext(), 0x7f0b031c));
 	        }
@@ -365,4 +390,108 @@ public class LoginActivity extends Activity {
 	        //closeJDInputMethod();
 	        super.onPause();
 	    }
+	    
+	    private void hideOrShowText() {
+	    	
+	        CheckBox slipButton = (CheckBox)findViewById(R.id.login_switchBtn);
+	        slipButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+	            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+	                EditText etPasswd = (EditText)findViewById(R.id.login_input_password);
+	                String pwTextString;
+	                
+	                try {
+						if(etPasswd == null) {
+						    pwTextString = "";
+						} else {
+						    pwTextString = etPasswd.getText().toString();
+						}
+						if(isChecked) {
+							etPasswd.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+						} else {
+							etPasswd.setTransformationMethod(PasswordTransformationMethod.getInstance());
+						}
+						if(!TextUtils.isEmpty(pwTextString)) {
+							etPasswd.setSelection(pwTextString.length());
+						}
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						String str = e.getMessage();
+						e.printStackTrace();
+					}
+	            }
+	        });
+	    }
+	    
+	    public static boolean isPhoneNumberValid(String phoneNumber)
+
+	    {
+
+	      boolean isValid = false;
+
+	      /* 可接受的电话格式有:
+
+	       * ^//(? : 可以使用 "(" 作为开头
+
+	       * (//d{3}): 紧接着三个数字
+
+	       * //)? : 可以使用")"接续
+
+	       * [- ]? : 在上述格式后可以使用具选择性的 "-".
+
+	       * (//d{4}) : 再紧接着三个数字
+
+	       * [- ]? : 可以使用具选择性的 "-" 接续.
+
+	       * (//d{4})$: 以四个数字结束.
+
+	       * 可以比较下列数字格式:
+
+	       * (123)456-78900, 123-4560-7890, 12345678900, (123)-4560-7890  
+
+	      */
+
+	      String expression = "^//(?(//d{3})//)?[- ]?(//d{3})[- ]?(//d{5})$";
+
+	      String expression2 ="^//(?(//d{3})//)?[- ]?(//d{4})[- ]?(//d{4})$";
+
+	      CharSequence inputStr = phoneNumber;
+
+	      /*创建Pattern*/
+
+	      Pattern pattern = Pattern.compile(expression);
+
+	      /*将Pattern 以参数传入Matcher作Regular expression*/
+
+	      Matcher matcher = pattern.matcher(inputStr);
+
+	      /*创建Pattern2*/
+
+	      Pattern pattern2 =Pattern.compile(expression2);
+
+	      /*将Pattern2 以参数传入Matcher2作Regular expression*/
+
+	      Matcher matcher2= pattern2.matcher(inputStr);
+
+	      if(matcher.matches()||matcher2.matches())
+
+	      {
+
+	        isValid = true;
+
+	      }
+
+	      return isValid; 
+
+	    }
+	    private void showDialog(String msg){
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(msg)
+			       .setCancelable(false)
+			       .setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+			           public void onClick(DialogInterface dialog, int id) {
+			           }
+			       });
+			AlertDialog alert = builder.create();
+			alert.show();
+		}
 }

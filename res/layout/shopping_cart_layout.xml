@@ -17,7 +17,7 @@
     </LinearLayout>
     <FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_below="@id/shopping_cart_function_layout">
         <include android:layout_gravity="center" android:id="@id/shopping_cart_no_data" android:layout_width="fill_parent" android:layout_height="fill_parent" layout="@layout/shopping_cart_no_data_layout" />
-        <include android:layout_gravity="center" android:id="@id/shopping_cart_load_error" android:layout_width="wrap_content" android:layout_height="wrap_content" layout="@layout/loading_error_tips" />
+        <!--  <include android:layout_gravity="center" android:id="@id/shopping_cart_load_error" android:layout_width="wrap_content" android:layout_height="wrap_content" layout="@layout/loading_error_tips" />-->
         <ListView android:id="@id/shopping_cart_list" android:fadingEdge="none" android:layout_width="fill_parent" android:layout_height="fill_parent" android:cacheColorHint="@color/transparent" />
         <View android:layout_gravity="top" android:id="@id/shopping_cart_shadow" android:background="@drawable/cart_price_bg_shadow_1" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="5.0dip" />
     </FrameLayout>

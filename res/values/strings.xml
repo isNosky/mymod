@@ -203,7 +203,7 @@
 
  1.为了避免您中奖后无法领奖，请您填写与真实姓名及身份信息完全一致的资料。
 
-2.由于一个京东账户只能绑定一个真实信息进行购彩及中奖奖金领取，请确保本账户是您本人使用！
+2.由于一个魏家凉皮账户只能绑定一个真实信息进行购彩及中奖奖金领取，请确保本账户是您本人使用！
 
 3.依据财政部《彩票发行与销售管理暂行规定》未满18岁不得购买彩票！"</string>
     <string name="no_network">这位客官，网络已断开，请检查一下您的网络!</string>
@@ -266,7 +266,7 @@
     <string name="lib_story_search_comment">好评度：%1$s</string>
     <string name="lib_story_edit_give_up_title">放弃大作</string>
     <string name="lib_story_edit_give_up_message">您不讲这个故事了？</string>
-    <string name="lib_story_jingdong">京东</string>
+    <string name="lib_story_jingdong">魏家凉皮</string>
     <string name="lib_story_add_more_prd">添加更多单品</string>
     <string name="lib_story_search_history_nodata">暂无搜索历史</string>
     <string name="lib_story_tip_count">约%1$s条结果</string>
@@ -673,7 +673,7 @@
     <string name="lib_phone_charge_500">500元</string>
     <string name="lib_phone_charge_dj">单价：</string>
     <string name="lib_phone_charge_ddlb">查看订单列表</string>
-    <string name="lib_phone_charge_myczyhr">月底充值高峰到账较慢，京东建议您</string>
+    <string name="lib_phone_charge_myczyhr">月底充值高峰到账较慢，魏家凉皮建议您</string>
     <string name="lib_phone_charge_jdfkjd">提早进行充值</string>
     <string name="lib_phone_charge_ljcz">立即充值</string>
     <string name="lib_phone_charge_success">订单支付成功，我们将尽快为您充值！</string>
@@ -698,7 +698,7 @@
 3、享受连续签到的额外奖励"</string>
     <string name="signin_pg_more_about_share">分享</string>
     <string name="signin_pg_more_about_share_to">分享到:</string>
-    <string name="signin_pg_more_about_share_subject">发现一个超赞的应用-京东</string>
+    <string name="signin_pg_more_about_share_subject">发现一个超赞的应用-魏家凉皮</string>
     <string name="signin_rule_title">连续签到达人榜规则</string>
     <string name="signin_get_reward">领取奖励失败，请重新领取</string>
     <string name="signin_congratulation">恭喜！</string>
@@ -710,7 +710,7 @@
     <string name="signin_has_sign">您今日已签到</string>
     <string name="alert_title_poor_network">网络不佳</string>
     <string name="alert_message_poor_network">您当前的网络情况不佳，请稍后再次尝试。</string>
-    <string name="cost_hint_message">欢迎使用京东Android客户端软件，客户端使用完全免费，在使用过程中，会产生流量费，流量费请咨询当地运营商。是否允许应用建立连接。</string>
+    <string name="cost_hint_message">欢迎使用魏家凉皮Android客户端软件，客户端使用完全免费，在使用过程中，会产生流量费，流量费请咨询当地运营商。是否允许应用建立连接。</string>
     <string name="no_show_again">不再显示提醒</string>
     <string name="tip">温馨提示</string>
     <string name="waiting_day">天</string>
@@ -755,7 +755,7 @@
     <string name="alert_title_barcode_clear">清空历史</string>
     <string name="alert_message_barcode_clear">确认清空扫描记录？</string>
     <string name="alert_message_no_scan">抱歉，此机型暂不支持通过摄像头进行条码扫描，请手动输入条码。</string>
-    <string name="barcode_welcome_text">您可以通过扫描或手动输入商品条码，搜索该商品在京东的价格和详细信息。</string>
+    <string name="barcode_welcome_text">您可以通过扫描或手动输入商品条码，搜索该商品在魏家凉皮的价格和详细信息。</string>
     <string name="barcode_input_button">输入条码</string>
     <string name="barcode_input_manual">手动输入</string>
     <string name="barcode_scan_button">扫描条码</string>
@@ -778,8 +778,8 @@
     <string name="menu_about">关于</string>
     <string name="menu_help">帮助</string>
     <string name="menu_exit">退出</string>
-    <string name="homeActivity_autoComplete">搜索京东商品</string>
-    <string name="jdnews_text">京东快报</string>
+    <string name="homeActivity_autoComplete">搜索魏家凉皮菜品</string>
+    <string name="jdnews_text">魏家凉皮快报</string>
     <string name="jdnews_detail">快报详情</string>
     <string name="categoryText">全部分类</string>
     <string name="product_jd_price_label">￥</string>
@@ -862,7 +862,7 @@
     <string name="sort_button_relative">相关度</string>
     <string name="sort_button_time">上架时间</string>
     <string name="fail_load_data">读取数据失败</string>
-    <string name="search_on_xx_category">搜索京东商品</string>
+    <string name="search_on_xx_category">搜索魏家凉皮菜品</string>
     <string name="product_add_to_car">加入购物车</string>
     <string name="product_add_to_read">免费试读</string>
     <string name="product_easy_buy">轻松购</string>
@@ -874,14 +874,14 @@
     <string name="pg_more_clean_history_confrim_string">确认清空浏览历史？</string>
     <string name="pg_more_about">关于</string>
     <string name="pg_more_help_lb_copy_right">"Copyright©2011-2014 
-京东JD.com 版权所有"</string>
-    <string name="pg_more_about_quick_mark_download">扫描二维码,您的朋友也可下载京东客户端</string>
-    <string name="pg_more_about_quick_mark_download_share">我发现了一款很赞的应用,京东移动客户端!促销、秒杀乐不停,手机下单、支付超方便,喜欢的商品还能分享给好友哦!一起试试吧!@京东 http://m.3.cn/s/zkwuea</string>
+魏家凉皮JD.com 版权所有"</string>
+    <string name="pg_more_about_quick_mark_download">扫描二维码,您的朋友也可下载魏家凉皮客户端</string>
+    <string name="pg_more_about_quick_mark_download_share">我发现了一款很赞的应用,魏家凉皮移动客户端!促销、秒杀乐不停,手机下单、支付超方便,喜欢的商品还能分享给好友哦!一起试试吧!@魏家凉皮 http://m.3.cn/s/zkwuea</string>
     <string name="pg_more_about_share">分享</string>
     <string name="pg_more_about_share_to">分享到:</string>
-    <string name="pg_more_about_share_subject">发现一个超赞的应用-京东</string>
+    <string name="pg_more_about_share_subject">发现一个超赞的应用-魏家凉皮</string>
     <string name="pg_home_jdpirce">￥%1$s</string>
-    <string name="pg_my_jd_title">我的京东</string>
+    <string name="pg_my_jd_title">我的魏家凉皮</string>
     <string name="pg_my_jd_logout">退出登录</string>
     <string name="pg_my_jd_logout_confrim_string">确认退出登录？</string>
     <string name="pg_my_jd_score">积分:</string>
@@ -912,7 +912,7 @@
     <string name="no_trace_info_data">暂无订单跟踪信息</string>
     <string name="pg_show_message_no_order">查看订单详情失败，请返回</string>
     <string name="pg_my_orders_suborder">（子订单）</string>
-    <string name="pg_my_message_consulted_by_jd">京东回复</string>
+    <string name="pg_my_message_consulted_by_jd">魏家凉皮回复</string>
     <string name="pg_my_order_receive_goods">确认收货</string>
     <string name="pg_my_order_receive_goods_failed">确认收货操作失败，请重试</string>
     <string name="pg_my_order_receive_goods_confirm">确定收货吗？</string>
@@ -971,7 +971,7 @@
     <string name="pay_send_type">支付和配送方式</string>
     <string name="send_type">支付及配送方式</string>
     <string name="send_type2">支付方式：</string>
-    <string name="send_type_self">来京东自提</string>
+    <string name="send_type_self">来魏家凉皮自提</string>
     <string name="send_type_after">货到付款</string>
     <string name="get_prod_addr">提货地址：</string>
     <string name="persong_type">配送方式：</string>
@@ -1005,9 +1005,9 @@
     <string name="dong_quan">东券：</string>
     <string name="jing_quan2">京券</string>
     <string name="dong_quan2">东券</string>
-    <string name="li_ping_ka">京东卡:</string>
+    <string name="li_ping_ka">魏家凉皮卡:</string>
     <string name="w_use_balance">是否使用余额：</string>
-    <string name="select_you_hui">选择优惠券和京东卡</string>
+    <string name="select_you_hui">选择优惠券和魏家凉皮卡</string>
     <string name="modify_number">修改</string>
     <string name="querying">查询中...</string>
     <string name="login_first">请您先登录</string>
@@ -1023,7 +1023,7 @@
     <string name="modify_easy_buy_failure">修改轻松购不成功，请检查您填的信息</string>
     <string name="ding_dan_comment">订单备注：</string>
     <string name="you_hui_quan">优惠券</string>
-    <string name="li_pin">京东卡</string>
+    <string name="li_pin">魏家凉皮卡</string>
     <string name="fan_xian2">返现：</string>
     <string name="last_money">应付金额</string>
     <string name="submit_ding_dan">提交订单</string>
@@ -1032,11 +1032,11 @@
     <string name="orignal_price">原始金额：</string>
     <string name="product_filter">筛选</string>
     <string name="rule_title">活动规则</string>
-    <string name="commercial_title_hint">京东活动</string>
+    <string name="commercial_title_hint">魏家凉皮活动</string>
     <string name="product_filter_none_hint">对不起，该类商品暂时没有筛选条件！</string>
     <string name="catelogy_filter_none_hint">对不起，没有筛选条件！</string>
     <string name="product_filter_hint">全部</string>
-    <string name="you_hui_quan_li_pin_ka">优惠券京东卡</string>
+    <string name="you_hui_quan_li_pin_ka">优惠券魏家凉皮卡</string>
     <string name="pay_money">应付：</string>
     <string name="order_completed">订单已提交!</string>
     <string name="completed">完成</string>
@@ -1059,7 +1059,7 @@
     <string name="find_pay_password_prompt">如您忘记支付密码,请点击\"找回支付密码\"</string>
     <string name="find_pay_password">找回支付密码>></string>
     <string name="pay_password_title">什么是支付密码?</string>
-    <string name="pay_password_explain">支付密码是保障用户资产的一个重要手段，需要用户在使用余额、优惠券、京东卡、京豆等资产进行支付时输入。</string>
+    <string name="pay_password_explain">支付密码是保障用户资产的一个重要手段，需要用户在使用余额、优惠券、魏家凉皮卡、京豆等资产进行支付时输入。</string>
     <string name="pay_password_know">我知道了</string>
     <string name="discuss_comment">评价/晒单</string>
     <string name="new_discuss">我要晒单</string>
@@ -1096,11 +1096,11 @@
     <string name="discuss_content_alert">请输入心得，长度在5-200个字之间</string>
     <string name="discuss_error_alert">没有照片或者内容不符，请确认</string>
     <string name="alert_comment_hint_message">"您暂不能对该商品进行评价，可能有以下原因：
-1.您可能没有在京东购买过该商品
+1.您可能没有在魏家凉皮购买过该商品
 2.购买时间已经超过半年
 3.您已经评价过该商品"</string>
     <string name="alert_discuss_hint_message">"您暂不能对该商品进行晒单，可能有以下原因：
-1.您可能没有在京东购买过该商品
+1.您可能没有在魏家凉皮购买过该商品
 2.购买时间已经超过半年
 3.您已经对该商品进行过晒单"</string>
     <string name="alert_discuss_image_message">为了保证您手机的正常使用，只能晒三张以内的图片</string>
@@ -1113,7 +1113,7 @@
     <string name="company">单位</string>
     <string name="order_not_exist">无此订单</string>
     <string name="order_not_exist_message">该订单已经取消</string>
-    <string name="pull_service_title">京东消息更新</string>
+    <string name="pull_service_title">魏家凉皮消息更新</string>
     <string name="no_image_switch_title">2G/3G网络手动下载图片</string>
     <string name="no_image_switch_key">jd_no_image_switch</string>
     <string name="local_cache_setup_title">本地缓存设置</string>
@@ -1152,7 +1152,7 @@
     <string name="app_error_tag_send">发送中</string>
     <string name="app_error_tag_restart">已发送，自动重启中...请稍后</string>
     <string name="app_error_tag_close">已发送，应用已关闭...</string>
-    <string name="app_error_tag_des">您可将联系方式（QQ、邮箱、手机）和出错情况提交给我们，以帮助改善软件质量，京东感谢您的支持与协助。</string>
+    <string name="app_error_tag_des">您可将联系方式（QQ、邮箱、手机）和出错情况提交给我们，以帮助改善软件质量，魏家凉皮感谢您的支持与协助。</string>
     <string name="app_error_tag_hint">请在此填写联系方式和出错情况</string>
     <string name="app_error_checkbox">提交后重启</string>
     <string name="more_jd_history">浏览记录</string>
@@ -1162,7 +1162,7 @@
     <string name="more_jd_about">关于</string>
     <string name="more_jd_exit">退出</string>
     <string name="more_jd_version">检测更新</string>
-    <string name="more_jd_paper">京东快报</string>
+    <string name="more_jd_paper">魏家凉皮快报</string>
     <string name="more_jd_app_recommend">应用推荐</string>
     <string name="search_barcode">扫一扫</string>
     <string name="search_camera">拍照购</string>
@@ -1209,11 +1209,11 @@
     <string name="label_symbol_key">1/2</string>
     <string name="label_switch_qwerty_key">ABC</string>
     <string name="label_switch_symbol_key">12#</string>
-    <string name="reactivation_default_message_title">京东精彩不断</string>
-    <string name="reactivation_default_message_content">您好久没有来京东了，最近很多商品在降价促销，快来抢购吧！</string>
+    <string name="reactivation_default_message_title">魏家凉皮精彩不断</string>
+    <string name="reactivation_default_message_content">您好久没有来魏家凉皮了，最近很多商品在降价促销，快来抢购吧！</string>
     <string name="payment_balance_lock">您的余额支付已被冻结，冻结期结束后方可使用。</string>
     <string name="payment_jdbean_lock">您的京豆支付已被冻结，冻结期结束后方可使用。</string>
-    <string name="card_not_available">您当前京东卡不可用!</string>
+    <string name="card_not_available">您当前魏家凉皮卡不可用!</string>
     <string name="jingquan_not_available">您当前京券不可用!</string>
     <string name="dongquan_not_available">您当前东券不可用!</string>
     <string name="location_set">位置设置</string>
@@ -1270,7 +1270,7 @@
     <string name="quick_register_login_promt_text">手机短信密码正发往您的手机！</string>
     <string name="quick_register_info">【提示】</string>
     <string name="quick_register_info1">1.使用手机号注册免费</string>
-    <string name="quick_register_info2">2.此手机号用来登录京东</string>
+    <string name="quick_register_info2">2.此手机号用来登录魏家凉皮</string>
     <string name="quick_register_info3">3.您还可以选择其他注册方式</string>
     <string name="quick_register_login_info1">1.注册成功后，即可用手机号和密码登录</string>
     <string name="quick_register_login_info2">2.如在120秒内未收到系统下发的短信，请点击</string>
@@ -1327,7 +1327,7 @@
     <string name="cart_id">编号:</string>
     <string name="cart_login_tip">您可以在登录后同步电脑与手机购物车中的商品</string>
     <string name="cart_empty_tip">购物车还是空的，去看看秒杀商品吧~</string>
-    <string name="cart_hot_product">去秒杀</string>
+    <string name="cart_hot_product">去点餐</string>
     <string name="cart_num">数量:</string>
     <string name="cart_yb_service">延保服务</string>
     <string name="cart_not_select_product">您当前购物车没有选中任何商品</string>
@@ -1348,7 +1348,7 @@
     <string name="comment_discuss_instruction">评价/晒单说明</string>
     <string name="has_already_comment">已评价</string>
     <string name="has_already_discuss">已晒单</string>
-    <string name="always_finish_activities">由于您已开启\"不保留活动\"，导致京东部分功能无法正常使用。我们建议您点击左下方\"设置\"按钮，在\"开发者选项\"中关闭\"不保留活动\"功能。</string>
+    <string name="always_finish_activities">由于您已开启\"不保留活动\"，导致魏家凉皮部分功能无法正常使用。我们建议您点击左下方\"设置\"按钮，在\"开发者选项\"中关闭\"不保留活动\"功能。</string>
     <string name="set_close">设置</string>
     <string name="color_shopping_title">颜色购</string>
     <string name="color_similar_product">相近颜色商品</string>
@@ -1357,13 +1357,13 @@
     <string name="color_categories_selection_title">分类选择</string>
     <string name="color_categories_all_selection">全选</string>
     <string name="get_coupon">快来免费领取优惠券喽~</string>
-    <string name="bind_giftcard">绑定京东卡</string>
+    <string name="bind_giftcard">绑定魏家凉皮卡</string>
     <string name="validity_to">至</string>
-    <string name="bind_giftcard_declar">京东卡每次最多使用49张,可与优惠券同时使用.京东卡金额大于订单应付金额时,差额可下次继续使用.</string>
+    <string name="bind_giftcard_declar">魏家凉皮卡每次最多使用49张,可与优惠券同时使用.魏家凉皮卡金额大于订单应付金额时,差额可下次继续使用.</string>
     <string name="gift_balance">余额:</string>
     <string name="gift_card_number">卡号:</string>
     <string name="gift_card_number_validity">有效期:</string>
-    <string name="gift_card_value_end">元京东卡</string>
+    <string name="gift_card_value_end">元魏家凉皮卡</string>
     <string name="coupon_gift_card_no_coupon">还没有优惠券哦！</string>
     <string name="coupon_gift_card_coupon_loading_error">优惠券加载失败!</string>
     <string name="product_inventory_title_string">商品清单</string>
@@ -1372,7 +1372,7 @@
     <string name="product_delete_string">请问您是否要删除这%1$s种商品?</string>
     <string name="order_commodity_no_stock">无货啦!</string>
     <string name="fill_order_final_price">&lt;font color=#3C3C3C>应付金额:&lt;/font > &lt;font color=#cc0000>￥%1$s &lt;/font ></string>
-    <string name="fill_order_coupons_gift_loading">优惠券京东卡加载中，请稍后再试</string>
+    <string name="fill_order_coupons_gift_loading">优惠券魏家凉皮卡加载中，请稍后再试</string>
     <string name="fill_order_mark_hint">限45个字以内</string>
     <string name="just_show_have_product">仅显示有货商品</string>
     <string name="edit_order_address_text_new">新建地址</string>
@@ -1390,7 +1390,7 @@
     <string name="widget_recharge_text">充值</string>
     <string name="widget_lottery_text">彩票</string>
     <string name="widget_group_shopping_text">团购</string>
-    <string name="personal_for_welcome">欢迎来到京东</string>
+    <string name="personal_for_welcome">欢迎光临魏家凉皮</string>
     <string name="personal_click_for_login">登 录 / 注 册</string>
     <string name="select_coupon_end_time">到期</string>
     <string name="none" />
@@ -1416,7 +1416,7 @@
     <string name="empty_search_history">暂无搜索历史</string>
     <string name="pg_my_jd_appointmente_service">电话预约服务</string>
     <string name="my_message_item_look_detail">查看详情</string>
-    <string name="shake_product_jdprice">京东价：</string>
+    <string name="shake_product_jdprice">魏家凉皮价：</string>
     <string name="shake_coupon_scope">使用范围：</string>
     <string name="shake_coupon_between_start_end">有效期：</string>
     <string name="shake_coupon_receive">领    取</string>
@@ -1433,15 +1433,15 @@
     <string name="shake_nothing">什么都没有摇到...</string>
     <string name="shake_immediately_receive">请马上领取，过期不候～</string>
     <string name="shake_hint">提示：%1$s</string>
-    <string name="shake_coupon_received">您已经成功领取了“%1$s”，请稍等几分钟后去“我的京东>优惠劵”页面查看。</string>
-    <string name="shake_bean_received">您已经成功领取了“%1$s”，请稍等几分钟后去“我的京东>京豆”页面查看。</string>
-    <string name="shake_share_msg">京东手机客户端的摇啊摇太赞了！我刚刚摇到了“%1$s”！小伙伴儿们都来试试运气吧！ |下载京东Android客户端:http://m.3.cn/s/zkwuea</string>
+    <string name="shake_coupon_received">您已经成功领取了“%1$s”，请稍等几分钟后去“我的魏家凉皮>优惠劵”页面查看。</string>
+    <string name="shake_bean_received">您已经成功领取了“%1$s”，请稍等几分钟后去“我的魏家凉皮>京豆”页面查看。</string>
+    <string name="shake_share_msg">魏家凉皮手机客户端的摇啊摇太赞了！我刚刚摇到了“%1$s”！小伙伴儿们都来试试运气吧！ |下载魏家凉皮Android客户端:http://m.3.cn/s/zkwuea</string>
     <string name="shake_share_text">分享给朋友，炫耀一下！</string>
     <string name="shake_coupon_hint_text">喂喂喂~你还没领奖品呢~</string>
     <string name="shake_bean_msg">您摇到了%1$s个%2$s!</string>
     <string name="shake_coupon_msg">您摇到了%1$s%2$s</string>
-    <string name="shake_home_share_text">京东手机客户端的摇啊摇太赞了！有京豆、优惠券、还有超低价商品！小伙伴儿们都来试试运气吧！@京东 |下载京东Android客户端:http://m.3.cn/s/zkwuea</string>
-    <string name="shake_share_super_msg">京东手机客户端的摇啊摇太赞了！我刚刚摇到了“神秘大奖”！小伙伴儿们都来试试运气吧！ |下载京东Android客户端:http://m.3.cn/s/zkwuea</string>
+    <string name="shake_home_share_text">魏家凉皮手机客户端的摇啊摇太赞了！有京豆、优惠券、还有超低价商品！小伙伴儿们都来试试运气吧！@魏家凉皮 |下载魏家凉皮Android客户端:http://m.3.cn/s/zkwuea</string>
+    <string name="shake_share_super_msg">魏家凉皮手机客户端的摇啊摇太赞了！我刚刚摇到了“神秘大奖”！小伙伴儿们都来试试运气吧！ |下载魏家凉皮Android客户端:http://m.3.cn/s/zkwuea</string>
     <string name="shake_phont_check_fail_text">请填写真实有效的号码，我们才能联系到你哦~</string>
     <string name="shake_super_product_hint_text">请留下手机号码，立即领取，我们会尽快与你联系。</string>
     <string name="shake_super_product_success_text">"我们会尽快与你联系。
@@ -1457,7 +1457,7 @@
     <string name="personel_login_meeting_pd_hint">请输入您的密码</string>
     <string name="personel_login_meeting_not_bind_hint">非ERP绑定帐号不能享用年会服务哦~ 请重新登录，或联系工作人员。</string>
     <string name="annual_meeting_error">服务小弟忙碌中！请稍后再试。</string>
-    <string name="annual_rock_default_msg">矜持什么呢，就差一点啦！加油摇摆吧，京东人！</string>
+    <string name="annual_rock_default_msg">矜持什么呢，就差一点啦！加油摇摆吧，魏家凉皮人！</string>
     <string name="personel_account_center">账户管理</string>
     <string name="personel_service_after_sale">服务管家</string>
     <string name="personel_plug_center">插件中心</string>
@@ -1483,7 +1483,7 @@
     <string name="logistics_packet_complete">您的商品已经成功送达</string>
     <string name="logistics_another_time_after_complete">您的商品已经成功送达，无法另约时间</string>
     <string name="logistics_no_route">抱歉，未找到线路</string>
-    <string name="logistics_psy_slogan">京东快递 为您服务！</string>
+    <string name="logistics_psy_slogan">魏家凉皮快递 为您服务！</string>
     <string name="logistics_choose_time">选择送货时间</string>
     <string name="logistics_service_promise">您所选时间我们会尽力满足，但不作为服务承诺。</string>
     <string name="logistics_time_tip_1">您选择的另约时间为</string>
@@ -1518,14 +1518,14 @@
     <string name="fill_order_retract_cart">移回购物车</string>
     <string name="fill_order_no_stock_product">以下商品暂时无货，为了不影响本次下单，可先暂时移回购物车：</string>
     <string name="fill_order_select_coupon">选择优惠券</string>
-    <string name="fill_order_select_jdcard">选择京东卡</string>
+    <string name="fill_order_select_jdcard">选择魏家凉皮卡</string>
     <string name="network_tips_title">无网络连接</string>
     <string name="network_tips_heading1">请设置你的网络</string>
     <string name="network_tips_heading2">如果你已经连接Wi-Fi网络</string>
     <string name="network_tips_part1">1.打开设备的“系统设置”>“无线和网络”>“移动网络”。</string>
     <string name="network_tips_part2">2.打开设备的“系统设置”>“WLAN”，“启动WLAN”后从中选择一个可用的热点连接。</string>
     <string name="network_tips_part3">请确认你所接入的Wi-Fi网络已经连入互联网，或者确认你的设备是否被允许访问该热点。</string>
-    <string name="my_jd_blank_note">京东白条</string>
+    <string name="my_jd_blank_note">魏家凉皮白条</string>
     <string name="my_jd_online_service">在线客服</string>
     <string name="personel_layer_text_info">可查询最新物流状态</string>
     <string name="new_easy_buy_address_title">地址管理</string>
@@ -1570,7 +1570,7 @@
     <string name="new_easy_buy_address_layout_text_payment_online">在线支付</string>
     <string name="new_easy_buy_address_layout_text_payment_offline">货到付款</string>
     <string name="new_easy_buy_address_layout_text_payment_pack">上门自提</string>
-    <string name="new_easy_buy_address_layout_text_payment_prompt">京配区域内由京东快递配送，京配区域外由第三方快递配送</string>
+    <string name="new_easy_buy_address_layout_text_payment_prompt">京配区域内由魏家凉皮快递配送，京配区域外由第三方快递配送</string>
     <string name="new_easy_buy_address_layout_text_payment_pack_name">请选择自提点</string>
     <string name="new_easy_buy_address_layout_text_defalut_set">设为默认</string>
     <string name="new_easy_buy_address_layout_text_defalut_desc">默认地址将作为轻松购地址，设置好下单方式即可在商品页面直接下单 ，购物从此变得简单快乐。</string>
@@ -1652,4 +1652,6 @@
     <string name="wifi_changing_network">请求连接到网络…</string>
     <string name="wifi_ssid_label">网络SSID</string>
     <string name="wifi_type_label">类型</string>
+    
+    <string name="must_login_use_phone_num">请您使用手机号码登录</string>
 </resources>

@@ -11,7 +11,7 @@
         android:orientation="vertical" >
         
 		<include layout="@layout/top1" />
-        <include layout="@layout/top2" />
+        <include android:id="@id/food_class" layout="@layout/top2" />
     </LinearLayout>
 
 	<LinearLayout 
@@ -20,16 +20,36 @@
 	    android:orientation="vertical">
 	    
 	</LinearLayout>
-	<LinearLayout 
+
+	<LinearLayout
+	    android:id="@id/menu_layout"
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
-	    android:orientation="vertical">
+	    android:layout_below="@+id/llayout"
+	    android:orientation="vertical" >
 
-		<RelativeLayout
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content" >
-		    
-		</RelativeLayout>
+	    <RelativeLayout
+	        android:id="@id/product_list_content_layout"
+	        android:layout_width="fill_parent"
+	        android:layout_height="414dp"
+	        android:layout_below="@id/food_class" >
+
+       		<ListView
+       		    android:id="@id/product_list"
+       		    android:layout_width="fill_parent"
+       		    android:layout_height="fill_parent"
+       		    android:alwaysDrawnWithCache="false"
+       		    android:cacheColorHint="#00000000"
+       		    android:divider="@drawable/product_list_divider"
+       		    android:fadeScrollbars="true"
+       		    android:persistentDrawingCache="none"
+       		    android:scrollingCache="false"
+       		    android:visibility="visible" />
+
+       		<GridView android:gravity="center" android:id="@id/product_list_content_gridview" android:background="#fff1f2f3" android:visibility="gone" android:fadingEdge="none" android:persistentDrawingCache="none" android:alwaysDrawnWithCache="false" android:layout_width="fill_parent" android:layout_height="fill_parent" android:scrollingCache="false" android:horizontalSpacing="5.0dip" android:verticalSpacing="5.0dip" android:stretchMode="columnWidth" android:numColumns="2" />
+       		<TextView android:textAppearance="@android:style/TextAppearance" android:gravity="center" android:id="@id/empty" android:padding="20.0dip" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/no_data" android:layout_centerHorizontal="true" />
+   		</RelativeLayout>
+
 	    
 	</LinearLayout>
 
