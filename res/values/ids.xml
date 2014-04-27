@@ -3437,5 +3437,6 @@
     <item type="id" name="food_class"></item>
     <item type="id" name="product_checkbox"></item>
     <item type="id" name="tabhost_main"></item>
-    
+    <item type="id" name="product_item_id"></item>
+    <item type="id" name="product_item_comment"></item>
 </resources>

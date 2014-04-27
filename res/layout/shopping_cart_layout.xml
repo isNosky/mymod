@@ -22,6 +22,6 @@
         <View android:layout_gravity="top" android:id="@id/shopping_cart_shadow" android:background="@drawable/cart_price_bg_shadow_1" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="5.0dip" />
     </FrameLayout>
     <FrameLayout android:orientation="vertical" android:background="#80000000" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_alignParentBottom="true">
-        <include android:id="@id/shopping_cart_count_price_layout" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/shopping_cart_price_layout" />
+        <include android:id="@id/shopping_cart_count_price_layout" android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/shopping_cart_price_layout" />
     </FrameLayout>
 </RelativeLayout>

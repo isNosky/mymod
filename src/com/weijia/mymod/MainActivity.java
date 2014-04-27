@@ -59,4 +59,8 @@ public class MainActivity extends TabActivity {
 	        myIntent=new Intent(this, PersonelActivity.class);  
 
 	    }
+//	    public TabHost getTabHost()
+//	    {
+//	    	return tabHost;
+//	    }
 }
