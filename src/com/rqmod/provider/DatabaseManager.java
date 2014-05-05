@@ -18,12 +18,12 @@ public class DatabaseManager {
 	private final int BUFFER_SIZE = 400000;  
     public static final String DB_NAME = "rqdata.db"; //保存的数据库文件名  
     public static final String DB_SUBFDL = "db"; //保存的数据库文件名  
-    public static final String PACKAGE_NAME = "rqmod";//包名  
+    public static final String PACKAGE_NAME = "mymod";//包名  
 //    public static final String DB_PATH = Environment.getExternalStorageDirectory().getPath()  
 //                    + Environment.getDataDirectory().getAbsolutePath() + "/"  
 //                    + PACKAGE_NAME + "/"  
 //                    + DB_SUBFDL;  //在手机里存放数据库的位置  
-    public static final String DB_PATH = "/data/rqmod/db";
+    public static final String DB_PATH = Environment.getDataDirectory().getAbsolutePath();
     private Context context;  
 
     DatabaseManager(Context context) {  
@@ -31,11 +31,26 @@ public class DatabaseManager {
     }  
 
     public SQLiteDatabase openDatabase() {  
-            return this.openDatabase(DB_PATH + "/" + DB_NAME);  
+    	
+    	String strFilePath = this.context.getCacheDir().getAbsolutePath();
+		File destDir = new File(strFilePath+"/db");
+		if (!destDir.exists()) {
+			destDir.mkdirs();
+		}
+		
+		//临时
+		File destDir2 = new File(strFilePath+"/pic");
+		if (!destDir2.exists()) {
+			destDir2.mkdirs();
+		}
+				
+		return this.openDatabase(strFilePath + "/db" + "/" + DB_NAME);  
     }  
 
-    private SQLiteDatabase openDatabase(String dbfile) {  
-            try {  
+    private SQLiteDatabase openDatabase(String dbfile)  {  
+            try {
+            		
+					
                     if (!(new File(dbfile).exists())) {
                             InputStream is = this.context.getResources().openRawResource(R.raw.rqdata); //欲导入的数据库  
                             FileOutputStream fos = new FileOutputStream(dbfile);  
@@ -58,7 +73,8 @@ public class DatabaseManager {
                     e.printStackTrace();  
             }  
             return null;  
-    }
+    }    
+    
     
     public static DatabaseManager getInstance(Context context)
     {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.rqmod.provider.DatabaseManager;
+import com.rqmod.provider.ImageManager;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -89,7 +90,7 @@ public class MenuActivity extends Activity {
 			    int isinsale = c.getInt(c.getColumnIndex("isinsale"));
 			    float price = c.getFloat(c.getColumnIndex("unitprice"));
 			    HashMap<String, Object> map = new HashMap<String, Object>();  
-			    Bitmap bmp = BitmapFactory.decodeFile(picptah);
+			    Bitmap bmp = ImageManager.getInstance(this).getBitmap(picptah);
 				map.put("product_item_image", bmp);
 			    map.put("product_item_name", pname);
 			    map.put("product_item_id", "±àºÅ:"+String.valueOf(id));
@@ -147,17 +148,45 @@ public class MenuActivity extends Activity {
 				    	  String strName = tvName.getText().toString();
 				    	  String strPrice = tvPrice.getText().toString();
 				    	  String strPrdtId = tvPrdtId.getText().toString();
-			    	  
+				    	  int productid = Integer.parseInt(strPrdtId.substring(3));
 				    	  ContentValues values = new ContentValues();
 				    	  values.put("productname", strName);
-				    	  values.put("productid", Integer.parseInt(strPrdtId.substring(3)));
+				    	  values.put("productid", productid);
 				    	  values.put("unitprice", Float.parseFloat(strPrice.substring(4)));
 				    	  values.put("buycount", 1);
 				    	  
-				    	  if(-1 == db.insert(TBL_SHOPCAR, null, values))
-				    	  {
-				    		  break;
-				    	  }
+						  Cursor count = db.rawQuery("select count(*) goodscount from tbl_shopcar where productid = " + productid, null);
+						  count.moveToFirst();
+						  int iColIdx = count.getColumnIndex("goodscount");
+						  int goodscount = count.getInt(iColIdx);
+						  count.close();
+						  
+						  if(goodscount > 1)
+						  {
+							  
+						  }
+						  else if(goodscount == 1)
+						  {
+							  Cursor buycount = db.rawQuery("select buycount from tbl_shopcar where productid = " + productid, null);
+							  buycount.moveToFirst();
+							  int iColIdx1 = count.getColumnIndex("buycount");
+							  int iBuycount = count.getInt(iColIdx1);
+							  count.close();
+							  
+							  ContentValues values1 = new ContentValues();
+							  values1.put("buycount", iBuycount +1);
+							  
+							  String whereClause = "productid";
+							  String [] whereArgs = {String.valueOf(productid)};
+							  db.update(TBL_SHOPCAR, values1, whereClause, whereArgs);
+						  }
+						  else
+						  {
+					    	  if(-1 == db.insert(TBL_SHOPCAR, null, values))
+					    	  {
+					    		  break;
+					    	  }
+						  }
 				      }
 				}
 			}

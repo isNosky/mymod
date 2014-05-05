@@ -35,5 +35,5 @@
         <activity android:name="NewEasyBuyAddressListActivity"/>
         <activity android:name="MyOderListActivity"/>
     </application>
-
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
 </manifest>
