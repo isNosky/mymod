@@ -19,9 +19,11 @@ import com.rqmod.provider.DbUlity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -31,10 +33,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewParent;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
@@ -44,6 +50,8 @@ import android.widget.TextView;
 import android.text.Layout;
 import android.util.Log;
 import android.view.ViewGroup;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 
 public class ShoppingCarActivity extends Activity {
 	
@@ -58,6 +66,11 @@ public class ShoppingCarActivity extends Activity {
 	boolean bHasGood = false;
 	float fTotalPrice = 0;
 	RelativeLayout loPrice = null;
+	TextView tvTotalPrice = null;
+	Button btnJieSuan = null;
+	LinearLayout llDelete = null;
+	View vPrice = null;
+	View vNodata = null;
 	
 	final int BUTTON_ADD = 1001;
 	final int BUTTON_REDUCE = 1002;
@@ -71,178 +84,74 @@ public class ShoppingCarActivity extends Activity {
 			dbm = DatabaseManager.getInstance(this);
 			db = dbm.openDatabase();
 			
+			llDelete = (LinearLayout)findViewById(R.id.shopping_cart_delete_layout);
+			
 			lvGood = (ListView)findViewById(R.id.shopping_cart_list);
 			btnOrder = (Button)findViewById(R.id.cart_no_data_forward_cuxiao);
-			View vNodata = (View)findViewById(R.id.shopping_cart_no_data);
-			View vPrice = (View)findViewById(R.id.shopping_cart_count_price_layout);
+			vNodata = (View)findViewById(R.id.shopping_cart_no_data);
+			vPrice = (View)findViewById(R.id.shopping_cart_count_price_layout);
 			loPrice = (RelativeLayout)findViewById(R.id.shoping_cart_user_no_login_tips);
 			//btnDec = (Button)findViewById(R.id.cart_single_product_num_reduce);
 			//btnInc = (Button)findViewById(R.id.cart_single_product_num_add);
 			tbhost = ((TabActivity)getParent()).getTabHost();
+			tvTotalPrice = (TextView)findViewById(R.id.cart_count_price_tv);
+			btnJieSuan = (Button)findViewById(R.id.cart_settle_accounts_but);
 			
-			ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String,Object>>();
-			try {
-				Cursor count = db.rawQuery("select count(*) goodscount from tbl_shopcar", null);
-				count.moveToFirst();
-				int iColIdx = count.getColumnIndex("goodscount");
-				int goodscount = count.getInt(iColIdx);
-				count.close();
-				if(0 == goodscount)
-				{
-					vPrice.setVisibility(8);
-//					loPrice.setVisibility(8);
-					lvGood.setVisibility(8);
-					btnOrder.setOnClickListener(new View.OnClickListener(){
+			btnJieSuan.setOnClickListener(new OnClickListener(){
 
-						@Override
-						public void onClick(View arg0) {
-							// TODO Auto-generated method stub
-							tbhost.setCurrentTab(0);
-						}
-						
-					});
-				}
-				else
-				{
-					Cursor c = db.rawQuery("select a.picturepath,b.* from tbl_product a,tbl_shopcar b where a.id=b.productid", null);// WHERE age >= ?", new String[]{"33"}); 
-					
-					while (c.moveToNext()) {
-						bHasGood = true;
-					    int id = c.getInt(c.getColumnIndex("id"));  
-					    String pname = c.getString(c.getColumnIndex("productname"));  
-					    int type = c.getInt(c.getColumnIndex("productid"));
-					    float price = c.getFloat(c.getColumnIndex("unitprice"));
-					    int buycount = c.getInt(c.getColumnIndex("buycount"));
-					    String strPicPath = c.getString(c.getColumnIndex("picturepath")); 
-					    float unittotalprice = price*buycount;
-					    
-					    HashMap<String, Object> map = new HashMap<String, Object>();  
-					    Bitmap bmp = getBitmapFromFile(strPicPath);
-						map.put("cart_single_product_image", bmp);
-					    map.put("cart_single_product_name", pname);
-					    map.put("cart_single_product_id", "编号:"+String.valueOf(id));
-					    map.put("cart_single_product_et_num", buycount);
-					    map.put("cart_single_product_price", "RMB:"+ Float.toString(unittotalprice));  
-					    listItem.add(map);
-					    
-					    fTotalPrice += unittotalprice;
-					}  
-					c.close();
-					
-					vNodata.setVisibility(8);
-					//BaseAdapter mBaseAdapter = new BaseAdapter()
-					SimpleAdapter mSimpleAdapter = new SimpleAdapter(
-							ShoppingCarActivity.this, 
-							listItem, 
-							R.layout.shopping_cart_single_product_item, 
-							new String[] {"cart_single_product_image", "cart_single_product_name","cart_single_product_id","cart_single_product_et_num", "cart_single_product_price"}, 
-							new int [] {R.id.cart_single_product_image,R.id.cart_single_product_name,R.id.cart_single_product_id, R.id.cart_single_product_et_num,R.id.cart_single_product_price})
-					{
-	                    //在这个重写的函数里设置 每个 item 中按钮的响应事件
-						View view = null;
-	                    @Override
-	                    public View getView(int position, View convertView,ViewGroup parent) {
-	                    	
-	                    	
-	                        
-							try {
-								final int p=position;
-								view = super.getView(position, convertView, parent);								
-								
-								ImageButton btnReduce=(ImageButton)view.findViewById(R.id.cart_single_product_num_reduce);
-		                        btnReduce.setOnClickListener(new OnClickListener() {
-		                            
-		                            @Override
-		                            public void onClick(View v) {
-		                            	
-		                            	TextView tvNum = (TextView)view.findViewById(R.id.cart_single_product_et_num);
-										String strNum = tvNum.getText().toString();
-										int iNum = Integer.parseInt(strNum);
-		                            	if(iNum == 1)
-		                            	{
-		                            		//v.setEnabled(false);
-		                            		return;
-		                            	}
-		                            	else
-		                            	{
-		                            		//iNum--;
-		                            		tvNum.setText(String.valueOf(--iNum));
-		                            		
-		                            		TextView tvPrice = (TextView)view.findViewById(R.id.cart_single_product_price);
-			                            	String strPrice = tvPrice.getText().toString().substring(4);
-			                            	float fPrice = Float.parseFloat(strPrice);
-			                            	tvPrice.setText("RMB:"+String.valueOf(fPrice/(iNum+1)*iNum));
-		                            	}
-		                            }
-		                        });
-								
-								ImageButton btnAdd=(ImageButton)view.findViewById(R.id.cart_single_product_num_add);
-		                        btnAdd.setOnClickListener(new OnClickListener() {
-		                            
-		                            @Override
-		                            public void onClick(View v) {
-		                            	
-		                            	TextView tvNum = (TextView)view.findViewById(R.id.cart_single_product_et_num);
-										String strNum = tvNum.getText().toString();
-										int iNum = Integer.parseInt(strNum);
-		                            	tvNum.setText(String.valueOf(++iNum));
-		                            	
-		                            	TextView tvPrice = (TextView)view.findViewById(R.id.cart_single_product_price);
-		                            	String strPrice = tvPrice.getText().toString().substring(4);
-		                            	float fPrice = Float.parseFloat(strPrice);
-		                            	tvPrice.setText("RMB:"+String.valueOf(fPrice/(iNum-1)*iNum));
-		                            }
-		                        });
-							} catch (NumberFormatException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							catch (Exception e) {
-								// TODO Auto-generated catch block
-								String str = e.getMessage();
-								e.printStackTrace();
-							}
-	                        return view;
-	                    }
-	        };
-					mSimpleAdapter.setViewBinder(new ViewBinder(){
+				@Override
+				public void onClick(View arg0) {
+					// TODO Auto-generated method stub
+					Bundle bd = new Bundle();
+					Intent intent = new Intent(ShoppingCarActivity.this,FillOrderActivity.class);
+					startActivity(intent);
+				}});
+			
+			llDelete.setOnClickListener(new OnClickListener(){
 
-						@Override
-						public boolean setViewValue(View arg0, Object arg1, String arg2) {
-							// TODO Auto-generated method stub
-							if( (arg0 instanceof ImageView) & (arg1 instanceof Bitmap) ) {  
-					            ImageView iv = (ImageView) arg0;  
-					            Bitmap bm = (Bitmap) arg1;  
-					            iv.setImageBitmap(bm);  
-					            return true;  
-					            }  
-					        return false;
-						}
+				@Override
+				public void onClick(View arg0) {
+					// TODO Auto-generated method stub
+					//ViewParent vp = arg0.getParent();
+					//ListView lvGood1 = (ListView) ((View) arg0.getParent()).findViewById(R.id.shopping_cart_list);
+					try {
+						//int iCount = lvGood.getCheckedItemCount();
 						
-					});
-					lvGood.setAdapter(mSimpleAdapter);
-					
-//					btnDec.setOnClickListener(new OnClickListener(){
-//
-//						@Override
-//						public void onClick(View arg0) {
-//							// TODO Auto-generated method stub
-//							
-//						}});
-//					
-//					btnInc.setOnClickListener(new OnClickListener(){
-//
-//						@Override
-//						public void onClick(View v) {
-//							// TODO Auto-generated method stub
-//							
-//						}});
-				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				String str = e.getMessage();
-				e.printStackTrace();
-			}
+						AlertDialog.Builder dialog=new AlertDialog.Builder(ShoppingCarActivity.this);
+						dialog.setTitle("提示")
+							.setIcon(android.R.drawable.ic_dialog_info)
+							.setMessage("请问您是否要删除这些商品吗")
+							.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+																	
+								for(int i = 0; i < lvGood.getChildCount(); i++){  
+								      View view = lvGood.getChildAt(i);  
+								      CheckBox cb = (CheckBox)view.findViewById(R.id.cart_single_product_cb);  
+								      if(cb.isChecked())
+								      {
+								    	  
+								      }
+								}
+						}
+            }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+						 
+
+						public void onClick(DialogInterface dialog, int which) {
+						    // TODO Auto-generated method stub
+						    dialog.cancel();//取消弹出框
+						}
+            }).create().show();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						String str = e.getMessage();
+						e.printStackTrace();
+					}
+
+					}
+				});
+			
+			updateShopCar();
 	
 		}
 		catch(Exception e)
@@ -253,6 +162,194 @@ public class ShoppingCarActivity extends Activity {
 		}
 		
 
+	}
+	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+//		showDialog("OnResume called");
+		updateShopCar();
+	}
+	
+	private void updateShopCar()
+	{
+		ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String,Object>>();
+		try {
+			Cursor count = db.rawQuery("select count(*) goodscount from tbl_shopcar", null);
+			count.moveToFirst();
+			int iColIdx = count.getColumnIndex("goodscount");
+			int goodscount = count.getInt(iColIdx);
+			count.close();
+			
+			fTotalPrice = 0;
+			if(0 == goodscount)
+			{
+				vPrice.setVisibility(8);
+//				loPrice.setVisibility(8);
+				lvGood.setVisibility(8);
+				btnOrder.setOnClickListener(new View.OnClickListener(){
+
+					@Override
+					public void onClick(View arg0) {
+						// TODO Auto-generated method stub
+						tbhost.setCurrentTab(0);
+					}
+					
+				});
+			}
+			else
+			{
+				Cursor c = db.rawQuery("select a.picturepath,b.* from tbl_product a,tbl_shopcar b where a.id=b.productid", null);// WHERE age >= ?", new String[]{"33"}); 
+				
+				while (c.moveToNext()) {
+					bHasGood = true;
+				    int id = c.getInt(c.getColumnIndex("id"));  
+				    String pname = c.getString(c.getColumnIndex("productname"));  
+				    int type = c.getInt(c.getColumnIndex("productid"));
+				    float price = c.getFloat(c.getColumnIndex("unitprice"));
+				    int buycount = c.getInt(c.getColumnIndex("buycount"));
+				    String strPicPath = c.getString(c.getColumnIndex("picturepath")); 
+				    float unittotalprice = price*buycount;
+				    
+				    HashMap<String, Object> map = new HashMap<String, Object>();  
+//				    Bitmap bmp = getBitmapFromFile(strPicPath);
+				    Bitmap bmp = null;
+					try {
+						bmp = BitmapFactory.decodeFile(strPicPath);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (OutOfMemoryError e) {
+					    //
+						e.printStackTrace();
+					}
+					
+					map.put("cart_single_product_image", bmp);
+				    map.put("cart_single_product_name", pname);
+				    map.put("cart_single_product_id", "编号:"+String.valueOf(id));
+				    map.put("cart_single_product_et_num", buycount);
+				    map.put("cart_single_product_price", "RMB:"+ Float.toString(unittotalprice));  
+				    listItem.add(map);
+				    
+				    fTotalPrice += unittotalprice;
+				}  
+				c.close();				
+				
+				
+				vNodata.setVisibility(8);
+				//BaseAdapter mBaseAdapter = new BaseAdapter()
+				SimpleAdapter mSimpleAdapter = new SimpleAdapter(
+						ShoppingCarActivity.this, 
+						listItem, 
+						R.layout.shopping_cart_single_product_item, 
+						new String[] {"cart_single_product_image", "cart_single_product_name","cart_single_product_id","cart_single_product_et_num", "cart_single_product_price"}, 
+						new int [] {R.id.cart_single_product_image,R.id.cart_single_product_name,R.id.cart_single_product_id, R.id.cart_single_product_et_num,R.id.cart_single_product_price})
+				{
+                    //在这个重写的函数里设置 每个 item 中按钮的响应事件
+					View view = null;
+                    @Override
+                    public View getView(int position, View convertView,ViewGroup parent) {
+                    	
+                    	
+                        
+						try {
+							final int p=position;
+							view = super.getView(position, convertView, parent);								
+							
+							ImageButton btnReduce=(ImageButton)view.findViewById(R.id.cart_single_product_num_reduce);
+	                        btnReduce.setOnClickListener(new OnClickListener() {
+	                            
+	                            @Override
+	                            public void onClick(View v) {
+	                            	
+	                            	TextView tvNum = (TextView)view.findViewById(R.id.cart_single_product_et_num);
+									String strNum = tvNum.getText().toString();
+									int iNum = Integer.parseInt(strNum);
+	                            	if(iNum == 1)
+	                            	{
+	                            		//v.setEnabled(false);
+	                            		return;
+	                            	}
+	                            	else
+	                            	{
+	                            		//iNum--;
+	                            		tvNum.setText(String.valueOf(--iNum));
+	                            		
+	                            		TextView tvPrice = (TextView)view.findViewById(R.id.cart_single_product_price);
+		                            	String strPrice = tvPrice.getText().toString().substring(4);
+		                            	float fPrice = Float.parseFloat(strPrice);
+		                            	float fNewPrice = fPrice/(iNum+1)*iNum;
+		                            	tvPrice.setText("RMB:"+String.valueOf(fNewPrice));
+		                            	
+		                            	String strOTPrice = tvTotalPrice.getText().toString();
+		            					fTotalPrice = Float.parseFloat(strOTPrice.substring(7));
+		                            	fTotalPrice = fTotalPrice - fPrice + fNewPrice;
+		                            	tvTotalPrice.setText("总计:RMB " + String.valueOf(fTotalPrice));
+	                            	}
+	                            }
+	                        });
+							
+							ImageButton btnAdd=(ImageButton)view.findViewById(R.id.cart_single_product_num_add);
+	                        btnAdd.setOnClickListener(new OnClickListener() {
+	                            
+	                            @Override
+	                            public void onClick(View v) {
+	                            	
+	                            	TextView tvNum = (TextView)view.findViewById(R.id.cart_single_product_et_num);
+									String strNum = tvNum.getText().toString();
+									int iNum = Integer.parseInt(strNum);
+	                            	tvNum.setText(String.valueOf(++iNum));
+	                            	
+	                            	TextView tvPrice = (TextView)view.findViewById(R.id.cart_single_product_price);
+	                            	String strPrice = tvPrice.getText().toString().substring(4);
+	                            	float fPrice = Float.parseFloat(strPrice);
+	                            	float fNewPrice = fPrice/(iNum-1)*iNum;
+	                            	tvPrice.setText("RMB:"+String.valueOf(fNewPrice));
+	                            	
+	                            	String strOTPrice = tvTotalPrice.getText().toString();
+	            					fTotalPrice = Float.parseFloat(strOTPrice.substring(7));
+	                            	fTotalPrice = fTotalPrice - fPrice + fNewPrice;
+	                            	tvTotalPrice.setText("总计:RMB " + String.valueOf(fTotalPrice));
+	                            }
+	                        });
+						} catch (NumberFormatException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						catch (Exception e) {
+							// TODO Auto-generated catch block
+							String str = e.getMessage();
+							e.printStackTrace();
+						}
+                        return view;
+                    }
+				};
+				mSimpleAdapter.setViewBinder(new ViewBinder(){
+
+					@Override
+					public boolean setViewValue(View arg0, Object arg1, String arg2) {
+						// TODO Auto-generated method stub
+						if( (arg0 instanceof ImageView) & (arg1 instanceof Bitmap) ) {  
+				            ImageView iv = (ImageView) arg0;  
+				            Bitmap bm = (Bitmap) arg1;  
+				            iv.setImageBitmap(bm);  
+				            return true;  
+				            }  
+				        return false;
+					}
+					
+				});
+				lvGood.setAdapter(mSimpleAdapter);
+				
+				tvTotalPrice.setText("总计:RMB " + String.valueOf(fTotalPrice));
+
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			String str = e.getMessage();
+			e.printStackTrace();
+		}
 	}
 	
 	private void showDialog(String msg){
@@ -286,7 +383,8 @@ public class ShoppingCarActivity extends Activity {
 	        InputStream is = url.openConnection().getInputStream();  
 	        BufferedInputStream bis = new BufferedInputStream(is);  // bitmap = BitmapFactory.decodeStream(bis);     注释1                                          
 	        byte[] b = getBytes(is);  
-	        bitmap = BitmapFactory.decodeByteArray(b,0,b.length);bis.close();  
+	        bitmap = BitmapFactory.decodeByteArray(b,0,b.length);
+	        bis.close();  
 	    } catch (MalformedURLException e) {  
 	        e.printStackTrace();  
 	    } catch (IOException e) {  

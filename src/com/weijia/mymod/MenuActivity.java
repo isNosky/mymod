@@ -7,7 +7,10 @@ import com.rqmod.provider.DatabaseManager;
 import com.rqmod.provider.ImageManager;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.TabActivity;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -22,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.SimpleAdapter.ViewBinder;
+import android.widget.TabHost;
 import android.widget.TextView;
 
 public class MenuActivity extends Activity {
@@ -32,6 +36,9 @@ public class MenuActivity extends Activity {
 	ImageView vShopCar = null;
 	SQLiteDatabase db = null;
 	DatabaseManager dbm = null;
+
+	TabHost tabHost = null;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -41,6 +48,8 @@ public class MenuActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		dbm = DatabaseManager.getInstance(this);
 		db = dbm.openDatabase();
+		
+		tabHost = ((TabActivity)getParent()).getTabHost();
 		
 		OnClickListener lsnr = new OnClickListener() {
 			@Override
@@ -73,8 +82,8 @@ public class MenuActivity extends Activity {
 //				startActivity(intent);				
 //			}
 //		});
-		lvMenu = (ListView)findViewById(R.id.product_list);
-		
+		lvMenu = (ListView)findViewById(R.id.product_list);	
+
 		
 		ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String,Object>>();
 		
@@ -141,9 +150,9 @@ public class MenuActivity extends Activity {
 				      if(cb.isChecked())
 				      {
 				    	  //加入后台数据库
-				    	  TextView tvName = (TextView)findViewById(R.id.product_item_name);
-				    	  TextView tvPrice = (TextView)findViewById(R.id.product_item_martPrice);
-				    	  TextView tvPrdtId = (TextView)findViewById(R.id.product_item_id);
+				    	  TextView tvName = (TextView)view.findViewById(R.id.product_item_name);
+				    	  TextView tvPrice = (TextView)view.findViewById(R.id.product_item_martPrice);
+				    	  TextView tvPrdtId = (TextView)view.findViewById(R.id.product_item_id);
 
 				    	  String strName = tvName.getText().toString();
 				    	  String strPrice = tvPrice.getText().toString();
@@ -169,16 +178,24 @@ public class MenuActivity extends Activity {
 						  {
 							  Cursor buycount = db.rawQuery("select buycount from tbl_shopcar where productid = " + productid, null);
 							  buycount.moveToFirst();
-							  int iColIdx1 = count.getColumnIndex("buycount");
-							  int iBuycount = count.getInt(iColIdx1);
-							  count.close();
+							  int iColIdx1 = buycount.getColumnIndex("buycount");
+							  int iBuycount = buycount.getInt(iColIdx1);
+							  buycount.close();
 							  
-							  ContentValues values1 = new ContentValues();
-							  values1.put("buycount", iBuycount +1);
-							  
-							  String whereClause = "productid";
-							  String [] whereArgs = {String.valueOf(productid)};
-							  db.update(TBL_SHOPCAR, values1, whereClause, whereArgs);
+//							  ContentValues values1 = new ContentValues();
+//							  values1.put("buycount", iBuycount +1);
+//							  
+//							  String whereClause = "productid=?";
+//							  String [] whereArgs = {String.valueOf(productid)};
+							  try {
+								//db.update(TBL_SHOPCAR, values1, whereClause, whereArgs);
+								  String strSql = "update tbl_shopcar set buycount = " + String.valueOf(iBuycount +1) + " where productid = " + String.valueOf(productid);
+								  db.execSQL(strSql);
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								String str = e.getMessage();
+								e.printStackTrace();
+							}
 						  }
 						  else
 						  {
@@ -189,6 +206,23 @@ public class MenuActivity extends Activity {
 						  }
 				      }
 				}
+				AlertDialog.Builder dialog=new AlertDialog.Builder(MenuActivity.this);
+				dialog.setTitle("提示")
+					.setIcon(android.R.drawable.ic_dialog_info)
+					.setPositiveButton("去购物车", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+															
+							tabHost.setCurrentTab(1);
+						}
+				}).setNegativeButton("再逛逛", new DialogInterface.OnClickListener() {
+	             
+
+	            public void onClick(DialogInterface dialog, int which) {
+	                // TODO Auto-generated method stub
+	                dialog.cancel();//取消弹出框
+	            }
+	        }).create().show();
 			}
 			
 		});

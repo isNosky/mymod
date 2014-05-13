@@ -1652,6 +1652,8 @@
     <string name="wifi_changing_network">请求连接到网络…</string>
     <string name="wifi_ssid_label">网络SSID</string>
     <string name="wifi_type_label">类型</string>
-    
     <string name="must_login_use_phone_num">请您使用手机号码登录</string>
+    <string name="title_activity_fill_order">FillOrderActivity</string>
+    <string name="title_activity_goods_info">GoodsInfoActivity</string>
+
 </resources>

@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -33,6 +36,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.rqmod.util.Constant;
 import com.rqmod.util.HttpUtil;
 
 public class LoginActivity extends Activity {
@@ -203,7 +207,10 @@ public class LoginActivity extends Activity {
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				 try {
-	                    return;
+					 JSONObject jso = getLoginJSO();
+					 JSONObject jsoOut = HttpUtil.queryStringForPost(Constant.LOGINSERVLET, jso);
+					 
+	                 return;
 	                } 
 				 catch(Exception e) {
 	                    e.printStackTrace();
@@ -277,6 +284,33 @@ public class LoginActivity extends Activity {
 //        });
     }
 	
+	private JSONObject getLoginJSO() throws JSONException
+	{
+		JSONObject jso = new JSONObject();
+		jso.put("PhoneNum", mUserNameTxt.getEditableText().toString());
+		jso.put("NickName", "");
+		jso.put("Password", mUserPassword.getEditableText().toString());
+		return jso;
+	}
+	
+	private int HandleLoginResult(JSONObject jso)
+	{
+		if(jso != null)
+		{
+			try {
+				int iErrCode = jso.getInt("ErrorCode");
+				int iUserId = jso.getInt("UserID");
+				
+				//TODO:¥Ê»Î ˝æ›ø‚
+				return 1;
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return 0;
+		
+	}
 	 private boolean nameCheck() {
 	        boolean checkFlag = false;
 	        String checkStr = mUserNameTxt.getText().toString();
