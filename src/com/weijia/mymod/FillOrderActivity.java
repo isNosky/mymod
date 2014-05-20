@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.TabActivity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -116,7 +117,8 @@ public class FillOrderActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				
+				Intent intent = new Intent(FillOrderActivity.this,GoodsInfoActivity.class);
+				startActivity(intent);
 			}});
 	}
 

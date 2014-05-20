@@ -74,6 +74,9 @@ public class ShoppingCarActivity extends Activity {
 	
 	final int BUTTON_ADD = 1001;
 	final int BUTTON_REDUCE = 1002;
+	
+	ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String,Object>>();
+	SimpleAdapter mSimpleAdapter = null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		
@@ -115,7 +118,20 @@ public class ShoppingCarActivity extends Activity {
 					//ViewParent vp = arg0.getParent();
 					//ListView lvGood1 = (ListView) ((View) arg0.getParent()).findViewById(R.id.shopping_cart_list);
 					try {
-						//int iCount = lvGood.getCheckedItemCount();
+						int iGoodsCount = lvGood.getChildCount();
+						if(0 == iGoodsCount)
+						{
+							return;
+						}
+						int iCount = 0;
+						for(int i = 0; i < lvGood.getChildCount(); i++){  
+						      View view = lvGood.getChildAt(i);  
+						      CheckBox cb = (CheckBox)view.findViewById(R.id.cart_single_product_cb);
+						      if(cb.isChecked())
+						      {
+						    	  iCount++;
+						      }
+						}
 						
 						AlertDialog.Builder dialog=new AlertDialog.Builder(ShoppingCarActivity.this);
 						dialog.setTitle("提示")
@@ -127,12 +143,26 @@ public class ShoppingCarActivity extends Activity {
 																	
 								for(int i = 0; i < lvGood.getChildCount(); i++){  
 								      View view = lvGood.getChildAt(i);  
-								      CheckBox cb = (CheckBox)view.findViewById(R.id.cart_single_product_cb);  
+								      CheckBox cb = (CheckBox)view.findViewById(R.id.cart_single_product_cb);
+								      TextView tvId = (TextView)findViewById(R.id.cart_single_product_id);
 								      if(cb.isChecked())
 								      {
-								    	  
+								    	  String strID = tvId.getText().toString();
+								    	  for(HashMap<String, Object> o : listItem)
+								    	  {
+								    		  String strOID = (String) o.get("cart_single_product_id");
+								    		  if(strOID.equals(strID))
+								    		  {
+								    			  listItem.remove(o);
+								    			  String[] whereArgs = {strID.substring(3)};
+								    			  db.delete("tbl_shopcar", "id=?", whereArgs);
+								    			  break;
+								    		  }
+								    	  }
 								      }
 								}
+								mSimpleAdapter.notifyDataSetChanged();  
+								lvGood.invalidate();
 						}
             }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
 						 
@@ -174,7 +204,7 @@ public class ShoppingCarActivity extends Activity {
 	
 	private void updateShopCar()
 	{
-		ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String,Object>>();
+		
 		try {
 			Cursor count = db.rawQuery("select count(*) goodscount from tbl_shopcar", null);
 			count.moveToFirst();
@@ -239,7 +269,7 @@ public class ShoppingCarActivity extends Activity {
 				
 				vNodata.setVisibility(8);
 				//BaseAdapter mBaseAdapter = new BaseAdapter()
-				SimpleAdapter mSimpleAdapter = new SimpleAdapter(
+				mSimpleAdapter = new SimpleAdapter(
 						ShoppingCarActivity.this, 
 						listItem, 
 						R.layout.shopping_cart_single_product_item, 
@@ -254,7 +284,7 @@ public class ShoppingCarActivity extends Activity {
                     	
                         
 						try {
-							final int p=position;
+							
 							view = super.getView(position, convertView, parent);								
 							
 							ImageButton btnReduce=(ImageButton)view.findViewById(R.id.cart_single_product_num_reduce);
@@ -263,7 +293,8 @@ public class ShoppingCarActivity extends Activity {
 	                            @Override
 	                            public void onClick(View v) {
 	                            	
-	                            	TextView tvNum = (TextView)view.findViewById(R.id.cart_single_product_et_num);
+	                            	View vp = (View) v.getParent();
+	                            	TextView tvNum = (TextView)vp.findViewById(R.id.cart_single_product_et_num);
 									String strNum = tvNum.getText().toString();
 									int iNum = Integer.parseInt(strNum);
 	                            	if(iNum == 1)
@@ -276,7 +307,7 @@ public class ShoppingCarActivity extends Activity {
 	                            		//iNum--;
 	                            		tvNum.setText(String.valueOf(--iNum));
 	                            		
-	                            		TextView tvPrice = (TextView)view.findViewById(R.id.cart_single_product_price);
+	                            		TextView tvPrice = (TextView)vp.findViewById(R.id.cart_single_product_price);
 		                            	String strPrice = tvPrice.getText().toString().substring(4);
 		                            	float fPrice = Float.parseFloat(strPrice);
 		                            	float fNewPrice = fPrice/(iNum+1)*iNum;
@@ -296,12 +327,13 @@ public class ShoppingCarActivity extends Activity {
 	                            @Override
 	                            public void onClick(View v) {
 	                            	
-	                            	TextView tvNum = (TextView)view.findViewById(R.id.cart_single_product_et_num);
+	                            	View vp = (View) v.getParent();
+	                            	TextView tvNum = (TextView)vp.findViewById(R.id.cart_single_product_et_num);
 									String strNum = tvNum.getText().toString();
 									int iNum = Integer.parseInt(strNum);
 	                            	tvNum.setText(String.valueOf(++iNum));
 	                            	
-	                            	TextView tvPrice = (TextView)view.findViewById(R.id.cart_single_product_price);
+	                            	TextView tvPrice = (TextView)vp.findViewById(R.id.cart_single_product_price);
 	                            	String strPrice = tvPrice.getText().toString().substring(4);
 	                            	float fPrice = Float.parseFloat(strPrice);
 	                            	float fNewPrice = fPrice/(iNum-1)*iNum;

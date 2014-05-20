@@ -1653,6 +1653,7 @@
     <string name="wifi_ssid_label">网络SSID</string>
     <string name="wifi_type_label">类型</string>
     <string name="must_login_use_phone_num">请您使用手机号码登录</string>
+    <string name="must_password_equal">两次输入的密码不一致</string>
     <string name="title_activity_fill_order">FillOrderActivity</string>
     <string name="title_activity_goods_info">GoodsInfoActivity</string>
 

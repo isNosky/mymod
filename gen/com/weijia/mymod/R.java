@@ -6004,6 +6004,7 @@ containing a value of this type.
         public static final int msg_unmount_usb=0x7f08062b;
         public static final int msghost_set_string=0x7f08051d;
         public static final int must_login_use_phone_num=0x7f080654;
+        public static final int must_password_equal=0x7f080655;
         public static final int my_coupon_consumption=0x7f0804ca;
         public static final int my_coupon_id=0x7f0804c9;
         public static final int my_coupon_money=0x7f0804c8;
@@ -6576,8 +6577,8 @@ containing a value of this type.
         public static final int time_counter_default=0x7f080016;
         public static final int time_set_error=0x7f080017;
         public static final int tip=0x7f0802b7;
-        public static final int title_activity_fill_order=0x7f080655;
-        public static final int title_activity_goods_info=0x7f080656;
+        public static final int title_activity_fill_order=0x7f080656;
+        public static final int title_activity_goods_info=0x7f080657;
         public static final int to_company=0x7f0803c0;
         public static final int to_json=0x7f080018;
         public static final int toast_aggrement_unchecked=0x7f0800a1;

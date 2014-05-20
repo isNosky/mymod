@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,10 +13,15 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -36,6 +42,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.rqmod.provider.DatabaseManager;
 import com.rqmod.util.Constant;
 import com.rqmod.util.HttpUtil;
 
@@ -90,12 +97,25 @@ public class LoginActivity extends Activity {
     String sUserPassword;
     EditText etName;
     EditText etPasswd;
+    private static final String TBL_USER = "tbl_user";
+    
+    DatabaseManager dbm = null;
+	SQLiteDatabase db = null;
+	
+	RelativeLayout rlLoginInfo = null;
+	RelativeLayout rlNotLoginInfo = null;
+	TextView tvUserName = null;
+	TextView tvUserLevel = null;
+	TextView tvUserScore = null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		
 		try{
 			super.onCreate(savedInstanceState);
 			setContentView(R.layout.login_activity);
+			dbm = DatabaseManager.getInstance(this);
+			db = dbm.openDatabase();
+			
 	        initBtn();
 	        initEditTxt();
 	        handleClickEvent();
@@ -111,6 +131,12 @@ public class LoginActivity extends Activity {
 	private void initBtn() {
         //nameTextView = (TextView)findViewById(R.id.login_input_name);
         //passwordTextView = (TextView)findViewById(0x7f0a04a1);
+		rlLoginInfo = (RelativeLayout)findViewById(R.id.personal_for_login_info);
+		rlNotLoginInfo = (RelativeLayout)findViewById(R.id.personal_for_not_login);
+		tvUserName = (TextView)findViewById(R.id.who_and_say_hello);
+		tvUserLevel = (TextView)findViewById(R.id.user_level);
+		tvUserScore = (TextView)findViewById(R.id.user_score);
+		
         mLoginConfirm = (Button)findViewById(R.id.login_comfirm_button);
         mRegLink = (Button)findViewById(R.id.register_link);
         mRememberMe = (CheckBox)findViewById(R.id.remember_user);
@@ -126,23 +152,40 @@ public class LoginActivity extends Activity {
         historyUserNameLayout = (LinearLayout)findViewById(R.id.history_user_name_layout);
         loginDividerLine = findViewById(R.id.login_divider_line);
         etName = (EditText)findViewById(R.id.login_input_name);
-        
-        mLoginConfirm.setOnClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View arg0) {
-				//1、首先检查各个参数的有效性
-				if(nameCheck())
-				{
-					showDialog(getResources().getString(R.string.must_login_use_phone_num));
-				}
-				
-				// TODO 向网络请求登录
-				
-			}
-        	
-        });
+          	
     }
+	
+	private void initTopUI()
+	{
+		Cursor c = db.rawQuery("select count(*) logincount from tbl_user where islogin=1", null);// WHERE age >= ?", new String[]{"33"}); 
+		
+    	int logincount = 0;
+		while (c.moveToNext()) {
+		    logincount = c.getInt(c.getColumnIndex("logincount"));
+		}  
+		c.close();
+		
+		if(0 == logincount)
+		{
+			
+		}
+		else
+		{
+			rlNotLoginInfo.setVisibility(View.GONE);
+			Cursor c1 = db.rawQuery("select * logincount from tbl_user where islogin=1", null);// WHERE age >= ?", new String[]{"33"}); 
+			
+			String strPhoneNum = "";
+			while (c1.moveToNext()) {
+				strPhoneNum = c1.getString(c1.getColumnIndex("phonenum"));
+			}  
+			c.close();
+			
+			tvUserName.setText(strPhoneNum);
+			tvUserLevel.setText("铜牌用户");
+			tvUserScore.setText("0");
+		}
+	}
+	
 	private void initEditTxt() {
         mUserNameTxt = (EditText)findViewById(R.id.login_input_name);
         mUserPassword = (EditText)findViewById(R.id.login_input_password);
@@ -205,8 +248,14 @@ public class LoginActivity extends Activity {
 			
 			@Override
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-				 try {
+				//1、首先检查各个参数的有效性
+				if(nameCheck())
+				{
+					showDialog(getResources().getString(R.string.must_login_use_phone_num));
+				}
+				
+				// TODO 向网络请求登录
+				try {
 					 JSONObject jso = getLoginJSO();
 					 JSONObject jsoOut = HttpUtil.queryStringForPost(Constant.LOGINSERVLET, jso);
 					 
@@ -302,6 +351,23 @@ public class LoginActivity extends Activity {
 				int iUserId = jso.getInt("UserID");
 				
 				//TODO:存入数据库
+				 ContentValues values = new ContentValues();
+				 values.put("nickname", mUserNameTxt.getEditableText().toString());
+				 values.put("id", iUserId);
+				 values.put("phonenum", mUserNameTxt.getEditableText().toString());
+				 values.put("password", mUserPassword.getEditableText().toString());
+				 values.put("islogin", 1);
+				 
+				 if(-1 == db.insert(TBL_USER, null, values))
+				 {
+					 
+				 }
+				 else
+				 {
+					 //TODO:登录成功呈现界面
+					 rlNotLoginInfo.setVisibility(View.GONE);
+					 
+				 }
 				return 1;
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
