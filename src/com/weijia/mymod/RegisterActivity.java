@@ -1,19 +1,29 @@
 package com.weijia.mymod;
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.rqmod.util.Constant;
 import com.rqmod.util.HttpUtil;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,14 +39,28 @@ public class RegisterActivity extends Activity {
 	
 	Button btnRegister = null;
 	
+	@SuppressLint("NewApi")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder() 
+	        .detectDiskReads() 
+	        .detectDiskWrites() 
+	        .detectNetwork()   // or .detectAll() for all detectable problems 
+	        .penaltyLog() 
+	        .build()); 
+		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder() 
+			.detectLeakedSqlLiteObjects() 
+			.detectLeakedClosableObjects() 
+			.penaltyLog()
+			.penaltyDeath() 
+			.build()); 
+		
 		super.onCreate(savedInstanceState);
 		try {
 			setContentView(R.layout.register_activity);
 			
 			etUserName = (EditText)findViewById(R.id.register_input_name);
-			etPassword = (EditText)findViewById(R.id.register_page_input_password);
+			etPassword = (EditText)findViewById(R.id.register_input_password);
 			etConfirmPassword = (EditText)findViewById(R.id.register_input_confirm_password);
 			
 			btnRegister = (Button)findViewById(R.id.register_top);
@@ -46,20 +70,83 @@ public class RegisterActivity extends Activity {
 				@Override
 				public void onClick(View arg0) {
 					// TODO Auto-generated method stub
+					String strUser = etUserName.getEditableText().toString();
 					String strPass = etPassword.getEditableText().toString();
 					String strConfirmPass = etConfirmPassword.getEditableText().toString();
 					if(!strPass.equals(strConfirmPass))
 					{
 						showDialog(getResources().getString(R.string.must_password_equal));
 					}
-					JSONObject jsoin = null;					
-					JSONObject jsonout = HttpUtil.queryStringForPost(Constant.REGISTERSERVLET, jsoin);
+					
+					JSONObject jsonout = null;
+					if(Constant.FLAG_POST_IN_JSON)
+					{
+						JSONObject jsoin = new JSONObject();
+					
+						try {
+							jsoin.put("CellphoneNumber", strUser);
+							jsoin.put("NickName", strUser);
+							jsoin.put("Password", strPass);
+							jsoin.put("CellphoneOSType", "Android");
+							jsoin.put("CellphoneBrand", android.os.Build.BRAND + " " + android.os.Build.MODEL);
+							jsoin.put("Age", "25");
+							jsoin.put("Sex", 0);
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}catch (Exception e) {
+							// TODO Auto-generated catch block
+							String str = e.getMessage();
+							e.printStackTrace();
+						}
+						jsonout = HttpUtil.queryStringForPost(Constant.REGISTERSERVLET, jsoin);						
+						
+					}
+					else
+					{
+						HttpPost request = new HttpPost();
+						List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+			            postParameters.add(new BasicNameValuePair("CellphoneNumber", strUser));
+			            postParameters.add(new BasicNameValuePair("NickName", strUser));
+			            postParameters.add(new BasicNameValuePair("Password", strPass));
+			            postParameters.add(new BasicNameValuePair("CellphoneOSType", "Android"));
+			            postParameters.add(new BasicNameValuePair("CellphoneBrand", android.os.Build.BRAND + " " + android.os.Build.MODEL));
+			            postParameters.add(new BasicNameValuePair("Age", "25"));
+			            postParameters.add(new BasicNameValuePair("Sex", "0"));
+			            
+			            
+			            jsonout = HttpUtil.queryStringForPost(Constant.REGISTERSERVLET, postParameters);
+						
+					}
+					
+					try {
+						int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
+						String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
+						
+						if(Constant.ERR_CODE_SUCCESS == iErrorCode)
+						{
+							showDialog(getResources().getString(R.string.upomp_bypay_registeractivity_succeed));
+							RegisterActivity.this.finalize();
+						}
+						else
+						{
+							showDialog(strErrDesc);
+						}
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						String str = e.getMessage();
+						e.printStackTrace();
+					} catch (Throwable e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
 				}});
 			
-			if(!nameCheck())
-			{
-				showDialog(getResources().getString(R.string.must_login_use_phone_num));
-			}
+//			if(!nameCheck())
+//			{
+//				showDialog(getResources().getString(R.string.must_login_use_phone_num));
+//			}
 			
 			
 		} catch (Exception e) {
@@ -153,4 +240,6 @@ public class RegisterActivity extends Activity {
       return isValid; 
 
     }
+	
+	
 }

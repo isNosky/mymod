@@ -5,12 +5,17 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
@@ -23,6 +28,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -43,6 +49,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.rqmod.provider.DatabaseManager;
+import com.rqmod.provider.MyModApp;
 import com.rqmod.util.Constant;
 import com.rqmod.util.HttpUtil;
 
@@ -102,13 +109,22 @@ public class LoginActivity extends Activity {
     DatabaseManager dbm = null;
 	SQLiteDatabase db = null;
 	
-	RelativeLayout rlLoginInfo = null;
-	RelativeLayout rlNotLoginInfo = null;
-	TextView tvUserName = null;
-	TextView tvUserLevel = null;
-	TextView tvUserScore = null;
+	@SuppressLint("NewApi")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		
+		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder() 
+        .detectDiskReads() 
+        .detectDiskWrites() 
+        .detectNetwork()   // or .detectAll() for all detectable problems 
+        .penaltyLog() 
+        .build()); 
+		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder() 
+		.detectLeakedSqlLiteObjects() 
+		.detectLeakedClosableObjects() 
+		.penaltyLog()
+		.penaltyDeath() 
+		.build()); 
 		
 		try{
 			super.onCreate(savedInstanceState);
@@ -130,12 +146,7 @@ public class LoginActivity extends Activity {
 	}
 	private void initBtn() {
         //nameTextView = (TextView)findViewById(R.id.login_input_name);
-        //passwordTextView = (TextView)findViewById(0x7f0a04a1);
-		rlLoginInfo = (RelativeLayout)findViewById(R.id.personal_for_login_info);
-		rlNotLoginInfo = (RelativeLayout)findViewById(R.id.personal_for_not_login);
-		tvUserName = (TextView)findViewById(R.id.who_and_say_hello);
-		tvUserLevel = (TextView)findViewById(R.id.user_level);
-		tvUserScore = (TextView)findViewById(R.id.user_score);
+        //passwordTextView = (TextView)findViewById(0x7f0a04a1);		
 		
         mLoginConfirm = (Button)findViewById(R.id.login_comfirm_button);
         mRegLink = (Button)findViewById(R.id.register_link);
@@ -151,40 +162,9 @@ public class LoginActivity extends Activity {
         //mTitle.setText(0x7f0b03d4);
         historyUserNameLayout = (LinearLayout)findViewById(R.id.history_user_name_layout);
         loginDividerLine = findViewById(R.id.login_divider_line);
-        etName = (EditText)findViewById(R.id.login_input_name);
-          	
+        etName = (EditText)findViewById(R.id.login_input_name);          	
     }
 	
-	private void initTopUI()
-	{
-		Cursor c = db.rawQuery("select count(*) logincount from tbl_user where islogin=1", null);// WHERE age >= ?", new String[]{"33"}); 
-		
-    	int logincount = 0;
-		while (c.moveToNext()) {
-		    logincount = c.getInt(c.getColumnIndex("logincount"));
-		}  
-		c.close();
-		
-		if(0 == logincount)
-		{
-			
-		}
-		else
-		{
-			rlNotLoginInfo.setVisibility(View.GONE);
-			Cursor c1 = db.rawQuery("select * logincount from tbl_user where islogin=1", null);// WHERE age >= ?", new String[]{"33"}); 
-			
-			String strPhoneNum = "";
-			while (c1.moveToNext()) {
-				strPhoneNum = c1.getString(c1.getColumnIndex("phonenum"));
-			}  
-			c.close();
-			
-			tvUserName.setText(strPhoneNum);
-			tvUserLevel.setText("铜牌用户");
-			tvUserScore.setText("0");
-		}
-	}
 	
 	private void initEditTxt() {
         mUserNameTxt = (EditText)findViewById(R.id.login_input_name);
@@ -256,10 +236,49 @@ public class LoginActivity extends Activity {
 				
 				// TODO 向网络请求登录
 				try {
-					 JSONObject jso = getLoginJSO();
-					 JSONObject jsoOut = HttpUtil.queryStringForPost(Constant.LOGINSERVLET, jso);
 					 
-	                 return;
+						JSONObject jsonout = null;
+						if(Constant.FLAG_POST_IN_JSON)
+						{
+							JSONObject jsoin = getLoginJSO();
+							jsonout = HttpUtil.queryStringForPost(Constant.LOGINSERVLET, jsoin);						
+							
+						}
+						else
+						{
+							List<NameValuePair> postParameters = getLoginPara();				            
+						    jsonout = HttpUtil.queryStringForPost(Constant.LOGINSERVLET, postParameters);
+							
+						}
+						
+						try {
+							int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
+							String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
+							
+							if(Constant.ERR_CODE_SUCCESS == iErrorCode)
+							{
+								int iUserId = (Integer) jsonout.get(Constant.PARA_USER_ID);
+								MyModApp app = (MyModApp)getApplication();
+								app.setUserId(iUserId);
+								//登录成功,登录页面消失
+								LoginActivity.this.finish();
+								//刷新个人信息页面
+								
+							}
+							else
+							{
+								showDialog(strErrDesc);
+							}
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							String str = e.getMessage();
+							e.printStackTrace();
+						} catch (Throwable e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					 
+						return;
 	                } 
 				 catch(Exception e) {
 	                    e.printStackTrace();
@@ -337,9 +356,19 @@ public class LoginActivity extends Activity {
 	{
 		JSONObject jso = new JSONObject();
 		jso.put("PhoneNum", mUserNameTxt.getEditableText().toString());
-		jso.put("NickName", "");
+		jso.put("NickName", mUserNameTxt.getEditableText().toString());
 		jso.put("Password", mUserPassword.getEditableText().toString());
 		return jso;
+	}
+	
+	private List<NameValuePair> getLoginPara() 
+	{
+		List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+        postParameters.add(new BasicNameValuePair("PhoneNum", mUserNameTxt.getEditableText().toString()));
+        postParameters.add(new BasicNameValuePair("NickName", mUserNameTxt.getEditableText().toString()));
+        postParameters.add(new BasicNameValuePair("Password", mUserPassword.getEditableText().toString()));
+
+        return postParameters;
 	}
 	
 	private int HandleLoginResult(JSONObject jso)
@@ -365,7 +394,8 @@ public class LoginActivity extends Activity {
 				 else
 				 {
 					 //TODO:登录成功呈现界面
-					 rlNotLoginInfo.setVisibility(View.GONE);
+					 //rlNotLoginInfo.setVisibility(View.GONE);
+					 this.finish();
 					 
 				 }
 				return 1;

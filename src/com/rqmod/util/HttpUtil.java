@@ -36,19 +36,39 @@ public class HttpUtil {
 	}
 	// 获得Post请求对象request
 	public static HttpPost getHttpPost(String servlet,JSONObject jso){
+		
 		String url = Constant.URL + servlet;
 		HttpPost request = new HttpPost(url);
-
-		String params = jso.toString();
 		ByteArrayEntity arrayEntity = null;
-		byte[] jsonByte = null;
 		try {
+		String params = jso.toString();
+		
+		byte[] jsonByte = null;
+		
 			jsonByte = params.getBytes(DEFAULT_ENCODING);
 			arrayEntity = new ByteArrayEntity(jsonByte); 
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		request.setEntity(arrayEntity);
+		request.setHeader("Accept", "application/json");
+		request.setHeader("Content-type", "application/x-www-form-urlencoded");
+		
+		return request;
+	}
+	
+	public static HttpPost getHttpPost(String servlet,List<NameValuePair> postParameters){
+		
+		String url = Constant.URL + servlet;
+		HttpPost request = new HttpPost(url);
+		UrlEncodedFormEntity formEntity = null;
+		try {
+			formEntity = new UrlEncodedFormEntity(postParameters);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        request.setEntity(formEntity);
 		request.setHeader("Accept", "application/json");
 		request.setHeader("Content-type", "application/x-www-form-urlencoded");
 		
@@ -75,6 +95,7 @@ public class HttpUtil {
 		try {
 			// 获得响应对象
 			HttpResponse response = HttpUtil.getHttpResponse(request);
+			
 			// 判断是否请求成功
 			if(response.getStatusLine().getStatusCode()==200){
 				// 获得响应
@@ -97,6 +118,41 @@ public class HttpUtil {
 		}
         return null;
     }
+	
+	// 发送Post请求，获得响应查询结果
+		public static JSONObject queryStringForPost(String servlet,List<NameValuePair> postParameters){
+			// 根据url获得HttpPost对象
+			
+			HttpPost request = HttpUtil.getHttpPost(servlet,postParameters);
+			JSONObject jsoOut = null;
+			
+			try {
+				// 获得响应对象
+				HttpResponse response = HttpUtil.getHttpResponse(request);
+				
+				// 判断是否请求成功
+				if(response.getStatusLine().getStatusCode()==200){
+					// 获得响应
+					byte[] responseByte;				
+					String result = null;
+					responseByte = EntityUtils.toByteArray(response.getEntity());
+					result = new String(responseByte, 0, responseByte.length, DEFAULT_ENCODING);
+					jsoOut = new JSONObject(result);
+					return jsoOut;
+				}
+			} catch (ClientProtocolException e) {
+				e.printStackTrace();
+				return jsoOut;
+			} catch (IOException e) {
+				e.printStackTrace();
+				return jsoOut;
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        return null;
+	    }
+	
 	// 获得响应查询结果
 	public static String queryStringForPost(HttpPost request){
 		String result = null;

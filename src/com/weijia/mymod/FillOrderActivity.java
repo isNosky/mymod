@@ -1,13 +1,27 @@
 package com.weijia.mymod;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.rqmod.provider.DatabaseManager;
+import com.rqmod.provider.MyModApp;
+import com.rqmod.util.Constant;
+import com.rqmod.util.HttpUtil;
 
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.TabActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -23,6 +37,8 @@ import android.widget.TextView;
 
 public class FillOrderActivity extends Activity {
 
+	private MyModApp app;
+	
 	DatabaseManager dbm = null;
 	SQLiteDatabase db = null;
 	RelativeLayout rlReceiver = null;
@@ -50,6 +66,8 @@ public class FillOrderActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		app = (MyModApp) getApplication();
+		
 		setContentView(R.layout.new_fill_order);
 		//tbhost = ((TabActivity)getParent()).getTabHost();
 		
@@ -71,7 +89,7 @@ public class FillOrderActivity extends Activity {
 		dbm = DatabaseManager.getInstance(this);
 		db = dbm.openDatabase();
 		
-		Cursor c = db.rawQuery("select b.id,b.nickname,a.phonenumber1,a.phonenumber2,a.addr from tbl_addr a,tbl_user b where a.isdefault = 1 and a.subscriberid = b.id", null);
+		Cursor c = db.rawQuery("select a.id,b.nickname,a.phonenumber1,a.phonenumber2,a.addr from tbl_addr a,tbl_user b where a.isdefault = 1 and a.subscriberid = b.id", null);
 		
 		while (c.moveToNext()) {			
 		    id = c.getInt(c.getColumnIndex("id"));  
@@ -92,6 +110,7 @@ public class FillOrderActivity extends Activity {
 			totalprice = c1.getFloat(c1.getColumnIndex("totalprice"));
 		}  
 		c1.close();
+		
 		String strOrg = tvFillOrderMoney.getText().toString();
 		tvFillOrderMoney.setText(strOrg +":RMB"+totalprice);
 		
@@ -100,6 +119,81 @@ public class FillOrderActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
+				JSONObject jsonout = null;
+				JSONArray jaFood = new JSONArray();
+				Cursor c2 = db.rawQuery("select productid,buycount from tbl_shopcar", null);
+				
+				while (c2.moveToNext()) {		
+					 int iFoodId = c2.getInt(c2.getColumnIndex("productid"));
+					 int iBuyCount = c2.getInt(c2.getColumnIndex("buycount"));
+					 JSONObject jsonObject = new JSONObject();
+					 try {
+						jsonObject.put("FoodId", iFoodId);
+						jsonObject.put("Quantity", iBuyCount);
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					 
+					 jaFood.put(jsonObject);
+				}  
+				c2.close();
+				if(Constant.FLAG_POST_IN_JSON)
+				{
+					JSONObject jsoin = new JSONObject();
+				
+					try {
+						jsoin.put("UserID", app.getUserId());						
+						jsoin.put("ShopID", 1);	//当前写死，东仪路店
+						jsoin.put("deliveryAddressID", id);
+						jsoin.put("Amount", totalprice);						
+						jsoin.put("FoodList", jaFood);
+						
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}catch (Exception e) {
+						// TODO Auto-generated catch block
+						String str = e.getMessage();
+						e.printStackTrace();
+					}
+					jsonout = HttpUtil.queryStringForPost(Constant.DOORDERSERVLET, jsoin);						
+					
+				}
+				else
+				{
+					HttpPost request = new HttpPost();
+					List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+		            postParameters.add(new BasicNameValuePair("UserID", String.valueOf(app.getUserId())));
+		            postParameters.add(new BasicNameValuePair("ShopID", String.valueOf(1)));
+		            postParameters.add(new BasicNameValuePair("deliveryAddressID", String.valueOf(id)));
+		            postParameters.add(new BasicNameValuePair("Amount", String.valueOf(totalprice)));
+		            postParameters.add(new BasicNameValuePair("FoodList", jaFood.toString()));
+		            
+		            jsonout = HttpUtil.queryStringForPost(Constant.DOORDERSERVLET, postParameters);
+					
+				}
+				
+				try {
+					int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
+					String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
+					
+					if(Constant.ERR_CODE_SUCCESS == iErrorCode)
+					{
+						//下订单成功
+					}
+					else
+					{
+						showDialog(strErrDesc);
+					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					String str = e.getMessage();
+					e.printStackTrace();
+				} catch (Throwable e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 			}});
 		
@@ -127,6 +221,18 @@ public class FillOrderActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.fill_order, menu);
 		return true;
+	}
+	
+	private void showDialog(String msg){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(msg)
+		       .setCancelable(false)
+		       .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		           }
+		       });
+		AlertDialog alert = builder.create();
+		alert.show();
 	}
 
 }

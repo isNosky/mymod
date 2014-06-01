@@ -12,8 +12,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.Menu;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.SimpleAdapter.ViewBinder;
 
 public class GoodsInfoActivity extends Activity {
 	
@@ -71,6 +74,22 @@ public class GoodsInfoActivity extends Activity {
 				R.layout.fill_order_commodity_item, 
 				new String[] {"order_commodity_item_left_image", "order_commodity_item_name","order_commodity_item_desc","order_commodity_item_num", "order_commodity_item_jdprice"}, 
 				new int [] {R.id.order_commodity_item_left_image,R.id.order_commodity_item_name,R.id.order_commodity_item_desc, R.id.order_commodity_item_num,R.id.order_commodity_item_jdprice});
+		
+		mSimpleAdapter.setViewBinder(new ViewBinder(){
+
+			@Override
+			public boolean setViewValue(View arg0, Object arg1, String arg2) {
+				// TODO Auto-generated method stub
+				if( (arg0 instanceof ImageView) & (arg1 instanceof Bitmap) ) {  
+		            ImageView iv = (ImageView) arg0;  
+		            Bitmap bm = (Bitmap) arg1;  
+		            iv.setImageBitmap(bm);  
+		            return true;  
+		            }  
+		        return false;
+			}
+		});
+		
 		lvGoodsInfo.setAdapter(mSimpleAdapter);
 	}
 

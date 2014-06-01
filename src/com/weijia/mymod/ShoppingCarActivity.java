@@ -199,7 +199,7 @@ public class ShoppingCarActivity extends Activity {
 	{
 		super.onResume();
 //		showDialog("OnResume called");
-		updateShopCar();
+		//updateShopCar();
 	}
 	
 	private void updateShopCar()

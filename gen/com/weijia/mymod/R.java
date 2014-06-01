@@ -5306,7 +5306,11 @@ containing a value of this type.
     public static final class raw {
         public static final int a=0x7f040000;
         public static final int b=0x7f040001;
-        public static final int rqdata=0x7f040002;
+        public static final int c=0x7f040002;
+        public static final int d=0x7f040003;
+        public static final int e=0x7f040004;
+        public static final int f=0x7f040005;
+        public static final int rqdata=0x7f040006;
     }
     public static final class string {
         public static final int accept_agreement=0x7f080338;

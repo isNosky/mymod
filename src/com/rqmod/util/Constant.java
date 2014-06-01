@@ -2,6 +2,8 @@ package com.rqmod.util;
 
 public class Constant {
 
+	 public final static Boolean FLAG_POST_IN_JSON = false;
+	
 	 public final static String LOGINSERVLET = "LoginServlet";
 	 public final static String REGISTERSERVLET = "RegisterServlet";
 	 public final static String LOGOUTSERVLET = "LogoutServlet";
@@ -15,5 +17,13 @@ public class Constant {
 	 public final static String CANCELORDERSSERVLET = "CancelOrdersServlet";
 	 public final static String ORDERHISTORYSERVLET = "OrderHistoryServlet";
 
-	 public final static String URL = "http://10.0.0.2/servlet/";
+	 public final static String URL = "http://192.168.0.152:8080/WebContent/";
+	 
+	 public final static String ERRDESC = "ErrorDesc";
+	 public final static String ERRCODE = "ErrorCode";
+	 
+	 public final static int ERR_CODE_SUCCESS = 0;
+	 public final static int ERR_CODE_FAIL = -1;
+	 
+	 public final static String PARA_USER_ID = "UserID";
 }

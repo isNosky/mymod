@@ -1,14 +1,26 @@
 package com.weijia.mymod;
 
+import com.rqmod.provider.DatabaseManager;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 public class PersonelActivity extends Activity {
-
+	TextView tvUserName = null;
+	TextView tvUserLevel = null;
+	TextView tvUserScore = null;
+	RelativeLayout rlLoginInfo = null;
+	RelativeLayout rlNotLoginInfo = null;
+	DatabaseManager dbm = null;
+	SQLiteDatabase db = null;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -17,6 +29,9 @@ public class PersonelActivity extends Activity {
 			PersonelActivity.ClickListener myClickListener = new PersonelActivity.ClickListener();
 			
 			setContentView(R.layout.personel_activity);
+			
+			//initTopUI();
+			
 			Button btnLogin = (Button)findViewById(R.id.personal_click_for_login);
 			btnLogin.setOnClickListener(new View.OnClickListener() {
 				
@@ -38,6 +53,7 @@ public class PersonelActivity extends Activity {
 			RelativeLayout myMaterialFlow = (RelativeLayout)findViewById(R.id.my_material_flow);
 			myAccount.setOnClickListener(myClickListener);
 			myMaterialFlow.setOnClickListener(myClickListener);
+			btnExitLogin.setOnClickListener(myClickListener);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -49,6 +65,46 @@ public class PersonelActivity extends Activity {
 		
 	}
 	
+	private void initTopUI()
+	{
+		dbm = DatabaseManager.getInstance(this);
+		db = dbm.openDatabase();
+		
+		rlLoginInfo = (RelativeLayout)findViewById(R.id.personal_for_login_info);
+		rlNotLoginInfo = (RelativeLayout)findViewById(R.id.personal_for_not_login);
+
+		tvUserName = (TextView)findViewById(R.id.who_and_say_hello);
+		tvUserLevel = (TextView)findViewById(R.id.user_level);
+		tvUserScore = (TextView)findViewById(R.id.user_score);
+		
+		Cursor c = db.rawQuery("select count(*) logincount from tbl_user where islogin=1", null);// WHERE age >= ?", new String[]{"33"}); 
+		
+    	int logincount = 0;
+		while (c.moveToNext()) {
+		    logincount = c.getInt(c.getColumnIndex("logincount"));
+		}  
+		c.close();
+		
+		if(0 == logincount)
+		{
+			
+		}
+		else
+		{
+			rlNotLoginInfo.setVisibility(View.GONE);
+			Cursor c1 = db.rawQuery("select * logincount from tbl_user where islogin=1", null);// WHERE age >= ?", new String[]{"33"}); 
+			
+			String strPhoneNum = "";
+			while (c1.moveToNext()) {
+				strPhoneNum = c1.getString(c1.getColumnIndex("phonenum"));
+			}  
+			c.close();
+			
+			tvUserName.setText(strPhoneNum);
+			tvUserLevel.setText("Õ≠≈∆”√ªß");
+			tvUserScore.setText("0");
+		}
+	}
 	class ClickListener implements View.OnClickListener {
         
         public void onClick(View v) {
@@ -88,7 +144,12 @@ public class PersonelActivity extends Activity {
                 	Intent intent1 = new Intent(PersonelActivity.this, MyOrderInfoListActivity.class);
                 	startActivity(intent1);
                     return;
-                }                
+                }  
+                
+                case R.id.personel_logout_but:
+                {
+                	
+                }
             }
         }
     }
