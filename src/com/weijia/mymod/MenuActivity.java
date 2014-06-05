@@ -19,10 +19,13 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.SimpleAdapter.ViewBinder;
 import android.widget.TabHost;
@@ -31,13 +34,15 @@ import android.widget.TextView;
 public class MenuActivity extends Activity {
 	
 	private static final String TBL_SHOPCAR = "tbl_shopcar";
-	int [] Ids = {R.id.quanbu,R.id.zhushi,R.id.yinliao,R.id.zhou};
+	private static final int TEXTVIEW_ID_OFFSET = 2048;
+	//int [] Ids = {R.id.quanbu,R.id.zhushi,R.id.yinliao,R.id.zhou};
 	ListView lvMenu = null;
 	ImageView vShopCar = null;
 	SQLiteDatabase db = null;
 	DatabaseManager dbm = null;
 
 	TabHost tabHost = null;
+	ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String,Object>>();		
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -51,28 +56,28 @@ public class MenuActivity extends Activity {
 		
 		tabHost = ((TabActivity)getParent()).getTabHost();
 		
-		OnClickListener lsnr = new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-				TextView tv = (TextView)findViewById(arg0.getId());
-				tv.setTextColor(getResources().getColor(R.color.green));
-				for(int i = 0 ; i < Ids.length ; i++ )
-				{
-					if(arg0.getId() != Ids[i])
-					{
-						TextView tv1 = (TextView)findViewById(Ids[i]);
-						tv1.setTextColor(getResources().getColor(R.color.black));
-					}
-				}
-			}
-		};
-		
-		for(int i = 0 ; i < Ids.length ; i++ )
-		{
-			TextView tv = (TextView)findViewById(Ids[i]);
-			tv.setOnClickListener(lsnr);
-		}
+//		OnClickListener lsnr = new OnClickListener() {
+//			@Override
+//			public void onClick(View arg0) {
+//				// TODO Auto-generated method stub
+//				TextView tv = (TextView)findViewById(arg0.getId());
+//				tv.setTextColor(getResources().getColor(R.color.green));
+//				for(int i = 0 ; i < Ids.length ; i++ )
+//				{
+//					if(arg0.getId() != Ids[i])
+//					{
+//						TextView tv1 = (TextView)findViewById(Ids[i]);
+//						tv1.setTextColor(getResources().getColor(R.color.black));
+//					}
+//				}
+//			}
+//		};
+//		
+//		for(int i = 0 ; i < Ids.length ; i++ )
+//		{
+//			TextView tv = (TextView)findViewById(Ids[i]);
+//			tv.setOnClickListener(lsnr);
+//		}
 
 //		ImageView ivSet = (ImageView)findViewById(R.id.set);
 //		ivSet.setOnClickListener(new OnClickListener() {
@@ -84,59 +89,8 @@ public class MenuActivity extends Activity {
 //		});
 		lvMenu = (ListView)findViewById(R.id.product_list);	
 
+		initView();
 		
-		ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String,Object>>();
-		
-		
-		try {
-			Cursor c = db.rawQuery("SELECT * FROM tbl_product", null);// WHERE age >= ?", new String[]{"33"});  
-			while (c.moveToNext()) {  
-			    int id = c.getInt(c.getColumnIndex("id"));  
-			    String pname = c.getString(c.getColumnIndex("productname"));  
-			    int type = c.getInt(c.getColumnIndex("type"));
-			    String desc = c.getString(c.getColumnIndex("description"));
-			    String picptah = c.getString(c.getColumnIndex("picturepath"));
-			    int isinsale = c.getInt(c.getColumnIndex("isinsale"));
-			    float price = c.getFloat(c.getColumnIndex("unitprice"));
-			    HashMap<String, Object> map = new HashMap<String, Object>();  
-			    Bitmap bmp = ImageManager.getInstance(this).getBitmap(picptah);
-				map.put("product_item_image", bmp);
-			    map.put("product_item_name", pname);
-			    map.put("product_item_id", "编号:"+String.valueOf(id));
-			    map.put("product_item_adword", desc);
-			    map.put("product_item_martPrice", "RMB:"+ Float.toString(price));  
-			    listItem.add(map);
-			}  
-			c.close();
-
-			SimpleAdapter mSimpleAdapter = new SimpleAdapter(
-					MenuActivity.this, 
-					listItem, 
-					R.layout.product_list_item, 
-					new String[] {"product_item_image", "product_item_name","product_item_id","product_item_adword", "product_item_martPrice"}, 
-					new int [] {R.id.product_item_image,R.id.product_item_name,R.id.product_item_id, R.id.product_item_adword,R.id.product_item_martPrice});
-			
-			mSimpleAdapter.setViewBinder(new ViewBinder(){
-
-				@Override
-				public boolean setViewValue(View arg0, Object arg1, String arg2) {
-					// TODO Auto-generated method stub
-					if( (arg0 instanceof ImageView) & (arg1 instanceof Bitmap) ) {  
-			            ImageView iv = (ImageView) arg0;  
-			            Bitmap bm = (Bitmap) arg1;  
-			            iv.setImageBitmap(bm);  
-			            return true;  
-			            }  
-			        return false;
-				}
-				
-			});
-			lvMenu.setAdapter(mSimpleAdapter);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			String str = e.getMessage();
-			e.printStackTrace();
-		}
 		
 		vShopCar = (ImageView)findViewById(R.id.shop_car_add);
 		vShopCar.setOnClickListener(new OnClickListener(){
@@ -228,7 +182,162 @@ public class MenuActivity extends Activity {
 		});
 	}
 	
+	private void initView() {
+        // 获取xml的RelativeLayout
+		RelativeLayout layout = (RelativeLayout) findViewById(R.id.lllayout);
+
+		
+		try {
+			Cursor c = db.rawQuery("SELECT * FROM tbl_product_type", null);// WHERE age >= ?", new String[]{"33"});  
+			while (c.moveToNext()) {  
+			    int type = c.getInt(c.getColumnIndex("type"));  
+			    String pname = c.getString(c.getColumnIndex("name"));  
+			    
+			    HashMap<String, Object> map = new HashMap<String, Object>();  
+			    map.put("type", type);
+			    map.put("name", pname);
+			    listItem.add(map);
+			}  
+			c.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			String str = e.getMessage();
+			e.printStackTrace();
+		}
+        for (int i = 0; i < listItem.size(); i++) {
+        	
+        	HashMap<String, Object> map = listItem.get(i);
+        	map.put("textview_id", i+TEXTVIEW_ID_OFFSET);
+        	// 每行都有一个linearlayout
+            LinearLayout lLayout = new LinearLayout(getBaseContext());
+            lLayout.setId(i + 1024);
+            lLayout.setOrientation(LinearLayout.VERTICAL);
+            lLayout.setBackgroundDrawable(getResources().getDrawable(R.drawable.guide_round));
+            lLayout.setGravity(LinearLayout.TEXT_ALIGNMENT_CENTER);
+            LinearLayout.LayoutParams lLayoutlayoutParams = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lLayout.setLayoutParams(lLayoutlayoutParams);
+            
+            TextView tv = new TextView(getBaseContext());
+            tv.setId(i + TEXTVIEW_ID_OFFSET);
+            tv.setText(map.get("name").toString());
+            int iTextColor = 0;
+            if(0 == i)
+            {
+            	iTextColor = R.color.green;
+            }
+            else
+            {
+            	iTextColor = R.color.black;
+            }
+            tv.setTextColor(getResources().getColor(iTextColor));
+            tv.setGravity(TextView.TEXT_ALIGNMENT_CENTER);
+            tv.setPadding(10, 10, 10, 10);
+            tv.setTextSize((float) 15.0);
+
+            map.put("textview_obj", tv);
+            // 为TextView添加长高设置
+            LinearLayout.LayoutParams layoutParams_txt = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            tv.setLayoutParams(layoutParams_txt);
+
+            // 添加到每行的linearlayout中
+            lLayout.addView(tv);
+
+          
+            // 把每个linearlayout加到relativelayout中
+            //layout.addView(lLayout, lLayoutlayoutParams);     
+            layout.addView(lLayout, i);
+           
+        }
+        
+        OnClickListener lsnr = new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				TextView tv = (TextView)findViewById(arg0.getId());
+				tv.setTextColor(getResources().getColor(R.color.green));
+				for(int i = 0 ; i < listItem.size() ; i++ )
+				{
+					HashMap<String, Object> map = listItem.get(i);
+					TextView tv1 = (TextView)(map.get("textview_obj"));
+					if(arg0.getId() != tv1.getId() )
+					{
+						tv1.setTextColor(getResources().getColor(R.color.black));
+					}
+					getMenuByType(Integer.parseInt(map.get("type").toString()));
+				}
+			}
+		};
+		
+		for(int ii = 0 ; ii < listItem.size() ; ii++ )
+		{
+			HashMap<String, Object> map1 = listItem.get(ii);
+			TextView tv1 = (TextView)(map1.get("textview_obj"));
+			tv1.setOnClickListener(lsnr);
+		}
+
+    }
 	
+	private void getMenuByType(int product_type)
+	{
+		ArrayList<HashMap<String, Object>> listItem1 = new ArrayList<HashMap<String,Object>>();		
+		
+		try {
+			String strSql = "SELECT * FROM tbl_product";
+			if(-1 != product_type)
+			{
+				strSql = strSql + " where type = " + product_type;
+			}
+			Cursor c = db.rawQuery(strSql, null);// WHERE age >= ?", new String[]{"33"});  
+			while (c.moveToNext()) {  
+			    int id = c.getInt(c.getColumnIndex("id"));  
+			    String pname = c.getString(c.getColumnIndex("productname"));  
+			    int type = c.getInt(c.getColumnIndex("type"));
+			    String desc = c.getString(c.getColumnIndex("description"));
+			    String picptah = c.getString(c.getColumnIndex("picturepath"));
+			    int isinsale = c.getInt(c.getColumnIndex("isinsale"));
+			    float price = c.getFloat(c.getColumnIndex("unitprice"));
+			    HashMap<String, Object> map = new HashMap<String, Object>();  
+			    Bitmap bmp = ImageManager.getInstance(this).getBitmap(picptah);
+				map.put("product_item_image", bmp);
+			    map.put("product_item_name", pname);
+			    map.put("product_item_id", "编号:"+String.valueOf(id));
+			    map.put("product_item_adword", desc);
+			    map.put("product_item_martPrice", "RMB:"+ Float.toString(price));  
+			    listItem1.add(map);
+			}  
+			c.close();
+
+			SimpleAdapter mSimpleAdapter = new SimpleAdapter(
+					MenuActivity.this, 
+					listItem1, 
+					R.layout.product_list_item, 
+					new String[] {"product_item_image", "product_item_name","product_item_id","product_item_adword", "product_item_martPrice"}, 
+					new int [] {R.id.product_item_image,R.id.product_item_name,R.id.product_item_id, R.id.product_item_adword,R.id.product_item_martPrice});
+			
+			mSimpleAdapter.setViewBinder(new ViewBinder(){
+
+				@Override
+				public boolean setViewValue(View arg0, Object arg1, String arg2) {
+					// TODO Auto-generated method stub
+					if( (arg0 instanceof ImageView) & (arg1 instanceof Bitmap) ) {  
+			            ImageView iv = (ImageView) arg0;  
+			            Bitmap bm = (Bitmap) arg1;  
+			            iv.setImageBitmap(bm);  
+			            return true;  
+			            }  
+			        return false;
+				}
+				
+			});
+			lvMenu.setAdapter(mSimpleAdapter);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			String str = e.getMessage();
+			e.printStackTrace();
+		}
+	}
 
 }
 
