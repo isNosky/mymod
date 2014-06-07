@@ -23,6 +23,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.StrictMode;
 import android.text.TextUtils;
 import android.view.View;
@@ -38,6 +40,7 @@ public class RegisterActivity extends Activity {
 	EditText etConfirmPassword = null;
 	
 	Button btnRegister = null;
+	
 	
 	@SuppressLint("NewApi")
 	@Override
@@ -70,76 +73,81 @@ public class RegisterActivity extends Activity {
 				@Override
 				public void onClick(View arg0) {
 					// TODO Auto-generated method stub
-					String strUser = etUserName.getEditableText().toString();
-					String strPass = etPassword.getEditableText().toString();
+					final String strUser = etUserName.getEditableText().toString();
+					final String strPass = etPassword.getEditableText().toString();
 					String strConfirmPass = etConfirmPassword.getEditableText().toString();
 					if(!strPass.equals(strConfirmPass))
 					{
 						showDialog(getResources().getString(R.string.must_password_equal));
-					}
+					}					
 					
-					JSONObject jsonout = null;
 					if(Constant.FLAG_POST_IN_JSON)
 					{
-						JSONObject jsoin = new JSONObject();
-					
-						try {
-							jsoin.put("CellphoneNumber", strUser);
-							jsoin.put("NickName", strUser);
-							jsoin.put("Password", strPass);
-							jsoin.put("CellphoneOSType", "Android");
-							jsoin.put("CellphoneBrand", android.os.Build.BRAND + " " + android.os.Build.MODEL);
-							jsoin.put("Age", "25");
-							jsoin.put("Sex", 0);
-						} catch (JSONException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}catch (Exception e) {
-							// TODO Auto-generated catch block
-							String str = e.getMessage();
-							e.printStackTrace();
-						}
-						jsonout = HttpUtil.queryStringForPost(Constant.REGISTERSERVLET, jsoin);						
+						Thread thread = new Thread(){ 
+					    	@Override 
+						    public void run() { 	
+					    		
+				    			JSONObject jsoin = new JSONObject();	
+				    			JSONObject jsonout = null;
+								try {
+									jsoin.put("CellphoneNumber", strUser);
+									jsoin.put("NickName", strUser);
+									jsoin.put("Password", strPass);
+									jsoin.put("CellphoneOSType", "Android");
+									jsoin.put("CellphoneBrand", android.os.Build.BRAND + " " + android.os.Build.MODEL);
+									jsoin.put("Age", "25");
+									jsoin.put("Sex", 0);
+									jsonout = HttpUtil.queryStringForPost(Constant.REGISTERSERVLET, jsoin);		
+						    	} catch (Exception e) { 
+						    		String str = e.getMessage();
+						    	} 
+						    	  
+						    	Message message= handler.obtainMessage() ; 
+						    	message.obj = jsonout; 
+						    	message.what = 1;
+						    	handler.sendMessage(message); 
+						    	} 
+					    	}; 
+					    	thread.start(); 
+					    	thread = null;
 						
 					}
 					else
 					{
-						HttpPost request = new HttpPost();
-						List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
-			            postParameters.add(new BasicNameValuePair("CellphoneNumber", strUser));
-			            postParameters.add(new BasicNameValuePair("NickName", strUser));
-			            postParameters.add(new BasicNameValuePair("Password", strPass));
-			            postParameters.add(new BasicNameValuePair("CellphoneOSType", "Android"));
-			            postParameters.add(new BasicNameValuePair("CellphoneBrand", android.os.Build.BRAND + " " + android.os.Build.MODEL));
-			            postParameters.add(new BasicNameValuePair("Age", "25"));
-			            postParameters.add(new BasicNameValuePair("Sex", "0"));
+			            Thread thread = new Thread(){ 
+					    	@Override 
+						    public void run() { 	
+					    		
+				    			JSONObject jsoin = new JSONObject();	
+				    			JSONObject jsonout = null;
+								try {
+									HttpPost request = new HttpPost();
+									List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+						            postParameters.add(new BasicNameValuePair("CellphoneNumber", strUser));
+						            postParameters.add(new BasicNameValuePair("NickName", strUser));
+						            postParameters.add(new BasicNameValuePair("Password", strPass));
+						            postParameters.add(new BasicNameValuePair("CellphoneOSType", "Android"));
+						            postParameters.add(new BasicNameValuePair("CellphoneBrand", android.os.Build.BRAND + " " + android.os.Build.MODEL));
+						            postParameters.add(new BasicNameValuePair("Age", "25"));
+						            postParameters.add(new BasicNameValuePair("Sex", "0"));
+						            
+						            jsonout = HttpUtil.queryStringForPost(Constant.REGISTERSERVLET, postParameters);
+						    	} catch (Exception e) { 
+						    		String str = e.getMessage();
+						    	} 
+						    	  
+						    	Message message= handler.obtainMessage() ; 
+						    	message.obj = jsonout; 
+						    	message.what = 1;
+						    	handler.sendMessage(message); 
+						    	} 
+					    	}; 
+					    	thread.start(); 
+					    	thread = null;
 			            
-			            
-			            jsonout = HttpUtil.queryStringForPost(Constant.REGISTERSERVLET, postParameters);
-						
 					}
 					
-					try {
-						int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
-						String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
-						
-						if(Constant.ERR_CODE_SUCCESS == iErrorCode)
-						{
-							showDialog(getResources().getString(R.string.upomp_bypay_registeractivity_succeed));
-							RegisterActivity.this.finalize();
-						}
-						else
-						{
-							showDialog(strErrDesc);
-						}
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						String str = e.getMessage();
-						e.printStackTrace();
-					} catch (Throwable e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					
 					
 				}});
 			
@@ -241,5 +249,36 @@ public class RegisterActivity extends Activity {
 
     }
 	
-	
+	private Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg){
+            switch(msg.what){
+            case 1:
+                //¹Ø±Õ
+            	try {
+            		JSONObject jsonout = (JSONObject) msg.obj;
+					int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
+					String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
+					
+					if(Constant.ERR_CODE_SUCCESS == iErrorCode)
+					{
+						showDialog(getResources().getString(R.string.upomp_bypay_registeractivity_succeed));
+						RegisterActivity.this.finalize();
+					}
+					else
+					{
+						showDialog(strErrDesc);
+					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					String str = e.getMessage();
+					e.printStackTrace();
+				} catch (Throwable e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                break;
+            }
+        }
+    };
 }

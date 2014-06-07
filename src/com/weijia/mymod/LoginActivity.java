@@ -28,6 +28,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.StrictMode;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -113,18 +115,18 @@ public class LoginActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		
-		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder() 
-        .detectDiskReads() 
-        .detectDiskWrites() 
-        .detectNetwork()   // or .detectAll() for all detectable problems 
-        .penaltyLog() 
-        .build()); 
-		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder() 
-		.detectLeakedSqlLiteObjects() 
-		.detectLeakedClosableObjects() 
-		.penaltyLog()
-		.penaltyDeath() 
-		.build()); 
+//		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder() 
+//        .detectDiskReads() 
+//        .detectDiskWrites() 
+//        .detectNetwork()   // or .detectAll() for all detectable problems 
+//        .penaltyLog() 
+//        .build()); 
+//		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder() 
+//		.detectLeakedSqlLiteObjects() 
+//		.detectLeakedClosableObjects() 
+//		.penaltyLog()
+//		.penaltyDeath() 
+//		.build()); 
 		
 		try{
 			super.onCreate(savedInstanceState);
@@ -236,47 +238,58 @@ public class LoginActivity extends Activity {
 				
 				// TODO 向网络请求登录
 				try {
-					 
-						JSONObject jsonout = null;
-						if(Constant.FLAG_POST_IN_JSON)
-						{
-							JSONObject jsoin = getLoginJSO();
-							jsonout = HttpUtil.queryStringForPost(Constant.LOGINSERVLET, jsoin);						
+					
+					 	if(Constant.FLAG_POST_IN_JSON)
+						{								
+					 		Thread thread = new Thread(){ 
+						    	@Override 
+							    public void run() { 	
+						    		JSONObject jsonout = null;
+							    	try { 							    		
+							    		JSONObject jsoin = getLoginJSO();
+										jsonout = HttpUtil.queryStringForPost(Constant.LOGINSERVLET, jsoin);
+							    	} catch (Exception e) { 
+							    		String str = e.getMessage();
+							    	} 
+							    	  
+							    	Message message= handler.obtainMessage() ; 
+							    	message.obj = jsonout; 
+							    	message.what = 1;
+							    	handler.sendMessage(message); 
+							    	} 
+						    	}; 
+						    	thread.start(); 
+						    	thread = null; 
 							
 						}
 						else
-						{
-							List<NameValuePair> postParameters = getLoginPara();				            
-						    jsonout = HttpUtil.queryStringForPost(Constant.LOGINSERVLET, postParameters);
-							
+						{						    
+						    
+						    Thread thread = new Thread(){ 
+						    	@Override 
+							    public void run() { 	
+						    		JSONObject jsonout = null;
+							    	try { 							    		
+							    		List<NameValuePair> postParameters = getLoginPara();				            
+									    jsonout = HttpUtil.queryStringForPost(Constant.LOGINSERVLET, postParameters);
+							    	} catch (Exception e) { 
+							    		String str = e.getMessage();
+							    	} 
+							    	  
+							    	Message message= handler.obtainMessage() ; 
+							    	message.obj = jsonout; 
+							    	message.what = 1;
+							    	handler.sendMessage(message); 
+							    	} 
+						    	}; 
+						    	thread.start(); 
+						    	thread = null; 
 						}
 						
-						try {
-							int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
-							String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
-							
-							if(Constant.ERR_CODE_SUCCESS == iErrorCode)
-							{
-								int iUserId = (Integer) jsonout.get(Constant.PARA_USER_ID);
-								MyModApp app = (MyModApp)getApplication();
-								app.setUserId(iUserId);
-								//登录成功,登录页面消失
-								LoginActivity.this.finish();
-								//刷新个人信息页面
-								
-							}
-							else
-							{
-								showDialog(strErrDesc);
-							}
-						} catch (JSONException e) {
-							// TODO Auto-generated catch block
-							String str = e.getMessage();
-							e.printStackTrace();
-						} catch (Throwable e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+						
+						
+						
+						
 					 
 						return;
 	                } 
@@ -624,4 +637,42 @@ public class LoginActivity extends Activity {
 			AlertDialog alert = builder.create();
 			alert.show();
 		}
+	    
+	    private Handler handler=new Handler(){
+	        @Override
+	        public void handleMessage(Message msg){
+	            switch(msg.what){
+	            case 1:
+	                //关闭
+	            	try {
+	            		JSONObject jsonout = (JSONObject) msg.obj;
+						int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
+						String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
+						
+						if(Constant.ERR_CODE_SUCCESS == iErrorCode)
+						{
+							int iUserId = (Integer) jsonout.get(Constant.PARA_USER_ID);
+							MyModApp app = (MyModApp)getApplication();
+							app.setUserId(iUserId);
+							//登录成功,登录页面消失
+							LoginActivity.this.finish();
+							//刷新个人信息页面
+							
+						}
+						else
+						{
+							showDialog(strErrDesc);
+						}
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						String str = e.getMessage();
+						e.printStackTrace();
+					} catch (Throwable e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	                break;
+	            }
+	        }
+	    };
 }

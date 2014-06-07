@@ -1,5 +1,7 @@
 package com.weijia.mymod;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +19,8 @@ import com.rqmod.util.Constant;
 import com.rqmod.util.HttpUtil;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -61,6 +65,9 @@ public class FillOrderActivity extends Activity {
     String phonenumber1; 
     String phonenumber2; 
     float totalprice = 0;
+        
+    JSONArray jaFood = new JSONArray();
+    
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -112,15 +119,14 @@ public class FillOrderActivity extends Activity {
 		c1.close();
 		
 		String strOrg = tvFillOrderMoney.getText().toString();
-		tvFillOrderMoney.setText(strOrg +":RMB"+totalprice);
+		tvFillOrderMoney.setText(strOrg +":RMB"+totalprice);	
 		
 		btnSubmitOrder.setOnClickListener(new OnClickListener(){
 
 			@Override
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-				JSONObject jsonout = null;
-				JSONArray jaFood = new JSONArray();
+				// TODO Auto-generated method stub			
+				
 				Cursor c2 = db.rawQuery("select productid,buycount from tbl_shopcar", null);
 				
 				while (c2.moveToNext()) {		
@@ -139,61 +145,67 @@ public class FillOrderActivity extends Activity {
 				}  
 				c2.close();
 				if(Constant.FLAG_POST_IN_JSON)
-				{
-					JSONObject jsoin = new JSONObject();
-				
-					try {
-						jsoin.put("UserID", app.getUserId());						
-						jsoin.put("ShopID", 1);	//当前写死，东仪路店
-						jsoin.put("deliveryAddressID", id);
-						jsoin.put("Amount", totalprice);						
-						jsoin.put("FoodList", jaFood);
-						
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}catch (Exception e) {
-						// TODO Auto-generated catch block
-						String str = e.getMessage();
-						e.printStackTrace();
-					}
-					jsonout = HttpUtil.queryStringForPost(Constant.DOORDERSERVLET, jsoin);						
+				{	
+					Thread thread = new Thread(){ 
+				    	@Override 
+					    public void run() { 	
+				    		
+			    			JSONObject jsoin = new JSONObject();
+			    			JSONObject jsonout = null;
+							try {
+								jsoin.put("UserID", app.getUserId());						
+								jsoin.put("ShopID", 1);	//当前写死，东仪路店
+								jsoin.put("deliveryAddressID", id);
+								jsoin.put("Amount", totalprice);						
+								jsoin.put("FoodList", jaFood);
+								jsonout = HttpUtil.queryStringForPost(Constant.DOORDERSERVLET, jsoin);	
+					    	} catch (Exception e) { 
+					    		String str = e.getMessage();
+					    	} 
+					    	  
+					    	Message message= handler.obtainMessage() ; 
+					    	message.obj = jsonout; 
+					    	message.what = 1;
+					    	handler.sendMessage(message); 
+					    	} 
+				    	}; 
+				    	thread.start(); 
+				    	thread = null;
 					
 				}
 				else
 				{
-					HttpPost request = new HttpPost();
-					List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
-		            postParameters.add(new BasicNameValuePair("UserID", String.valueOf(app.getUserId())));
-		            postParameters.add(new BasicNameValuePair("ShopID", String.valueOf(1)));
-		            postParameters.add(new BasicNameValuePair("deliveryAddressID", String.valueOf(id)));
-		            postParameters.add(new BasicNameValuePair("Amount", String.valueOf(totalprice)));
-		            postParameters.add(new BasicNameValuePair("FoodList", jaFood.toString()));
-		            
-		            jsonout = HttpUtil.queryStringForPost(Constant.DOORDERSERVLET, postParameters);
+					Thread thread = new Thread(){ 
+				    	@Override 
+					    public void run() { 	
+				    		
+				    		JSONObject jsoin = new JSONObject();
+				    		JSONObject jsonout = null;
+				    		
+							try {
+								HttpPost request = new HttpPost();
+								List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+					            postParameters.add(new BasicNameValuePair("UserID", String.valueOf(app.getUserId())));
+					            postParameters.add(new BasicNameValuePair("ShopID", String.valueOf(1)));
+					            postParameters.add(new BasicNameValuePair("deliveryAddressID", String.valueOf(id)));
+					            postParameters.add(new BasicNameValuePair("Amount", String.valueOf(totalprice)));
+					            postParameters.add(new BasicNameValuePair("FoodList", jaFood.toString()));
+					            
+					            jsonout = HttpUtil.queryStringForPost(Constant.DOORDERSERVLET, postParameters);
+					    	} catch (Exception e) { 
+					    		String str = e.getMessage();
+					    	} 
+					    	  
+					    	Message message= handler.obtainMessage() ; 
+					    	message.obj = jsonout; 
+					    	message.what = 1;
+					    	handler.sendMessage(message); 
+					    	} 
+				    	}; 
+				    	thread.start(); 
+				    	thread = null;
 					
-				}
-				
-				try {
-					int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
-					String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
-					
-					if(Constant.ERR_CODE_SUCCESS == iErrorCode)
-					{
-						//下订单成功
-					}
-					else
-					{
-						showDialog(strErrDesc);
-					}
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					String str = e.getMessage();
-					e.printStackTrace();
-				} catch (Throwable e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				}				
 				
 			}});
 		
@@ -234,5 +246,37 @@ public class FillOrderActivity extends Activity {
 		AlertDialog alert = builder.create();
 		alert.show();
 	}
+	
+	private Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg){
+            switch(msg.what){
+            case 1:
+                //关闭
+            	try {
+            		JSONObject jsonout = (JSONObject) msg.obj;
+					int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
+					String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
+					
+					if(Constant.ERR_CODE_SUCCESS == iErrorCode)
+					{
+						//下订单成功
+					}
+					else
+					{
+						showDialog(strErrDesc);
+					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					String str = e.getMessage();
+					e.printStackTrace();
+				} catch (Throwable e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                break;
+            }
+        }
+    };
 
 }

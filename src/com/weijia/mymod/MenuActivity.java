@@ -184,7 +184,7 @@ public class MenuActivity extends Activity {
 	
 	private void initView() {
         // 获取xml的RelativeLayout
-		RelativeLayout layout = (RelativeLayout) findViewById(R.id.lllayout);
+		LinearLayout layout = (LinearLayout) findViewById(R.id.lllayout);
 
 		
 		try {
@@ -204,6 +204,8 @@ public class MenuActivity extends Activity {
 			String str = e.getMessage();
 			e.printStackTrace();
 		}
+		
+		int last_linearlayout_id = -1;
         for (int i = 0; i < listItem.size(); i++) {
         	
         	HashMap<String, Object> map = listItem.get(i);
@@ -215,7 +217,7 @@ public class MenuActivity extends Activity {
             lLayout.setBackgroundDrawable(getResources().getDrawable(R.drawable.guide_round));
             lLayout.setGravity(LinearLayout.TEXT_ALIGNMENT_CENTER);
             LinearLayout.LayoutParams lLayoutlayoutParams = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,1.0f);
             lLayout.setLayoutParams(lLayoutlayoutParams);
             
             TextView tv = new TextView(getBaseContext());
@@ -234,6 +236,9 @@ public class MenuActivity extends Activity {
             tv.setGravity(TextView.TEXT_ALIGNMENT_CENTER);
             tv.setPadding(10, 10, 10, 10);
             tv.setTextSize((float) 15.0);
+//            int lw = layout.getWidth();
+//            lw = lw / listItem.size();
+//            tv.setWidth(lw);
 
             map.put("textview_obj", tv);
             // 为TextView添加长高设置
@@ -243,11 +248,10 @@ public class MenuActivity extends Activity {
 
             // 添加到每行的linearlayout中
             lLayout.addView(tv);
-
-          
             // 把每个linearlayout加到relativelayout中
             //layout.addView(lLayout, lLayoutlayoutParams);     
-            layout.addView(lLayout, i);
+            layout.addView(lLayout);
+
            
         }
         
@@ -257,6 +261,7 @@ public class MenuActivity extends Activity {
 				// TODO Auto-generated method stub
 				TextView tv = (TextView)findViewById(arg0.getId());
 				tv.setTextColor(getResources().getColor(R.color.green));
+				int type= -1;
 				for(int i = 0 ; i < listItem.size() ; i++ )
 				{
 					HashMap<String, Object> map = listItem.get(i);
@@ -264,9 +269,13 @@ public class MenuActivity extends Activity {
 					if(arg0.getId() != tv1.getId() )
 					{
 						tv1.setTextColor(getResources().getColor(R.color.black));
+					}	
+					else
+					{
+						type = (Integer) map.get("type");
 					}
-					getMenuByType(Integer.parseInt(map.get("type").toString()));
 				}
+				getMenuByType(type);
 			}
 		};
 		

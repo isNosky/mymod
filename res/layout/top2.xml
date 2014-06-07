@@ -4,12 +4,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/lllayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#F5F5F5"
         android:orientation="horizontal" >        
-    </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>
