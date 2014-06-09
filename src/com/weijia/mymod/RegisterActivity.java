@@ -262,12 +262,12 @@ public class RegisterActivity extends Activity {
 					
 					if(Constant.ERR_CODE_SUCCESS == iErrorCode)
 					{
-						showDialog(getResources().getString(R.string.upomp_bypay_registeractivity_succeed));
-						RegisterActivity.this.finalize();
+						showDialog(getResources().getString(R.string.register_success));
+//						RegisterActivity.this.finish();
 					}
 					else
 					{
-						showDialog(strErrDesc);
+						showDialog(getResources().getString(R.string.register_fail));
 					}
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block

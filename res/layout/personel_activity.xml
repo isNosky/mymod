@@ -11,7 +11,14 @@
         </RelativeLayout>
         <Button android:id="@id/order_drawer_handle" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="订单" android:layout_below="@id/order_drawer_details" android:layout_centerHorizontal="true" />
     </RelativeLayout>
-    <ScrollView android:id="@id/persion_main_scroller" android:layout_width="fill_parent" android:layout_height="wrap_content" android:fillViewport="true" android:layout_below="@id/order_drawer">
+
+    <ScrollView
+        android:id="@id/persion_main_scroller"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/order_drawer"
+        android:fillViewport="true" >
+
         <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
             <RelativeLayout android:id="@id/personal_header" android:background="@drawable/personel_user_head_bg" android:layout_width="wrap_content" android:layout_height="@dimen/personal_user_head_height">
                 <RelativeLayout android:id="@id/personal_for_login_info" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content">
@@ -34,7 +41,14 @@
             </RelativeLayout>
             <include android:id="@id/my_service_list" layout="@layout/personel_list_layout" />
             <!--  
-            <RelativeLayout android:id="@id/crazy_guess_product_list" android:background="#fff5f5f5" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip">
+            <RelativeLayout
+                android:id="@id/crazy_guess_product_list"
+                android:layout_width="fill_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="10.0dip"
+                android:background="#fff5f5f5"
+                android:visibility="invisible" >
+
                 <View android:id="@id/crazy_guess_divide_line" android:layout_alignParentTop="true" style="@style/line1" />
                 <LinearLayout android:orientation="vertical" android:id="@id/guess_taste" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_below="@id/crazy_guess_divide_line">
                     <TextView android:textSize="15.0sp" android:gravity="center_vertical" android:id="@id/personal_guess_you_like" android:padding="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/pg_my_jd_guess_states" />
@@ -50,7 +64,17 @@
                 </LinearLayout>
                 <View android:id="@id/crazy_guess_divide_line_1" android:layout_alignParentBottom="true" style="@style/line1" />
             </RelativeLayout>
-            -->
+            
+            <LinearLayout android:orientation="vertical" android:id="@id/my_account_service" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="12.0dip" android:visibility="invisible">
+        		<View android:id="@id/my_divide_line_10" style="@style/line1"/>
+        		<RelativeLayout android:id="@id/my_account" android:background="@drawable/personel_list_item_bg_selector" android:paddingLeft="23.0dip" android:clickable="true" android:layout_width="fill_parent" android:layout_height="43.0dip">
+            		<ImageView android:id="@id/my_account_image" android:background="@drawable/android_my_jd_account_center" android:padding="5.0dip" android:layout_width="25.0dip" android:layout_height="25.0dip" android:layout_alignParentLeft="true" android:layout_centerVertical="true" android:contentDescription="@string/none" />
+            		<TextView android:textSize="15.0sp" android:textColor="@color/black" android:id="@id/my_account_text" android:paddingLeft="15.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/personel_account_center" android:layout_toRightOf="@id/my_account_image" android:layout_centerVertical="true" />
+            		<ImageView android:id="@id/my_account_arrow" android:paddingRight="20.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/android_list_idex" android:layout_alignParentRight="true" android:layout_centerVertical="true" android:contentDescription="@string/none" />
+        		</RelativeLayout>
+        		<View android:id="@id/my_divide_line_11" style="@style/line1"/>        
+    		</LinearLayout>
+    		-->
             <Button android:textSize="19.0sp" android:textColor="@drawable/product_button_text_color_selector" android:id="@id/personel_logout_but" android:background="@drawable/product_add_to_car_button_selector" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="20.0dip" android:layout_marginRight="20.0dip" android:layout_marginBottom="10.0dip" android:text="@string/pg_my_jd_logout" />
         </LinearLayout>
     </ScrollView>

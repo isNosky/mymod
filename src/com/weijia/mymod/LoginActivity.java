@@ -377,8 +377,7 @@ public class LoginActivity extends Activity {
 	private List<NameValuePair> getLoginPara() 
 	{
 		List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
-        postParameters.add(new BasicNameValuePair("PhoneNum", mUserNameTxt.getEditableText().toString()));
-        postParameters.add(new BasicNameValuePair("NickName", mUserNameTxt.getEditableText().toString()));
+        postParameters.add(new BasicNameValuePair("LoginName", mUserNameTxt.getEditableText().toString()));
         postParameters.add(new BasicNameValuePair("Password", mUserPassword.getEditableText().toString()));
 
         return postParameters;
@@ -651,8 +650,9 @@ public class LoginActivity extends Activity {
 						
 						if(Constant.ERR_CODE_SUCCESS == iErrorCode)
 						{
+							showDialog(getResources().getString(R.string.signin_login_success));
 							int iUserId = (Integer) jsonout.get(Constant.PARA_USER_ID);
-							MyModApp app = (MyModApp)getApplication();
+							MyModApp app = (MyModApp)getApplicationContext();
 							app.setUserId(iUserId);
 							//登录成功,登录页面消失
 							LoginActivity.this.finish();
@@ -661,7 +661,8 @@ public class LoginActivity extends Activity {
 						}
 						else
 						{
-							showDialog(strErrDesc);
+							showDialog(getResources().getString(R.string.signin_login_fail));
+							//showDialog(strErrDesc);
 						}
 					} catch (JSONException e) {
 						// TODO Auto-generated catch block

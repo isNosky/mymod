@@ -161,15 +161,15 @@ public class MenuActivity extends Activity {
 				      }
 				}
 				AlertDialog.Builder dialog=new AlertDialog.Builder(MenuActivity.this);
-				dialog.setTitle("提示")
+				dialog.setTitle(getResources().getString(R.string.shake_dialog_title))
 					.setIcon(android.R.drawable.ic_dialog_info)
-					.setPositiveButton("去购物车", new DialogInterface.OnClickListener() {
+					.setPositiveButton(getResources().getString(R.string.menu_goto_shop_car), new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 															
 							tabHost.setCurrentTab(1);
 						}
-				}).setNegativeButton("再逛逛", new DialogInterface.OnClickListener() {
+				}).setNegativeButton(getResources().getString(R.string.menu_remain), new DialogInterface.OnClickListener() {
 	             
 
 	            public void onClick(DialogInterface dialog, int which) {
@@ -204,8 +204,7 @@ public class MenuActivity extends Activity {
 			String str = e.getMessage();
 			e.printStackTrace();
 		}
-		
-		int last_linearlayout_id = -1;
+
         for (int i = 0; i < listItem.size(); i++) {
         	
         	HashMap<String, Object> map = listItem.get(i);
@@ -223,16 +222,7 @@ public class MenuActivity extends Activity {
             TextView tv = new TextView(getBaseContext());
             tv.setId(i + TEXTVIEW_ID_OFFSET);
             tv.setText(map.get("name").toString());
-            int iTextColor = 0;
-            if(0 == i)
-            {
-            	iTextColor = R.color.green;
-            }
-            else
-            {
-            	iTextColor = R.color.black;
-            }
-            tv.setTextColor(getResources().getColor(iTextColor));
+            tv.setTextColor(getResources().getColor(R.color.black));
             tv.setGravity(TextView.TEXT_ALIGNMENT_CENTER);
             tv.setPadding(10, 10, 10, 10);
             tv.setTextSize((float) 15.0);
@@ -254,6 +244,8 @@ public class MenuActivity extends Activity {
 
            
         }
+        
+        
         
         OnClickListener lsnr = new OnClickListener() {
 			@Override
@@ -286,6 +278,10 @@ public class MenuActivity extends Activity {
 			tv1.setOnClickListener(lsnr);
 		}
 
+		//模拟第一个tab页被点击
+		HashMap<String, Object> maptmp = listItem.get(0);
+		TextView tvtmp = (TextView)(maptmp.get("textview_obj"));
+		tvtmp.performClick();
     }
 	
 	private void getMenuByType(int product_type)

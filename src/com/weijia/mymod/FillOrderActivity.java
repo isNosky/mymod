@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import com.rqmod.provider.DatabaseManager;
 import com.rqmod.provider.MyModApp;
+import com.rqmod.provider.OrderDetail;
 import com.rqmod.util.Constant;
 import com.rqmod.util.HttpUtil;
 
@@ -25,6 +26,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.TabActivity;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -66,14 +68,17 @@ public class FillOrderActivity extends Activity {
     String phonenumber2; 
     float totalprice = 0;
         
-    JSONArray jaFood = new JSONArray();
+    JSONArray jaProduct = null;
+    
+    private final static String TBL_SHOP = "tbl_shop";
+    private final static String TBL_SHOP_DELIVERY_TIMES = "tbl_shop_delivery_times";
     
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		app = (MyModApp) getApplication();
+		//app = (MyModApp) getApplicationContext();
 		
 		setContentView(R.layout.new_fill_order);
 		//tbhost = ((TabActivity)getParent()).getTabHost();
@@ -127,6 +132,8 @@ public class FillOrderActivity extends Activity {
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub			
 				
+				jaProduct = new JSONArray();
+				
 				Cursor c2 = db.rawQuery("select productid,buycount from tbl_shopcar", null);
 				
 				while (c2.moveToNext()) {		
@@ -134,14 +141,15 @@ public class FillOrderActivity extends Activity {
 					 int iBuyCount = c2.getInt(c2.getColumnIndex("buycount"));
 					 JSONObject jsonObject = new JSONObject();
 					 try {
-						jsonObject.put("FoodId", iFoodId);
+						jsonObject.put("ProductId", iFoodId);
 						jsonObject.put("Quantity", iBuyCount);
+						jsonObject.put("Amount", 300);
 					} catch (JSONException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					 
-					 jaFood.put(jsonObject);
+					 jaProduct.put(jsonObject);
 				}  
 				c2.close();
 				if(Constant.FLAG_POST_IN_JSON)
@@ -157,7 +165,7 @@ public class FillOrderActivity extends Activity {
 								jsoin.put("ShopID", 1);	//当前写死，东仪路店
 								jsoin.put("deliveryAddressID", id);
 								jsoin.put("Amount", totalprice);						
-								jsoin.put("FoodList", jaFood);
+								jsoin.put("ProductIDs", jaProduct);
 								jsonout = HttpUtil.queryStringForPost(Constant.DOORDERSERVLET, jsoin);	
 					    	} catch (Exception e) { 
 					    		String str = e.getMessage();
@@ -185,11 +193,12 @@ public class FillOrderActivity extends Activity {
 							try {
 								HttpPost request = new HttpPost();
 								List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
-					            postParameters.add(new BasicNameValuePair("UserID", String.valueOf(app.getUserId())));
-					            postParameters.add(new BasicNameValuePair("ShopID", String.valueOf(1)));
+					            //postParameters.add(new BasicNameValuePair("UserID", String.valueOf(app.getUserId())));
+					            postParameters.add(new BasicNameValuePair("UserID", "6"));
+					            postParameters.add(new BasicNameValuePair("ShopID", "1"));
 					            postParameters.add(new BasicNameValuePair("deliveryAddressID", String.valueOf(id)));
 					            postParameters.add(new BasicNameValuePair("Amount", String.valueOf(totalprice)));
-					            postParameters.add(new BasicNameValuePair("FoodList", jaFood.toString()));
+					            postParameters.add(new BasicNameValuePair("ProductIDs", jaProduct.toString()));
 					            
 					            jsonout = HttpUtil.queryStringForPost(Constant.DOORDERSERVLET, postParameters);
 					    	} catch (Exception e) { 
@@ -205,6 +214,7 @@ public class FillOrderActivity extends Activity {
 				    	thread.start(); 
 				    	thread = null;
 					
+					    
 				}				
 				
 			}});
@@ -273,10 +283,121 @@ public class FillOrderActivity extends Activity {
 				} catch (Throwable e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}
+				}            	
                 break;
+
+            case 2:
+                //关闭
+            	try {
+            		JSONObject jsonout = (JSONObject) msg.obj;
+					int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
+					String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
+					
+					if(Constant.ERR_CODE_SUCCESS == iErrorCode)
+					{
+						JSONArray jsonShops = jsonout.getJSONArray("Shops");
+						for(int shopid = 0 ; shopid < jsonShops.length() ; shopid++)
+						{
+							JSONObject jsonShop = (JSONObject) jsonShops.get(shopid);
+							try {
+								int iShopID = jsonShop.getInt("ShopsID");
+				            	ContentValues values = new ContentValues();
+								values.put("shopid", iShopID);
+								values.put("shopname", jsonShop.getString("ShopName"));
+								JSONArray jaProducts = jsonShop.getJSONArray("ProductIDs");
+								values.put("productids", jaProducts.toString());									
+								
+								if(-1 == db.insert(TBL_SHOP, null, values))
+								{
+									//
+								}
+								
+								ContentValues valuests = new ContentValues();
+								JSONArray jaDeliveryTimes = jsonShop.getJSONArray("DeliveryTimes");
+								for(int jdtid = 0 ; jdtid < jaDeliveryTimes.length() ; jdtid++)
+								{
+									JSONObject ts = (JSONObject) jaDeliveryTimes.get(jdtid);
+									valuests.put("shopid", iShopID);
+									valuests.put("starttime", str2int(ts.getString("StartTime")));
+									valuests.put("endtime", str2int(ts.getString("EndTime")));
+									
+									if(-1 == db.insert(TBL_SHOP_DELIVERY_TIMES, null, values))
+									{
+										//
+									}
+								}	
+								
+							} catch (JSONException e) {
+								// TODO Auto-generated catch block
+								String str = e.getMessage();
+								e.printStackTrace();
+							}
+						}
+					}
+					else
+					{
+						showDialog(strErrDesc);
+					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					String str = e.getMessage();
+					e.printStackTrace();
+				} catch (Throwable e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}            	
+                break;
+            
             }
         }
     };
+    
+    private void getShops()
+    {
+    	if(Constant.FLAG_POST_IN_JSON)
+		{	
+			
+		}
+		else
+		{
+			Thread thread = new Thread(){ 
+		    	@Override 
+			    public void run() { 	
+		    		
+		    		JSONObject jsoin = new JSONObject();
+		    		JSONObject jsonout = null;
+		    		
+					try {
+						HttpPost request = new HttpPost();
+						List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+			            //postParameters.add(new BasicNameValuePair("UserID", String.valueOf(app.getUserId())));
+			            postParameters.add(new BasicNameValuePair("ShopID", "6"));
+			            postParameters.add(new BasicNameValuePair("Token", "1"));
+			            postParameters.add(new BasicNameValuePair("StartNum", "0"));
+			            postParameters.add(new BasicNameValuePair("Count", "100"));
+			            
+			            jsonout = HttpUtil.queryStringForPost(Constant.GETSHOPSERVLET, postParameters);
+			    	} catch (Exception e) { 
+			    		String str = e.getMessage();
+			    	} 
+			    	  
+			    	Message message= handler.obtainMessage() ; 
+			    	message.obj = jsonout; 
+			    	message.what = 2;
+			    	handler.sendMessage(message); 
+			    	} 
+		    	}; 
+		    	thread.start(); 
+		    	thread = null;
+			
+			    
+		}	
+    }
 
+    private int str2int(String strTime)
+    {
+    	String[] str = strTime.split(":");
+    	int iTime = Integer.parseInt(str[0])*60 + Integer.parseInt(str[1]);
+    	return iTime;
+    }
 }

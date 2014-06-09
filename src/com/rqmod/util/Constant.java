@@ -17,7 +17,7 @@ public class Constant {
 	 public final static String CANCELORDERSSERVLET = "CancelOrdersServlet";
 	 public final static String ORDERHISTORYSERVLET = "OrderHistoryServlet";
 
-	 public final static String URL = "http://192.168.0.152:8080/WebContent/";
+	 public final static String URL = "http://192.168.0.152:8080/DcSystem/";
 	 
 	 public final static String ERRDESC = "ErrorDesc";
 	 public final static String ERRCODE = "ErrorCode";
