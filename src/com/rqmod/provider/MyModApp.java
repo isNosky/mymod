@@ -6,6 +6,7 @@ public class MyModApp  extends Application {
 	 
     private int userid; 
     private String CellphoneNumber;
+    private MyModApp app;
       
     public String getCellphoneNumber() {
 		return CellphoneNumber;
@@ -32,4 +33,13 @@ public class MyModApp  extends Application {
       
     private static final int BLANK = -1;  
     private static final String CELLPHONENUM = "";
+    
+    public MyModApp getInstance()
+    {
+    	if(null == app)
+    	{
+    		app = new MyModApp();
+    	}
+    	return app;
+    }
 } 

@@ -23,10 +23,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class PersonelActivity extends Activity {
 	TextView tvUserName = null;
@@ -76,9 +78,25 @@ public class PersonelActivity extends Activity {
 			String str = e.getMessage();
 			e.printStackTrace();
 		}
-		
-		
-		
+	}
+	
+	long mExitTime = 0;
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		 if (keyCode == KeyEvent.KEYCODE_BACK) {
+             if ((System.currentTimeMillis() - mExitTime) > 2000) {
+                     Object mHelperUtils;
+                     Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                     mExitTime = System.currentTimeMillis();
+
+             } else {
+                     finish();
+             }
+             return true;
+		 }
+
+		 return super.onKeyDown(keyCode, event);
 	}
 	
 	private void initTopUI()

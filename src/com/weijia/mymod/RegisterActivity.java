@@ -40,23 +40,12 @@ public class RegisterActivity extends Activity {
 	EditText etConfirmPassword = null;
 	
 	Button btnRegister = null;
-	
+	String strUser = "";
+	String strPass = "";
 	
 	@SuppressLint("NewApi")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder() 
-	        .detectDiskReads() 
-	        .detectDiskWrites() 
-	        .detectNetwork()   // or .detectAll() for all detectable problems 
-	        .penaltyLog() 
-	        .build()); 
-		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder() 
-			.detectLeakedSqlLiteObjects() 
-			.detectLeakedClosableObjects() 
-			.penaltyLog()
-			.penaltyDeath() 
-			.build()); 
 		
 		super.onCreate(savedInstanceState);
 		try {
@@ -73,8 +62,8 @@ public class RegisterActivity extends Activity {
 				@Override
 				public void onClick(View arg0) {
 					// TODO Auto-generated method stub
-					final String strUser = etUserName.getEditableText().toString();
-					final String strPass = etPassword.getEditableText().toString();
+					strUser = etUserName.getEditableText().toString();
+					strPass = etPassword.getEditableText().toString();
 					String strConfirmPass = etConfirmPassword.getEditableText().toString();
 					if(!strPass.equals(strConfirmPass))
 					{
@@ -263,7 +252,12 @@ public class RegisterActivity extends Activity {
 					if(Constant.ERR_CODE_SUCCESS == iErrorCode)
 					{
 						showDialog(getResources().getString(R.string.register_success));
-//						RegisterActivity.this.finish();
+						
+						Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+						intent.putExtra("UserName", strUser);
+						intent.putExtra("Password", strPass);
+						setResult(RESULT_OK,intent); 
+						finish();
 					}
 					else
 					{

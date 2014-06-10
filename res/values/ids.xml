@@ -3439,4 +3439,8 @@
     <item type="id" name="tabhost_main"></item>
     <item type="id" name="product_item_id"></item>
     <item type="id" name="product_item_comment"></item>
+    
+    <item type="id" name="shop_radiobutton"></item>
+    <item type="id" name="shop_name"></item>
+    <item type="id" name="shop_addr"></item>
 </resources>

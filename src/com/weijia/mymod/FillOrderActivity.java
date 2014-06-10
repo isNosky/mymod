@@ -25,6 +25,8 @@ import android.os.Message;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.app.Dialog;
 import android.app.TabActivity;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -37,13 +39,15 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 
-public class FillOrderActivity extends Activity {
+public class FillOrderActivity extends Activity {		
 
 	private MyModApp app;
+	private final static int DIALOG=1;
 	
 	DatabaseManager dbm = null;
 	SQLiteDatabase db = null;
@@ -60,6 +64,9 @@ public class FillOrderActivity extends Activity {
 	TextView tvReturnCar = null;
 	TextView tvFillOrderMoney = null;
 	RelativeLayout rlInventory = null;
+	LinearLayout llSelShop = null;
+	ArrayList<CharSequence> lstShops = new ArrayList<CharSequence>();
+	TextView tvShopName = null;
 	
 	int id = 0;
 	String nickname; 
@@ -95,8 +102,12 @@ public class FillOrderActivity extends Activity {
 		ivIndexIcon = (ImageView)findViewById(R.id.index_icon1);
 		rlInventory = (RelativeLayout)findViewById(R.id.layout_product_inventory);
 		
+		llSelShop =  (LinearLayout)findViewById(R.id.select_shop);
+		
 		tvReceiverInfo.setVisibility(View.VISIBLE);
 		rlReceiver.setVisibility(View.VISIBLE);
+		
+		tvShopName = (TextView)findViewById(R.id.textview_select_shop_name);
 		
 		dbm = DatabaseManager.getInstance(this);
 		db = dbm.openDatabase();
@@ -236,8 +247,43 @@ public class FillOrderActivity extends Activity {
 				Intent intent = new Intent(FillOrderActivity.this,GoodsInfoActivity.class);
 				startActivity(intent);
 			}});
+		
+		llSelShop.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				showDialog(DIALOG);
+			}});
 	}
 
+	@Override
+	@Deprecated
+	protected Dialog onCreateDialog(int id) {
+		// TODO Auto-generated method stub
+		Dialog dialog=null;
+        switch (id) {
+        case DIALOG:
+            Builder builder=new android.app.AlertDialog.Builder(this);
+            //设置对话框的图标
+            //builder.setIcon(R.drawable.header);
+            //设置对话框的标题
+            builder.setTitle("选择配送门店");
+            
+            //添加按钮，android.content.DialogInterface.OnClickListener.OnClickListener
+            builder.setItems((CharSequence[])lstShops.toArray(), new android.content.DialogInterface.OnClickListener(){
+                public void onClick(DialogInterface dialog, int which) {
+                    String hoddy=(String) lstShops.get(which);
+                    tvShopName.setText(hoddy);
+                }
+            });
+            //创建一个列表对话框
+            dialog=builder.create();
+            break;
+        }
+        return dialog;
+    }
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -303,9 +349,12 @@ public class FillOrderActivity extends Activity {
 								int iShopID = jsonShop.getInt("ShopsID");
 				            	ContentValues values = new ContentValues();
 								values.put("shopid", iShopID);
-								values.put("shopname", jsonShop.getString("ShopName"));
+								String shopname = jsonShop.getString("ShopName");
+								values.put("shopname", shopname);
 								JSONArray jaProducts = jsonShop.getJSONArray("ProductIDs");
-								values.put("productids", jaProducts.toString());									
+								values.put("productids", jaProducts.toString());	
+								
+								lstShops.add(shopname);
 								
 								if(-1 == db.insert(TBL_SHOP, null, values))
 								{

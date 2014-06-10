@@ -17,6 +17,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -30,9 +31,12 @@ import android.widget.SimpleAdapter;
 import android.widget.SimpleAdapter.ViewBinder;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MenuActivity extends Activity {
 	
+	
+
 	private static final String TBL_SHOPCAR = "tbl_shopcar";
 	private static final int TEXTVIEW_ID_OFFSET = 2048;
 	//int [] Ids = {R.id.quanbu,R.id.zhushi,R.id.yinliao,R.id.zhou};
@@ -43,6 +47,25 @@ public class MenuActivity extends Activity {
 
 	TabHost tabHost = null;
 	ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String,Object>>();		
+	
+	long mExitTime = 0;
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		 if (keyCode == KeyEvent.KEYCODE_BACK) {
+             if ((System.currentTimeMillis() - mExitTime) > 2000) {
+                     Object mHelperUtils;
+                     Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                     mExitTime = System.currentTimeMillis();
+
+             } else {
+                     finish();
+             }
+             return true;
+		 }
+
+		 return super.onKeyDown(keyCode, event);
+	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -344,5 +367,6 @@ public class MenuActivity extends Activity {
 		}
 	}
 
+	
 }
 

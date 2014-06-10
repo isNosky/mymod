@@ -56,7 +56,7 @@ import com.rqmod.util.Constant;
 import com.rqmod.util.HttpUtil;
 
 public class LoginActivity extends Activity {
-	
+
 	public static final String AUTO_SAVE_USER_NAME = "auto_save_user_name_for_select";
     public static final String FIND_PD_KEY = "findpwd";
     public static final int NAME_LOG_IN = 0x0;
@@ -111,22 +111,30 @@ public class LoginActivity extends Activity {
     DatabaseManager dbm = null;
 	SQLiteDatabase db = null;
 	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		switch (resultCode) {
+			case RESULT_OK:
+				Bundle b=data.getExtras();  //data为B中回传的Intent
+				String strUser = b.getString("UserName");
+				String strPass = b.getString("Password");
+				
+				mUserNameTxt.setText(strUser);
+				mUserPassword.setText(strPass);
+				
+				mLoginConfirm.performClick();
+				break;
+			default:
+		          break;
+		}
+		
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+	
 	@SuppressLint("NewApi")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		
-//		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder() 
-//        .detectDiskReads() 
-//        .detectDiskWrites() 
-//        .detectNetwork()   // or .detectAll() for all detectable problems 
-//        .penaltyLog() 
-//        .build()); 
-//		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder() 
-//		.detectLeakedSqlLiteObjects() 
-//		.detectLeakedClosableObjects() 
-//		.penaltyLog()
-//		.penaltyDeath() 
-//		.build()); 
 		
 		try{
 			super.onCreate(savedInstanceState);
@@ -302,9 +310,8 @@ public class LoginActivity extends Activity {
         	@Override
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                //intent.putExtra("com.360buy:navigationDisplayFlag", getIntent().getIntExtra("com.360buy:navigationDisplayFlag", 0x0));
-                //intent.putExtra("com.360buy:loginResendFlag", getIntent().getIntExtra("com.360buy:loginResendFlag", -0x1));
-                startActivity(intent);
+                //startActivity(intent);
+                startActivityForResult(intent, 0);
             }
         });
         mRememberMe.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -670,6 +677,7 @@ public class LoginActivity extends Activity {
 						e.printStackTrace();
 					} catch (Throwable e) {
 						// TODO Auto-generated catch block
+						String str = e.getMessage();
 						e.printStackTrace();
 					}
 	                break;
