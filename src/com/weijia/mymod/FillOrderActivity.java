@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.rqmod.provider.DatabaseManager;
+import com.rqmod.provider.GlobalVar;
 import com.rqmod.provider.MyModApp;
 import com.rqmod.provider.OrderDetail;
 import com.rqmod.util.Constant;
@@ -204,8 +205,8 @@ public class FillOrderActivity extends Activity {
 							try {
 								HttpPost request = new HttpPost();
 								List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
-					            //postParameters.add(new BasicNameValuePair("UserID", String.valueOf(app.getUserId())));
-					            postParameters.add(new BasicNameValuePair("UserID", "6"));
+					            postParameters.add(new BasicNameValuePair("UserID", String.valueOf(GlobalVar.getInstance().getUserId())));
+					            postParameters.add(new BasicNameValuePair("Token", GlobalVar.getInstance().getToken()));
 					            postParameters.add(new BasicNameValuePair("ShopID", "1"));
 					            postParameters.add(new BasicNameValuePair("deliveryAddressID", String.valueOf(id)));
 					            postParameters.add(new BasicNameValuePair("Amount", String.valueOf(totalprice)));
@@ -255,6 +256,8 @@ public class FillOrderActivity extends Activity {
 				// TODO Auto-generated method stub
 				showDialog(DIALOG);
 			}});
+		
+		getShops();
 	}
 
 	@Override
@@ -346,12 +349,12 @@ public class FillOrderActivity extends Activity {
 						{
 							JSONObject jsonShop = (JSONObject) jsonShops.get(shopid);
 							try {
-								int iShopID = jsonShop.getInt("ShopsID");
+								int iShopID = jsonShop.getInt("shopid");
 				            	ContentValues values = new ContentValues();
 								values.put("shopid", iShopID);
-								String shopname = jsonShop.getString("ShopName");
+								String shopname = jsonShop.getString("shopName");
 								values.put("shopname", shopname);
-								JSONArray jaProducts = jsonShop.getJSONArray("ProductIDs");
+								JSONArray jaProducts = jsonShop.getJSONArray("productIDs");
 								values.put("productids", jaProducts.toString());	
 								
 								lstShops.add(shopname);
@@ -362,13 +365,13 @@ public class FillOrderActivity extends Activity {
 								}
 								
 								ContentValues valuests = new ContentValues();
-								JSONArray jaDeliveryTimes = jsonShop.getJSONArray("DeliveryTimes");
+								JSONArray jaDeliveryTimes = jsonShop.getJSONArray("deliveryTimes");
 								for(int jdtid = 0 ; jdtid < jaDeliveryTimes.length() ; jdtid++)
 								{
 									JSONObject ts = (JSONObject) jaDeliveryTimes.get(jdtid);
 									valuests.put("shopid", iShopID);
-									valuests.put("starttime", str2int(ts.getString("StartTime")));
-									valuests.put("endtime", str2int(ts.getString("EndTime")));
+									valuests.put("starttime", str2int(ts.getString("startTime")));
+									valuests.put("endtime", str2int(ts.getString("endTime")));
 									
 									if(-1 == db.insert(TBL_SHOP_DELIVERY_TIMES, null, values))
 									{
@@ -421,7 +424,7 @@ public class FillOrderActivity extends Activity {
 						List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 			            //postParameters.add(new BasicNameValuePair("UserID", String.valueOf(app.getUserId())));
 			            postParameters.add(new BasicNameValuePair("ShopID", "6"));
-			            postParameters.add(new BasicNameValuePair("Token", "1"));
+			            postParameters.add(new BasicNameValuePair("Token", GlobalVar.getInstance().getToken()));
 			            postParameters.add(new BasicNameValuePair("StartNum", "0"));
 			            postParameters.add(new BasicNameValuePair("Count", "100"));
 			            

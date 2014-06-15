@@ -75,7 +75,19 @@
         		<View android:id="@id/my_divide_line_11" style="@style/line1"/>        
     		</LinearLayout>
     		-->
-            <Button android:textSize="19.0sp" android:textColor="@drawable/product_button_text_color_selector" android:id="@id/personel_logout_but" android:background="@drawable/product_add_to_car_button_selector" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="20.0dip" android:layout_marginRight="20.0dip" android:layout_marginBottom="10.0dip" android:text="@string/pg_my_jd_logout" />
         </LinearLayout>
     </ScrollView>
+
+    <Button
+        android:id="@id/personel_logout_but"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/product_add_to_car_button_selector"
+        android:text="@string/pg_my_jd_logout"
+        android:textColor="@drawable/product_button_text_color_selector"
+        android:textSize="19.0sp" />
+
 </RelativeLayout>

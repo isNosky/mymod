@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.rqmod.provider.DatabaseManager;
+import com.rqmod.provider.GlobalVar;
 import com.rqmod.provider.MyModApp;
 import com.rqmod.util.Constant;
 import com.rqmod.util.HttpUtil;
@@ -31,6 +32,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class PersonelActivity extends Activity {
+	
+
 	TextView tvUserName = null;
 	TextView tvUserLevel = null;
 	TextView tvUserScore = null;
@@ -38,17 +41,21 @@ public class PersonelActivity extends Activity {
 	RelativeLayout rlNotLoginInfo = null;
 	DatabaseManager dbm = null;
 	SQLiteDatabase db = null;
+	Button btnExitLogin = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		dbm = DatabaseManager.getInstance(this);
+		db = dbm.openDatabase();
 		
 		try {
 			PersonelActivity.ClickListener myClickListener = new PersonelActivity.ClickListener();
 			
 			setContentView(R.layout.personel_activity);
 			
-			//initTopUI();
+			
 			
 			Button btnLogin = (Button)findViewById(R.id.personal_click_for_login);
 			btnLogin.setOnClickListener(new View.OnClickListener() {
@@ -59,13 +66,12 @@ public class PersonelActivity extends Activity {
 					if(arg0.getId() == R.id.personal_click_for_login)
 					{
 						Intent intent = new Intent(PersonelActivity.this,LoginActivity.class);
-						startActivity(intent);
+						startActivityForResult(intent,0);
 					}
 				}
 			});
 			
-			Button btnExitLogin = (Button)findViewById(R.id.personel_logout_but);
-			btnExitLogin.setVisibility(4);
+			btnExitLogin = (Button)findViewById(R.id.personel_logout_but);			
 			
 			RelativeLayout myAccount = (RelativeLayout)findViewById(R.id.my_account);
 			RelativeLayout myMaterialFlow = (RelativeLayout)findViewById(R.id.my_material_flow);
@@ -73,11 +79,26 @@ public class PersonelActivity extends Activity {
 			myMaterialFlow.setOnClickListener(myClickListener);
 			btnExitLogin.setOnClickListener(myClickListener);
 			
+			initTopUI();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			String str = e.getMessage();
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub		
+		switch (resultCode) {
+			case RESULT_OK:
+				initTopUI();
+				break;
+			default:
+		          break;
+	}
+		
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 	
 	long mExitTime = 0;
@@ -100,10 +121,7 @@ public class PersonelActivity extends Activity {
 	}
 	
 	private void initTopUI()
-	{
-		dbm = DatabaseManager.getInstance(this);
-		db = dbm.openDatabase();
-		
+	{		
 		rlLoginInfo = (RelativeLayout)findViewById(R.id.personal_for_login_info);
 		rlNotLoginInfo = (RelativeLayout)findViewById(R.id.personal_for_not_login);
 
@@ -121,18 +139,29 @@ public class PersonelActivity extends Activity {
 		
 		if(0 == logincount)
 		{
-			
+			btnExitLogin.setVisibility(View.GONE);
 		}
 		else
 		{
 			rlNotLoginInfo.setVisibility(View.GONE);
-			Cursor c1 = db.rawQuery("select * logincount from tbl_user where islogin=1", null);// WHERE age >= ?", new String[]{"33"}); 
+			rlLoginInfo.setVisibility(View.VISIBLE);
+			btnExitLogin.setVisibility(View.VISIBLE);
 			
 			String strPhoneNum = "";
-			while (c1.moveToNext()) {
-				strPhoneNum = c1.getString(c1.getColumnIndex("phonenum"));
-			}  
-			c.close();
+			Cursor c1 = null;
+			try {
+				c1 = db.rawQuery("select * from tbl_user where islogin=1", null);
+				
+				while (c1.moveToNext()) {
+					strPhoneNum = c1.getString(c1.getColumnIndex("phonenum"));
+				}  
+				c.close();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+			
+			
 			
 			tvUserName.setText(strPhoneNum);
 			tvUserLevel.setText("铜牌用户");
@@ -198,7 +227,7 @@ public class PersonelActivity extends Activity {
 	    			JSONObject jsoin = new JSONObject();
 	    			JSONObject jsonout = null;
 					try {	
-						MyModApp app = (MyModApp)PersonelActivity.this.getApplication();
+						GlobalVar app = GlobalVar.getInstance();
 						jsoin.put("UserID", app.getUserId());	
 						jsonout = HttpUtil.queryStringForPost(Constant.LOGOUTSERVLET, jsoin);	
 			    	} catch (Exception e) { 
@@ -224,7 +253,7 @@ public class PersonelActivity extends Activity {
 		    		JSONObject jsonout = null;
 		    		
 					try {
-						MyModApp app = (MyModApp) PersonelActivity.this.getApplication();
+						GlobalVar app = GlobalVar.getInstance();
 						HttpPost request = new HttpPost();
 						List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 			            postParameters.add(new BasicNameValuePair("UserID", String.valueOf(app.getUserId())));			           
@@ -259,6 +288,16 @@ public class PersonelActivity extends Activity {
 					
 					if(Constant.ERR_CODE_SUCCESS == iErrorCode)
 					{
+						 try {
+							    GlobalVar app = GlobalVar.getInstance();
+							    String strSql = "update tbl_user set islogin = 0" + " where id = " + String.valueOf(app.getUserId());
+							    db.execSQL(strSql);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							String str = e.getMessage();
+							e.printStackTrace();
+						}
+						initTopUI();
 						//注销成功
 						showDialog(getResources().getString(R.string.jshop_logout_success));
 					}

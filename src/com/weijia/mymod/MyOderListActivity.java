@@ -1,6 +1,7 @@
 package com.weijia.mymod;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.rqmod.provider.DatabaseManager;
+import com.rqmod.provider.GlobalVar;
 import com.rqmod.provider.ImageManager;
 import com.rqmod.provider.MyModApp;
 import com.rqmod.provider.OrderDetail;
@@ -24,12 +26,14 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -56,6 +60,7 @@ public class MyOderListActivity extends Activity {
 	
 	private final static String TBL_ORDER = "tbl_order";
 	private final static String TBL_ORDER_DETAIL = "tbl_order_detail";
+	private final static String TBL_ORDER_HISTORY = "tbl_order_history";
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -122,11 +127,12 @@ public class MyOderListActivity extends Activity {
 			    public void run() { 	
 		    		JSONObject jsonout = null;
 			    	try { 							    		
-			    		//MyModApp app = (MyModApp)FillOrderActivity.this.getApplication();
+			    		
 						HttpPost request = new HttpPost();
 						List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 			            //postParameters.add(new BasicNameValuePair("CellphoneNumber", app.getCellphoneNumber()));   
-						postParameters.add(new BasicNameValuePair("SubscriberID", "6"));
+						postParameters.add(new BasicNameValuePair("SubscriberID", String.valueOf(GlobalVar.getInstance().getUserId())));
+						postParameters.add(new BasicNameValuePair("Token", GlobalVar.getInstance().getToken()));
 						//postParameters.add(new BasicNameValuePair("OrderID", "6"));
 			            
 			            jsonout = HttpUtil.queryStringForPost(Constant.GETORDERSSERVLET, postParameters);
@@ -164,8 +170,9 @@ public class MyOderListActivity extends Activity {
 						HttpPost request = new HttpPost();
 						List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 			            //postParameters.add(new BasicNameValuePair("CellphoneNumber", app.getCellphoneNumber()));  
-						postParameters.add(new BasicNameValuePair("UserId", String.valueOf(orderId)));
+						postParameters.add(new BasicNameValuePair("UserId", String.valueOf(GlobalVar.getInstance().getUserId())));
 						postParameters.add(new BasicNameValuePair("OrderId", String.valueOf(orderId)));
+						postParameters.add(new BasicNameValuePair("Token", GlobalVar.getInstance().getToken()));
 			            
 			            jsonout = HttpUtil.queryStringForPost(Constant.ORDERHISTORYSERVLET, postParameters);
 			    	} catch (Exception e) { 
@@ -318,12 +325,15 @@ public class MyOderListActivity extends Activity {
 	
 	private void handleGetOrderHistoryMsg(Message msg)
 	{
+		
+		ArrayList<ContentValues> listItem = new ArrayList<ContentValues>();
 		try {
     		JSONObject jsonout = (JSONObject) msg.obj;
 			int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
 			String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
 			
 			JSONArray jsonOrders = jsonout.getJSONArray("Orders");
+			
 			
 			for(int jsorder = 0 ; jsorder < jsonOrders.length() ; jsorder++)
 			{
@@ -334,35 +344,40 @@ public class MyOderListActivity extends Activity {
 					//RegisterActivity.this.finalize();
 					
 					try {
+						
 		            	ContentValues values = new ContentValues();
-						values.put("orderid", jsonOrder.getInt("orderID"));
-						values.put("totalprice", jsonOrder.getDouble("sumOfMoney"));
-						values.put("createtime", jsonOrder.getString("createTime"));
-						values.put("addrid", jsonOrder.getInt("orderFormAddressID"));
-						values.put("deliveriername", jsonOrder.getString("orderDeliveryName"));
-						values.put("deliveriertel", jsonOrder.getString("orderDeliveryTel"));
-						values.put("orderstatus", jsonOrder.getString("orderCurrentStatus"));
-						values.put("orderfromshopid", jsonOrder.getInt("orderFromShop"));
-						if(-1 == db.insert(TBL_ORDER, null, values))
+		            	int orderid = jsonOrder.getInt("orderID");
+		            	values.put("orderid", orderid);
+		            	String orderstatus = String.valueOf(jsonOrder.getInt("orderStatus"));
+						values.put("orderstatus", orderstatus);
+						String comment = jsonOrder.getString("comment");
+						values.put("comment", comment);
+						String optime = jsonOrder.getString("opTime");
+
+						values.put("optime", optime);
+
+						listItem.add(values);
+						
+						if(-1 == db.insert(TBL_ORDER_HISTORY, null, values))
 						{
 							//
 						}
-						
-						ContentValues valuesdetail = new ContentValues();
-						JSONArray jsa = jsonOrder.getJSONArray("orderDetails");
-						for(int i = 0 ; i < jsa.length() ; i++)
-						{
-							JSONObject od = (JSONObject) jsa.get(i);
-							valuesdetail.put("orderid", od.getString("orderID"));
-							valuesdetail.put("foodid", od.getInt("productID"));
-							valuesdetail.put("quantity", od.getInt("quantity"));
-							valuesdetail.put("amount", od.getInt("amount"));
-							
-							if(-1 == db.insert(TBL_ORDER_DETAIL, null, values))
-							{
-								//
-							}
-						}			
+//						
+//						ContentValues valuesdetail = new ContentValues();
+//						JSONArray jsa = jsonOrder.getJSONArray("orderDetails");
+//						for(int i = 0 ; i < jsa.length() ; i++)
+//						{
+//							JSONObject od = (JSONObject) jsa.get(i);
+//							valuesdetail.put("orderid", od.getString("orderID"));
+//							valuesdetail.put("foodid", od.getInt("productID"));
+//							valuesdetail.put("quantity", od.getInt("quantity"));
+//							valuesdetail.put("amount", od.getInt("amount"));
+//							
+//							if(-1 == db.insert(TBL_ORDER_DETAIL, null, values))
+//							{
+//								//
+//							}
+//						}			
 						
 					} catch (JSONException e) {
 						// TODO Auto-generated catch block
@@ -384,6 +399,11 @@ public class MyOderListActivity extends Activity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		Bundle bundle = new Bundle();
+		bundle.putParcelableArrayList("OrderHistoryList", (ArrayList<? extends Parcelable>) listItem);
+		Intent intent = new Intent(MyOderListActivity.this,OrderHistoryActivity.class);
+		startActivity(intent);
 	}
 	
 	private Handler handler=new Handler(){

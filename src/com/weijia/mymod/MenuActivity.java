@@ -2,9 +2,20 @@ package com.weijia.mymod;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.rqmod.provider.DatabaseManager;
+import com.rqmod.provider.GlobalVar;
 import com.rqmod.provider.ImageManager;
+import com.rqmod.util.Constant;
+import com.rqmod.util.HttpUtil;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -17,6 +28,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -42,6 +55,7 @@ public class MenuActivity extends Activity {
 	//int [] Ids = {R.id.quanbu,R.id.zhushi,R.id.yinliao,R.id.zhou};
 	ListView lvMenu = null;
 	ImageView vShopCar = null;
+	LinearLayout llShopCar = null;
 	SQLiteDatabase db = null;
 	DatabaseManager dbm = null;
 
@@ -55,7 +69,7 @@ public class MenuActivity extends Activity {
 		 if (keyCode == KeyEvent.KEYCODE_BACK) {
              if ((System.currentTimeMillis() - mExitTime) > 2000) {
                      Object mHelperUtils;
-                     Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                     Toast.makeText(this, getResources().getString(R.string.again_exit_app), Toast.LENGTH_SHORT).show();
                      mExitTime = System.currentTimeMillis();
 
              } else {
@@ -79,44 +93,15 @@ public class MenuActivity extends Activity {
 		
 		tabHost = ((TabActivity)getParent()).getTabHost();
 		
-//		OnClickListener lsnr = new OnClickListener() {
-//			@Override
-//			public void onClick(View arg0) {
-//				// TODO Auto-generated method stub
-//				TextView tv = (TextView)findViewById(arg0.getId());
-//				tv.setTextColor(getResources().getColor(R.color.green));
-//				for(int i = 0 ; i < Ids.length ; i++ )
-//				{
-//					if(arg0.getId() != Ids[i])
-//					{
-//						TextView tv1 = (TextView)findViewById(Ids[i]);
-//						tv1.setTextColor(getResources().getColor(R.color.black));
-//					}
-//				}
-//			}
-//		};
-//		
-//		for(int i = 0 ; i < Ids.length ; i++ )
-//		{
-//			TextView tv = (TextView)findViewById(Ids[i]);
-//			tv.setOnClickListener(lsnr);
-//		}
-
-//		ImageView ivSet = (ImageView)findViewById(R.id.set);
-//		ivSet.setOnClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				Intent intent = new Intent(MenuActivity.this,LoginActivity.class);
-//				startActivity(intent);				
-//			}
-//		});
 		lvMenu = (ListView)findViewById(R.id.product_list);	
 
-		initView();
 		
+		getMenu();
+		initView();		
 		
 		vShopCar = (ImageView)findViewById(R.id.shop_car_add);
-		vShopCar.setOnClickListener(new OnClickListener(){
+		llShopCar = (LinearLayout)findViewById(R.id.ll_add_to_car);
+		llShopCar.setOnClickListener(new OnClickListener(){
 
 			@Override
 			public void onClick(View arg0) {
@@ -367,6 +352,148 @@ public class MenuActivity extends Activity {
 		}
 	}
 
+	private void getMenu()
+	{
+		if(Constant.FLAG_POST_IN_JSON)
+		{								
+	 		Thread thread = new Thread(){ 
+		    	@Override 
+			    public void run() { 	
+		    		JSONObject jsonout = null;
+		    		GlobalVar app = GlobalVar.getInstance();
+			    	try { 							    		
+			    		JSONObject jsoin = new JSONObject();
+			    		jsoin.put("Token", app.getToken());
+						jsonout = HttpUtil.queryStringForPost(Constant.LOGINSERVLET, jsoin);
+			    	} catch (Exception e) { 
+			    		String str = e.getMessage();
+			    	} 
+			    	  
+			    	Message message= handler.obtainMessage() ; 
+			    	message.obj = jsonout; 
+			    	message.what = 1;
+			    	handler.sendMessage(message); 
+			    	} 
+		    	}; 
+		    	thread.start(); 
+		    	thread = null; 
+			
+		}
+		else
+		{
+			 Thread thread = new Thread(){ 
+			    	@Override 
+				    public void run() { 	
+			    		
+		    			JSONObject jsoin = new JSONObject();	
+		    			JSONObject jsonout = null;
+						try {
+							HttpPost request = new HttpPost();
+							List<NameValuePair> postParameters = new ArrayList<NameValuePair>();	
+							GlobalVar app = GlobalVar.getInstance();
+				            postParameters.add(new BasicNameValuePair("Token", app.getToken()));	            
+						    jsonout = HttpUtil.queryStringForPost(Constant.GETMENUSERVLET, postParameters);
+				    	} catch (Exception e) { 
+				    		String str = e.getMessage();
+				    	} 
+				    	  
+				    	Message message= handler.obtainMessage() ; 
+				    	message.obj = jsonout; 
+				    	message.what = 1;
+				    	handler.sendMessage(message); 
+				    	} 
+			    	}; 
+			    	thread.start(); 
+			    	thread = null;
+		
+		}	
+	}
 	
+	private Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg){
+            switch(msg.what){
+            case 1:
+                //关闭
+            	try {
+            		JSONObject jsonout = (JSONObject) msg.obj;
+					int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
+					String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
+					
+					if(Constant.ERR_CODE_SUCCESS == iErrorCode)
+					{
+						HandleLoginResult(jsonout);
+					}
+					else
+					{
+						
+					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					String str = e.getMessage();
+					e.printStackTrace();
+				} catch (Throwable e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                break;
+            }
+        }
+    };
+	
+	private int HandleLoginResult(JSONObject jso)
+	{
+		if(jso != null)
+		{
+			try {
+				int iErrCode = jso.getInt("ErrorCode");
+				int iUserId = jso.getInt("UserID");
+				
+				JSONArray jsonShops = jso.getJSONArray("Types");
+				
+				String strSql = "delete from tbl_product_type";
+			    db.execSQL(strSql);
+			    
+			    for(int i = 0 ; i < jso.length() ; i++)
+			    {
+			    	JSONObject jsType = (JSONObject) jsonShops.get(i);
+			    	ContentValues values = new ContentValues();
+			    	values.put("type", jsType.getString("id"));
+			    	values.put("name", jsType.getString("name"));
+			    	
+			    	if(-1 == db.insert("tbl_product_type", null, values))
+					{
+						//
+					}
+			    }
+			    
+			    JSONArray jsonMenus = jso.getJSONArray("products");
+			    for(int j = 0 ; j < jso.length() ; j++)
+			    {
+			    	JSONObject jsProduct = (JSONObject) jsonMenus.get(j);
+			    	ContentValues values = new ContentValues();
+			    	values.put("type", jsProduct.getInt("pictruepath"));
+			    	values.put("productname", jsProduct.getString("name"));
+			    	values.put("description", jsProduct.getString("id"));
+			    	values.put("id", jsProduct.getInt("id"));
+			    	values.put("type", jsProduct.getString("type"));
+			    	values.put("unitprice", jsProduct.getDouble("unitprice"));
+			    	values.put("isinsale", jsProduct.getInt("isinsale"));
+			    	values.put("comment", "");
+			    	values.put("pri", 0);
+			    	
+			    	if(-1 == db.insert("tbl_product", null, values))
+					{
+						//
+					}
+			    }
+				
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return 0;
+	}		
 }
 

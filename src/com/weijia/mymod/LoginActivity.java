@@ -51,6 +51,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.rqmod.provider.DatabaseManager;
+import com.rqmod.provider.GlobalVar;
 import com.rqmod.provider.MyModApp;
 import com.rqmod.util.Constant;
 import com.rqmod.util.HttpUtil;
@@ -292,13 +293,7 @@ public class LoginActivity extends Activity {
 						    	}; 
 						    	thread.start(); 
 						    	thread = null; 
-						}
-						
-						
-						
-						
-						
-					 
+						}	
 						return;
 	                } 
 				 catch(Exception e) {
@@ -340,36 +335,6 @@ public class LoginActivity extends Activity {
         } else {
             findPassword.setVisibility(0x8);
         }
-//        findPassword.setOnClickListener(new View.OnClickListener() {
-//        	@Override
-//            public void onClick(View v) {
-//                URLParamMap map = new URLParamMap();
-//                if(TextUtils.isEmpty(findPdUrl)) {
-//                    return;
-//                }
-//                map.put("to", findPdUrl.toString().trim());
-//                CommonUtil.queryBrowserUrl("to", map, new CommonBase.BrowserUrlListener(this) {
-//                    
-//                    1(LoginActivity.9 p1) {
-//                    }
-//                    
-//                    public void onComplete(String url) {
-//                        LoginActivity.9.this$0.post(new Runnable(this, url) {
-//                            
-//                            1(LoginActivity.9.1 p1, String p2) {
-//                            }
-//                            
-//                            public void run() {
-//                                Intent intent = new Intent(LoginActivity.9.this$0, WebActivity.class);
-//                                intent.putExtra("url", url);
-//                                intent.putExtra("com.360buy:navigationDisplayFlag", LoginActivity.9.this$0.getIntent().getIntExtra("com.360buy:navigationDisplayFlag", 0x0));
-//                                LoginActivity.9.this$0.startActivityInFrame(intent);
-//                            }
-//                        });
-//                    }
-//                });
-//            }
-//        });
     }
 	
 	private JSONObject getLoginJSO() throws JSONException
@@ -397,26 +362,59 @@ public class LoginActivity extends Activity {
 			try {
 				int iErrCode = jso.getInt("ErrorCode");
 				int iUserId = jso.getInt("UserID");
-				
+				String strToken = jso.getString("Token");
 				//TODO:存入数据库
 				 ContentValues values = new ContentValues();
-				 values.put("nickname", mUserNameTxt.getEditableText().toString());
+				 String strNickName = mUserNameTxt.getEditableText().toString();
+				 values.put("nickname", strNickName);
 				 values.put("id", iUserId);
-				 values.put("phonenum", mUserNameTxt.getEditableText().toString());
-				 values.put("password", mUserPassword.getEditableText().toString());
+				 String strPhoneNum = mUserNameTxt.getEditableText().toString();
+				 values.put("phonenum", strPhoneNum);
+				 String strPassword = mUserPassword.getEditableText().toString();
+				 values.put("password", strPassword);
 				 values.put("islogin", 1);
 				 
-				 if(-1 == db.insert(TBL_USER, null, values))
+				 Cursor count = db.rawQuery("select count(1) userscount from tbl_user where id = " + iUserId, null);
+				 count.moveToFirst();
+				 int iColIdx = count.getColumnIndex("userscount");
+				 int userscount = count.getInt(iColIdx);
+				 count.close();
+				 
+				 if(0 == userscount)
 				 {
-					 
+					 if(-1 == db.insert(TBL_USER, null, values))				 
+					 {
+						 
+					 }
+					 else
+					 {
+						 //TODO:登录成功呈现界面
+						 //rlNotLoginInfo.setVisibility(View.GONE);
+						Intent intent = new Intent(LoginActivity.this, PersonelActivity.class);
+						setResult(RESULT_OK,intent); 
+						LoginActivity.this.finish();
+						 
+					 }
 				 }
 				 else
 				 {
-					 //TODO:登录成功呈现界面
-					 //rlNotLoginInfo.setVisibility(View.GONE);
-					 this.finish();
-					 
+					 try {
+							
+							  String strSql = "update tbl_user set islogin = 1" + " where id = " + String.valueOf(iUserId);
+							  db.execSQL(strSql);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							String str = e.getMessage();
+							e.printStackTrace();
+						}
+					 Intent intent = new Intent(LoginActivity.this, PersonelActivity.class);
+						setResult(RESULT_OK,intent); 
+						LoginActivity.this.finish();
 				 }
+				 GlobalVar.getInstance().setToken(strToken);
+				 GlobalVar.getInstance().setUserId(iUserId);
+				 GlobalVar.getInstance().setCellphoneNumber(strPhoneNum);
+				 
 				return 1;
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -657,12 +655,14 @@ public class LoginActivity extends Activity {
 						
 						if(Constant.ERR_CODE_SUCCESS == iErrorCode)
 						{
-							showDialog(getResources().getString(R.string.signin_login_success));
-							int iUserId = (Integer) jsonout.get(Constant.PARA_USER_ID);
-							MyModApp app = (MyModApp)getApplicationContext();
-							app.setUserId(iUserId);
+							//showDialog(getResources().getString(R.string.signin_login_success));
+							HandleLoginResult(jsonout);
+							
+//							int iUserId = (Integer) jsonout.get(Constant.PARA_USER_ID);
+//							GlobalVar app = GlobalVar.getInstance();
+//							app.setUserId(iUserId);
 							//登录成功,登录页面消失
-							LoginActivity.this.finish();
+							
 							//刷新个人信息页面
 							
 						}

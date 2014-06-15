@@ -33,11 +33,13 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/ll_add_to_car"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_alignParentRight="true"
             android:gravity="center"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"             
+			android:background="@drawable/product_add_to_car_button_selector" >
 
 			<ImageView
                 android:id="@+id/shop_car_add"
@@ -45,6 +47,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="15.0dip"
                 android:src="@drawable/product_detail_new_shoppingcart" />
+
+			<TextView
+			    android:id="@id/shopping_cart_text"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:layout_marginLeft="6.0dip"
+			    android:text="@string/product_add_to_cart"
+			    android:textColor="@color/im_button_text_normal"
+			    android:textSize="@dimen/im_button_text_size" />
+
             <!--  
             <ImageView
                 android:id="@+id/set"

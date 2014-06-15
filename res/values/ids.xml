@@ -3443,4 +3443,13 @@
     <item type="id" name="shop_radiobutton"></item>
     <item type="id" name="shop_name"></item>
     <item type="id" name="shop_addr"></item>
+    <item type="id" name="order_history_list"></item>
+    
+    <item type="id" name="order_history_optime_hint"></item>
+    <item type="id" name="order_history_optime"></item>
+    <item type="id" name="order_history_status_hint"></item>
+    <item type="id" name="order_history_status"></item>
+    <item type="id" name="order_history_comment_hint"></item>
+    <item type="id" name="order_history_comment"></item>
+    
 </resources>

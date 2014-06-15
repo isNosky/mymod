@@ -6,7 +6,15 @@
         <LinearLayout android:gravity="center" android:layout_gravity="right|center" android:orientation="horizontal" android:id="@id/shopping_cart_delete_right" android:layout_width="wrap_content" android:layout_height="wrap_content">
             <ImageView android:layout_gravity="center_vertical" android:id="@id/shopping_cart_delete_line" android:layout_width="1.0dip" android:layout_height="32.0dip" android:src="@drawable/shopping_cart_delete_line" android:adjustViewBounds="true" android:contentDescription="@string/none" />
             <LinearLayout android:gravity="center" android:layout_gravity="right|center" android:orientation="horizontal" android:id="@id/shopping_cart_delete_layout" android:background="@drawable/shopping_cart_delete_btn_selector" android:layout_width="90.0dip" android:layout_height="45.0dip">
-                <ImageView android:id="@id/shopping_cart_icon" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/shopping_cart_delete_icon" android:adjustViewBounds="true" android:contentDescription="@string/none" />
+
+                <ImageView
+                    android:id="@id/shopping_cart_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="@string/none"
+                    android:src="@drawable/shopping_cart_delete_icon" />
+
                 <TextView android:textSize="@dimen/im_button_text_size" android:textColor="@color/im_button_text_normal" android:id="@id/shopping_cart_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="6.0dip" android:text="@string/delete" />
             </LinearLayout>
         </LinearLayout>
