@@ -63,15 +63,22 @@
                     <TextView android:textColor="@color/fill_order_content_color" android:id="@id/fill_order_online_tip" android:visibility="visible" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="15.0dip" android:layout_marginRight="10.0dip" android:layout_marginBottom="10.0dip" android:text="@string/fill_order_online_pay_tips" />
                 </LinearLayout>
                 
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/select_shop"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/layout_calc_info"
                     android:layout_marginTop="15.0dip"
                     android:background="@drawable/fill_order_list_item_bg"
+                    android:orientation="horizontal" >
+                    
+					 <LinearLayout
+                    android:id="@+id/select_shop"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15.0dip"
+                    android:background="@drawable/fill_order_list_item_bg"
                     android:orientation="vertical" >
-
                     <TextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
@@ -111,7 +118,9 @@
                         android:maxLength="20"
                         android:singleLine="true"
                         android:textColor="@color/fill_order_content_color" />
-                </LinearLayout>
+                     </LinearLayout>
+                    <ImageView android:background="@drawable/index_icon1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="18.0dip" android:layout_alignParentRight="true" android:layout_centerVertical="true" />
+                </RelativeLayout>
 
             </RelativeLayout>
         </ScrollView>

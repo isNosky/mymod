@@ -26,7 +26,7 @@
         </activity>
         <activity
             android:name="com.weijia.mymod.LoginActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar" />
+            android:theme="@android:style/Theme.Light.NoTitleBar" />
         <activity
             android:name="com.weijia.mymod.RegisterActivity"
             android:theme="@android:style/Theme.Black.NoTitleBar" />
@@ -68,8 +68,12 @@
         </activity>
         <activity
             android:name="com.weijia.mymod.OrderHistoryActivity"
-            android:label="@string/title_activity_order_history" 
+            android:label="@string/title_activity_order_history"
             android:theme="@android:style/Theme.Black.NoTitleBar" >
+        </activity>
+        <activity
+            android:name="com.weijia.mymod.NewAddrActivity"
+            android:label="@string/title_activity_new_addr" >
         </activity>
     </application>
 

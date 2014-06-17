@@ -65,8 +65,8 @@ public class FillOrderActivity extends Activity {
 	TextView tvReturnCar = null;
 	TextView tvFillOrderMoney = null;
 	RelativeLayout rlInventory = null;
-	LinearLayout llSelShop = null;
-	ArrayList<CharSequence> lstShops = new ArrayList<CharSequence>();
+	RelativeLayout llSelShop = null;
+	ArrayList<String> lstShops = new ArrayList<String>();
 	TextView tvShopName = null;
 	
 	int id = 0;
@@ -103,7 +103,7 @@ public class FillOrderActivity extends Activity {
 		ivIndexIcon = (ImageView)findViewById(R.id.index_icon1);
 		rlInventory = (RelativeLayout)findViewById(R.id.layout_product_inventory);
 		
-		llSelShop =  (LinearLayout)findViewById(R.id.select_shop);
+		llSelShop =  (RelativeLayout)findViewById(R.id.select_shop);
 		
 		tvReceiverInfo.setVisibility(View.VISIBLE);
 		rlReceiver.setVisibility(View.VISIBLE);
@@ -267,21 +267,28 @@ public class FillOrderActivity extends Activity {
 		Dialog dialog=null;
         switch (id) {
         case DIALOG:
-            Builder builder=new android.app.AlertDialog.Builder(this);
-            //设置对话框的图标
-            //builder.setIcon(R.drawable.header);
-            //设置对话框的标题
-            builder.setTitle("选择配送门店");
-            
-            //添加按钮，android.content.DialogInterface.OnClickListener.OnClickListener
-            builder.setItems((CharSequence[])lstShops.toArray(), new android.content.DialogInterface.OnClickListener(){
-                public void onClick(DialogInterface dialog, int which) {
-                    String hoddy=(String) lstShops.get(which);
-                    tvShopName.setText(hoddy);
-                }
-            });
-            //创建一个列表对话框
-            dialog=builder.create();
+            try {
+				Builder builder=new android.app.AlertDialog.Builder(this);
+				//设置对话框的图标
+				//builder.setIcon(R.drawable.header);
+				//设置对话框的标题
+				builder.setTitle("选择配送门店");
+				
+				//添加按钮，android.content.DialogInterface.OnClickListener.OnClickListener
+				String[] items = (String[]) lstShops.toArray(new String[lstShops.size()]);
+				builder.setItems(items, new android.content.DialogInterface.OnClickListener(){
+				    public void onClick(DialogInterface dialog, int which) {
+				        String hoddy=(String) lstShops.get(which);
+				        tvShopName.setText(hoddy);
+				    }
+				});
+				//创建一个列表对话框
+				dialog=builder.create();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				String str = e.getMessage();
+				e.printStackTrace();
+			}
             break;
         }
         return dialog;
@@ -352,7 +359,7 @@ public class FillOrderActivity extends Activity {
 								int iShopID = jsonShop.getInt("shopid");
 				            	ContentValues values = new ContentValues();
 								values.put("shopid", iShopID);
-								String shopname = jsonShop.getString("shopName");
+								String shopname = jsonShop.getString("shopname");
 								values.put("shopname", shopname);
 								JSONArray jaProducts = jsonShop.getJSONArray("productIDs");
 								values.put("productids", jaProducts.toString());	
@@ -364,20 +371,38 @@ public class FillOrderActivity extends Activity {
 									//
 								}
 								
-								ContentValues valuests = new ContentValues();
-								JSONArray jaDeliveryTimes = jsonShop.getJSONArray("deliveryTimes");
-								for(int jdtid = 0 ; jdtid < jaDeliveryTimes.length() ; jdtid++)
+//								ContentValues valuests = new ContentValues();
+//								JSONArray jaDeliveryTimes = jsonShop.getJSONArray("deliveryTimes");
+//								for(int jdtid = 0 ; jdtid < jaDeliveryTimes.length() ; jdtid++)
+//								{
+//									JSONObject ts = (JSONObject) jaDeliveryTimes.get(jdtid);
+//									valuests.put("shopid", iShopID);
+//									valuests.put("starttime", str2int(ts.getString("startTime")));
+//									valuests.put("endtime", str2int(ts.getString("endTime")));
+//									
+//									if(-1 == db.insert(TBL_SHOP_DELIVERY_TIMES, null, values))
+//									{
+//										//
+//									}
+//								}	
+								
+								ContentValues valuests = new ContentValues();								
+								valuests.put("shopid", iShopID);
+								valuests.put("starttime", str2int(jsonShop.getString("nosalestarttime_a")));
+								valuests.put("endtime", str2int(jsonShop.getString("nosaleendtime_a")));
+								if(-1 == db.insert(TBL_SHOP_DELIVERY_TIMES, null, values))
 								{
-									JSONObject ts = (JSONObject) jaDeliveryTimes.get(jdtid);
-									valuests.put("shopid", iShopID);
-									valuests.put("starttime", str2int(ts.getString("startTime")));
-									valuests.put("endtime", str2int(ts.getString("endTime")));
-									
-									if(-1 == db.insert(TBL_SHOP_DELIVERY_TIMES, null, values))
-									{
-										//
-									}
-								}	
+									//
+								}
+								
+//								valuests.clear();							
+//								valuests.put("shopid", iShopID);
+//								valuests.put("starttime", str2int(jsonShop.getString("nosalestarttime_b")));
+//								valuests.put("endtime", str2int(jsonShop.getString("nosaleendtime_b")));
+//								if(-1 == db.insert(TBL_SHOP_DELIVERY_TIMES, null, values))
+//								{
+//									//
+//								}
 								
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
@@ -423,7 +448,7 @@ public class FillOrderActivity extends Activity {
 						HttpPost request = new HttpPost();
 						List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 			            //postParameters.add(new BasicNameValuePair("UserID", String.valueOf(app.getUserId())));
-			            postParameters.add(new BasicNameValuePair("ShopID", "6"));
+			            //postParameters.add(new BasicNameValuePair("ShopID", "6"));
 			            postParameters.add(new BasicNameValuePair("Token", GlobalVar.getInstance().getToken()));
 			            postParameters.add(new BasicNameValuePair("StartNum", "0"));
 			            postParameters.add(new BasicNameValuePair("Count", "100"));

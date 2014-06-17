@@ -1547,6 +1547,7 @@
     <string name="new_easy_buy_address_desc_jump_order">进入结算页确认后下单</string>
     <string name="new_easy_buy_address_desc_direct_order">无需确认，一键下单</string>
     <string name="new_easy_buy_address_areas_content">所在地区</string>
+    <string name="new_easy_buy_address_street_content">所在街道</string>
     <string name="new_easy_buy_address_dialog_title_town">选择城镇</string>
     <string name="new_easy_buy_address_dialog_title_area">选择地区</string>
     <string name="new_easy_buy_address_dialog_title_city">选择城市</string>
@@ -1664,9 +1665,10 @@
     <string name="selected_shop_tips">当前已经选中的配送门店为:</string>
     <string name="title_activity_shop_list">ShopListActivity</string>
     <string name="title_activity_order_history">OrderHistoryActivity</string>
-
     <string name="order_history_status">订单状态:</string>
     <string name="order_history_optime">操作时间:</string>
-   	<string name="order_history_comment">备        注:</string>
+    <string name="order_history_comment">备        注:</string>
     <string name="again_exit_app">再按一次退出程序</string>
+    <string name="title_activity_new_addr">NewAddrActivity</string>
+
 </resources>

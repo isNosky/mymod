@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="district">        
+        <item>雁塔区</item>
+        <item>碑林区</item>
+        <item>新城区</item>
+        <item>未央区</item>
+        <item>莲湖区</item>
+        <item>灞桥区</item>
+        <item>阎良区</item>
+        <item>临潼区</item>
+        <item>长安区</item>
+    </string-array>
+    
+    <string-array name="yanta_district">        
+        <item>等驾坡街道</item>
+        <item>曲江街道</item>
+        <item>小寨街道</item>
+        <item>电子城街道</item>
+        <item>丈八街道</item>
+        <item>长延堡街道</item>
+        <item>大雁塔街道</item>
+    </string-array>    
+</resources>

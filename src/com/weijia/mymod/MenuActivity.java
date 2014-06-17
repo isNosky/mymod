@@ -3,6 +3,7 @@ package com.weijia.mymod;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpPost;
@@ -11,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.rqmod.provider.AsyncViewTask;
 import com.rqmod.provider.DatabaseManager;
 import com.rqmod.provider.GlobalVar;
 import com.rqmod.provider.ImageManager;
@@ -21,6 +23,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.TabActivity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -30,7 +33,9 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -312,8 +317,8 @@ public class MenuActivity extends Activity {
 			    int isinsale = c.getInt(c.getColumnIndex("isinsale"));
 			    float price = c.getFloat(c.getColumnIndex("unitprice"));
 			    HashMap<String, Object> map = new HashMap<String, Object>();  
-			    Bitmap bmp = ImageManager.getInstance(this).getBitmap(picptah);
-				map.put("product_item_image", bmp);
+			    //Bitmap bmp = ImageManager.getInstance(this).getBitmap(picptah);
+				map.put("product_item_image", picptah);
 			    map.put("product_item_name", pname);
 			    map.put("product_item_id", "±àºÅ:"+String.valueOf(id));
 			    map.put("product_item_adword", desc);
@@ -322,7 +327,7 @@ public class MenuActivity extends Activity {
 			}  
 			c.close();
 
-			SimpleAdapter mSimpleAdapter = new SimpleAdapter(
+			MenuAdaptor mSimpleAdapter = new MenuAdaptor(
 					MenuActivity.this, 
 					listItem1, 
 					R.layout.product_list_item, 
@@ -434,6 +439,7 @@ public class MenuActivity extends Activity {
 					e.printStackTrace();
 				} catch (Throwable e) {
 					// TODO Auto-generated catch block
+					String str = e.getMessage();
 					e.printStackTrace();
 				}
                 break;
@@ -447,16 +453,16 @@ public class MenuActivity extends Activity {
 		{
 			try {
 				int iErrCode = jso.getInt("ErrorCode");
-				int iUserId = jso.getInt("UserID");
+				//int iUserId = jso.getInt("UserID");
 				
-				JSONArray jsonShops = jso.getJSONArray("Types");
+				JSONArray jsonTypes = jso.getJSONArray("Types");
 				
 				String strSql = "delete from tbl_product_type";
 			    db.execSQL(strSql);
 			    
-			    for(int i = 0 ; i < jso.length() ; i++)
+			    for(int i = 0 ; i < jsonTypes.length() ; i++)
 			    {
-			    	JSONObject jsType = (JSONObject) jsonShops.get(i);
+			    	JSONObject jsType = (JSONObject) jsonTypes.get(i);
 			    	ContentValues values = new ContentValues();
 			    	values.put("type", jsType.getString("id"));
 			    	values.put("name", jsType.getString("name"));
@@ -467,33 +473,97 @@ public class MenuActivity extends Activity {
 					}
 			    }
 			    
-			    JSONArray jsonMenus = jso.getJSONArray("products");
-			    for(int j = 0 ; j < jso.length() ; j++)
+			    strSql = "delete from tbl_product";
+			    db.execSQL(strSql);
+			    JSONArray jsonMenus = jso.getJSONArray("Products");
+			    for(int j = 0 ; j < jsonMenus.length() ; j++)
 			    {
 			    	JSONObject jsProduct = (JSONObject) jsonMenus.get(j);
 			    	ContentValues values = new ContentValues();
-			    	values.put("type", jsProduct.getInt("pictruepath"));
+			    	values.put("picturepath", jsProduct.getString("picturepath"));
 			    	values.put("productname", jsProduct.getString("name"));
-			    	values.put("description", jsProduct.getString("id"));
+			    	values.put("description", jsProduct.getString("description"));
 			    	values.put("id", jsProduct.getInt("id"));
-			    	values.put("type", jsProduct.getString("type"));
+			    	values.put("type", jsProduct.getInt("type"));
 			    	values.put("unitprice", jsProduct.getDouble("unitprice"));
 			    	values.put("isinsale", jsProduct.getInt("isinsale"));
-			    	values.put("comment", "");
-			    	values.put("pri", 0);
+			    	values.put("commnet", jsProduct.getString("commnet"));
+			    	values.put("pri", jsProduct.getInt("pri"));
 			    	
-			    	if(-1 == db.insert("tbl_product", null, values))
+			    	if(-1 == db.insertOrThrow("tbl_product", null, values))
 					{
-						//
+						Log.v("TEST", "error occurs");
 					}
 			    }
 				
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
+				String str = e.getMessage();
+				Log.v("TEST", str);
 				e.printStackTrace();
 			}
 		}
 		return 0;
-	}		
+	}	
+	
+	class MenuAdaptor extends SimpleAdapter{
+		
+		private LayoutInflater mInflater;
+		List<HashMap<String, Object>> mlistData;
+		
+		@Override
+		public int getCount() {
+			// TODO Auto-generated method stub
+			return mlistData.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			// TODO Auto-generated method stub
+			return mlistData.get(position);
+		}
+
+		@Override
+		public long getItemId(int position) {
+			// TODO Auto-generated method stub
+			return position;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			// TODO Auto-generated method stub
+			convertView = mInflater.inflate(R.layout.product_list_item, null);
+	        ImageView image = (ImageView) convertView.findViewById(R.id.product_item_image);
+	        TextView product_item_name = (TextView) convertView.findViewById(R.id.product_item_name);
+	        TextView product_item_id = (TextView) convertView.findViewById(R.id.product_item_id);
+	        TextView product_item_adword = (TextView) convertView.findViewById(R.id.product_item_adword);
+	        TextView product_item_martPrice = (TextView) convertView.findViewById(R.id.product_item_martPrice);
+	        
+	        HashMap<String, Object> map = (HashMap<String, Object>) mlistData.get(position);
+	        String strTag = (String) map.get("product_item_image");
+	        image.setTag(strTag);
+	        new AsyncViewTask().execute(image);
+	        String name = (String)map.get("product_item_name");
+	        product_item_name.setText(name);
+	        String id = (String)map.get("product_item_id");
+	        product_item_id.setText(id);
+	        String adword = (String)map.get("product_item_adword");
+	        product_item_adword.setText(adword);
+	        String price = (String)map.get("product_item_martPrice");
+	        product_item_martPrice.setText(price);
+	        
+	        return convertView; 
+		}
+
+		public MenuAdaptor(Context context,
+				List<? extends Map<String, ?>> data, int resource,
+				String[] from, int[] to) {
+			super(context, data, resource, from, to);
+			// TODO Auto-generated constructor stub
+			this.mInflater = LayoutInflater.from(context); 
+			mlistData = (List<HashMap<String, Object>>) data;
+		}	
+		
+	}
 }
 

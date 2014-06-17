@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.rqmod.provider.AsyncViewTask;
 import com.rqmod.provider.DatabaseManager;
 import com.rqmod.provider.DbUlity;
 
@@ -277,7 +278,7 @@ public class ShoppingCarActivity extends Activity {
 						e.printStackTrace();
 					}
 					
-					map.put("cart_single_product_image", bmp);
+					map.put("cart_single_product_image", strPicPath);
 				    map.put("cart_single_product_name", pname);
 				    map.put("cart_single_product_id", "±àºÅ:"+String.valueOf(id));
 				    map.put("cart_single_product_et_num", buycount);
@@ -307,7 +308,7 @@ public class ShoppingCarActivity extends Activity {
                         
 						try {
 							
-							view = super.getView(position, convertView, parent);								
+							view = super.getView(position, convertView, parent);
 							
 							ImageButton btnReduce=(ImageButton)view.findViewById(R.id.cart_single_product_num_reduce);
 	                        btnReduce.setOnClickListener(new OnClickListener() {
@@ -381,13 +382,25 @@ public class ShoppingCarActivity extends Activity {
 				};
 				mSimpleAdapter.setViewBinder(new ViewBinder(){
 
+//					@Override
+//					public boolean setViewValue(View arg0, Object arg1, String arg2) {
+//						// TODO Auto-generated method stub
+//						if( (arg0 instanceof ImageView) & (arg1 instanceof Bitmap) ) {  
+//				            ImageView iv = (ImageView) arg0;  
+//				            Bitmap bm = (Bitmap) arg1;  
+//				            iv.setImageBitmap(bm);  
+//				            return true;  
+//				            }  
+//				        return false;
+//					}
+					
 					@Override
 					public boolean setViewValue(View arg0, Object arg1, String arg2) {
 						// TODO Auto-generated method stub
-						if( (arg0 instanceof ImageView) & (arg1 instanceof Bitmap) ) {  
+						if( (arg0 instanceof ImageView) & (arg1 instanceof String) ) {  
 				            ImageView iv = (ImageView) arg0;  
-				            Bitmap bm = (Bitmap) arg1;  
-				            iv.setImageBitmap(bm);  
+				            iv.setTag(arg1);
+					        new AsyncViewTask().execute(iv);
 				            return true;  
 				            }  
 				        return false;

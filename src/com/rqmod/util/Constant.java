@@ -16,7 +16,8 @@ public class Constant {
 	 public final static String GETORDERSSERVLET = "GetOrdersServlet";
 	 public final static String CANCELORDERSSERVLET = "CancelOrdersServlet";
 	 public final static String ORDERHISTORYSERVLET = "OrderHistoryServlet";
-
+	 public final static String GETADDRSERVLET = "GetAddrServlet";
+	 
 	 public final static String URL = "http://42.96.203.30:8080/DcSystem/";
 	 
 	 public final static String ERRDESC = "ErrorDesc";
