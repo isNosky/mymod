@@ -93,7 +93,7 @@ public class RegisterActivity extends Activity {
 						    	  
 						    	Message message= handler.obtainMessage() ; 
 						    	message.obj = jsonout; 
-						    	message.what = 1;
+						    	message.what = Constant.REGISTER_MSG;
 						    	handler.sendMessage(message); 
 						    	} 
 					    	}; 
@@ -127,7 +127,7 @@ public class RegisterActivity extends Activity {
 						    	  
 						    	Message message= handler.obtainMessage() ; 
 						    	message.obj = jsonout; 
-						    	message.what = 1;
+						    	message.what = Constant.REGISTER_MSG;
 						    	handler.sendMessage(message); 
 						    	} 
 					    	}; 
@@ -242,7 +242,7 @@ public class RegisterActivity extends Activity {
         @Override
         public void handleMessage(Message msg){
             switch(msg.what){
-            case 1:
+            case Constant.REGISTER_MSG:
                 //¹Ø±Õ
             	try {
             		JSONObject jsonout = (JSONObject) msg.obj;

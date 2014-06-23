@@ -9,6 +9,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.rqmod.provider.DatabaseManager;
 import com.rqmod.provider.GlobalVar;
 import com.rqmod.util.Constant;
 import com.rqmod.util.HttpUtil;
@@ -20,12 +21,17 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.AlertDialog.Builder;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -44,13 +50,23 @@ public class NewAddrActivity extends Activity {
 	RelativeLayout rlStreet = null;
 	TextView tvArea = null;
 	TextView tvStreet = null;
+	CheckBox ckDefault = null;
+	
+	int iPos = -1;
 	private final static int AREA_DIALOG = 1;
 	private final static int STREET_DIALOG = 2;
+	private final static String TBL_ADDR = "tbl_addr";
+	
+	SQLiteDatabase db = null;
+	DatabaseManager dbm = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_new_addr);
+		
+		dbm = DatabaseManager.getInstance(this);
+		db = dbm.openDatabase();
 		
 		btnDelete = (Button)findViewById(R.id.button_new_easy_buy_address_delete);
 		btnOK = (Button)findViewById(R.id.button_new_easy_buy_address_ok);
@@ -65,6 +81,8 @@ public class NewAddrActivity extends Activity {
 		tvArea = (TextView)findViewById(R.id.textview_new_easy_buy_address_areas_content);
 		tvStreet = (TextView)findViewById(R.id.textview_new_easy_buy_address_street_content);
 		
+		ckDefault = (CheckBox)findViewById(R.id.checkbox_new_easy_buy_address_defalut);
+		
 		Intent intent = getIntent();
 		int flag = intent.getFlags();
 		if(0 == flag)	//新增地址
@@ -73,7 +91,16 @@ public class NewAddrActivity extends Activity {
 		}
 		else
 		{
+			etAlias.setText(intent.getStringExtra("textview_new_easy_buy_address_list_item_alias"));
+			etName.setText(intent.getStringExtra("textview_new_easy_buy_address_list_item_name"));
+			etMobile.setText(intent.getStringExtra("textview_new_easy_buy_address_list_item_phone"));
+			tvArea.setText(tvArea.getText().toString() + intent.getStringExtra("textview_new_easy_buy_address_list_item_area"));
+			tvStreet.setText(tvStreet.getText().toString() + intent.getStringExtra("textview_new_easy_buy_address_list_item_street"));
+			etAddr.setText(intent.getStringExtra("textview_new_easy_buy_address_list_item_addr"));
 			
+			btnDelete.setVisibility(Button.VISIBLE);
+			
+			iPos = intent.getIntExtra("position", -1);
 		}
 		
 		rlArea.setOnClickListener(new OnClickListener(){
@@ -98,6 +125,27 @@ public class NewAddrActivity extends Activity {
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				setAddr();
+			}});
+		
+		btnDelete.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent(NewAddrActivity.this, NewEasyBuyAddressListActivity.class);			
+				intent.putExtra("textview_new_easy_buy_address_list_item_alias", "");
+				intent.putExtra("textview_new_easy_buy_address_list_item_name", "");
+				intent.putExtra("textview_new_easy_buy_address_list_item_phone", "");
+				intent.putExtra("textview_new_easy_buy_address_list_item_area", "");
+				intent.putExtra("textview_new_easy_buy_address_list_item_street", "");
+				intent.putExtra("textview_new_easy_buy_address_list_item_addr", "");
+				
+				intent.putExtra("operate_type", "delete");
+				intent.putExtra("position", iPos);
+				
+				setResult(RESULT_OK,intent); 
+				
+				finish();
 			}});
 	}
 
@@ -162,7 +210,25 @@ public class NewAddrActivity extends Activity {
 	
 	private void insertToDB(int iAddrID)
 	{
+		ContentValues values = new ContentValues();
+		values.put("id", iAddrID);
+		GlobalVar app = GlobalVar.getInstance();
+		values.put("subscriberid", app.getUserId());
+		values.put("isdefault", ckDefault.isChecked());
+		values.put("addr", getAddrStr());
+		values.put("name", etName.getText().toString());
+		values.put("phonenumber1", etMobile.getText().toString());
 		
+		try {
+			if(-1 == db.insertOrThrow(TBL_ADDR  ,null , values))
+			{
+				Log.e("insertToDB", "Error");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			String str = e.getMessage();
+			e.printStackTrace();
+		}
 	}
 	
 	private void setAddr()
@@ -177,14 +243,14 @@ public class NewAddrActivity extends Activity {
 	    			JSONObject jsonout = null;
 					try {
 						
-						jsonout = HttpUtil.queryStringForPost(Constant.REGISTERSERVLET, jsoin);		
+						jsonout = HttpUtil.queryStringForPost(Constant.SETADDRSERVLET, jsoin);		
 			    	} catch (Exception e) { 
 			    		String str = e.getMessage();
 			    	} 
 			    	  
 			    	Message message= handler.obtainMessage() ; 
 			    	message.obj = jsonout; 
-			    	message.what = 1;
+			    	message.what = Constant.SETADDR_MSG;
 			    	handler.sendMessage(message); 
 			    	} 
 		    	}; 
@@ -205,17 +271,22 @@ public class NewAddrActivity extends Activity {
 						List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 						GlobalVar app = GlobalVar.getInstance();
 			            postParameters.add(new BasicNameValuePair("UserID", String.valueOf(app.getUserId())));
-			            postParameters.add(new BasicNameValuePair("Addr", ""));
+			            postParameters.add(new BasicNameValuePair("district", tvArea.getText().toString().substring(5)));
+			            postParameters.add(new BasicNameValuePair("building", tvStreet.getText().toString().substring(5)));
+			            postParameters.add(new BasicNameValuePair("street", etAddr.getEditableText().toString()));
+			            postParameters.add(new BasicNameValuePair("isdefault", ckDefault.isChecked()?"1":"0"));
+			            postParameters.add(new BasicNameValuePair("phonenumber1", etMobile.getEditableText().toString()));
 			            postParameters.add(new BasicNameValuePair("Token", GlobalVar.getInstance().getToken()));
 			            
 			            jsonout = HttpUtil.queryStringForPost(Constant.SETADDRSERVLET, postParameters);
+			            
 			    	} catch (Exception e) { 
 			    		String str = e.getMessage();
 			    	} 
 			    	  
 			    	Message message= handler.obtainMessage() ; 
 			    	message.obj = jsonout; 
-			    	message.what = 1;
+			    	message.what = Constant.SETADDR_MSG;
 			    	handler.sendMessage(message); 
 			    	} 
 		    	}; 
@@ -225,11 +296,20 @@ public class NewAddrActivity extends Activity {
 		}
 	}
 	
+	private String getAddrStr()
+	{
+		String str = null;
+		str = tvArea.getText().toString().substring(5);
+		str += tvStreet.getText().toString().substring(5);
+		str += etAddr.getEditableText().toString();
+		return str;
+	}
+	
 	private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg){
             switch(msg.what){
-            case 1:
+            case Constant.SETADDR_MSG:
                 //关闭
             	try {
             		JSONObject jsonout = (JSONObject) msg.obj;
@@ -241,10 +321,16 @@ public class NewAddrActivity extends Activity {
 						int AddrID = jsonout.getInt("AddrID");
 						insertToDB(AddrID);
 						
-						Intent intent = new Intent(NewAddrActivity.this, NewEasyBuyAddressListActivity.class);						
+						Intent intent = new Intent(NewAddrActivity.this, NewEasyBuyAddressListActivity.class);			
+						intent.putExtra("textview_new_easy_buy_address_list_item_alias", etAlias.getEditableText().toString());
 						intent.putExtra("textview_new_easy_buy_address_list_item_name", etName.getEditableText().toString());
 						intent.putExtra("textview_new_easy_buy_address_list_item_phone", etMobile.getEditableText().toString());
-						intent.putExtra("textview_new_easy_buy_address_list_item_address", tvArea.getText().toString() + tvStreet.getText().toString() + etAddr.getEditableText().toString());
+						intent.putExtra("textview_new_easy_buy_address_list_item_area", tvArea.getText().toString().substring(5));
+						intent.putExtra("textview_new_easy_buy_address_list_item_street", tvStreet.getText().toString().substring(5));
+						intent.putExtra("textview_new_easy_buy_address_list_item_addr", etAddr.getEditableText().toString());
+						
+						intent.putExtra("operate_type", "modify");
+						intent.putExtra("isdefault", ckDefault.isChecked());
 						
 						setResult(RESULT_OK,intent); 
 						finish();

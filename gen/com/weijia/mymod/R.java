@@ -10,6 +10,7 @@ package com.weijia.mymod;
 public final class R {
     public static final class array {
         public static final int district=0x7f050000;
+        public static final int order_status=0x7f050002;
         public static final int yanta_district=0x7f050001;
     }
     public static final class attr {
@@ -41,6 +42,14 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
          */
         public static final int actionViewId=0x7f010014;
+        /** <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+         */
+        public static final int buttonBarButtonStyle=0x7f010030;
+        /** <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+         */
+        public static final int buttonBarStyle=0x7f01002f;
         /** <p>Must be a boolean value, either "<code>true</code>" or "<code>false</code>".
 <p>This may also be a reference to a resource (in the form
 "<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
@@ -335,23 +344,23 @@ containing a value of this type.
     public static final class color {
         public static final int activity_bg=0x7f060094;
         public static final int activity_bg_transparent=0x7f060095;
-        /** 蜜色 
+        /**  蜜色 
          */
         public static final int aliceblue=0x7f06002d;
         public static final int all_bg=0x7f0600d6;
-        /** 亚麻色 
+        /**  亚麻色 
          */
         public static final int antiquewhite=0x7f060023;
-        /** 中灰兰色 
+        /**  中灰兰色 
          */
         public static final int aqua=0x7f060083;
-        /** 粟色 
+        /**  粟色 
          */
         public static final int aquamarine=0x7f060064;
-        /** 沙褐色 
+        /**  沙褐色 
          */
         public static final int azure=0x7f06002b;
-        /** 烟白色 
+        /**  烟白色 
          */
         public static final int beige=0x7f060028;
         public static final int bg_gray_dark=0x7f060099;
@@ -360,28 +369,29 @@ containing a value of this type.
         public static final int bg_white=0x7f060096;
         public static final int bind_gift_card_description=0x7f0600fa;
         public static final int bind_gift_card_list_item_text=0x7f0600fb;
-        /** 浅玫瑰色 
+        /**  浅玫瑰色 
          */
         public static final int bisque=0x7f06000e;
-        /** 海军色 
+        /**  海军色 
          */
         public static final int black=0x7f060092;
-        /** 番木色 
+        public static final int black_overlay=0x7f0601a3;
+        /**  番木色 
          */
         public static final int blanchedalmond=0x7f06000b;
-        /** 暗绿色 
+        /**  暗绿色 
          */
         public static final int blue=0x7f06008e;
-        /** 暗红色 
+        /**  暗红色 
          */
         public static final int blueviolet=0x7f06005c;
-        /** 暗灰色 
+        /**  暗灰色 
          */
         public static final int brown=0x7f060051;
-        /** 亮青色 
+        /**  亮青色 
          */
         public static final int burlywood=0x7f060035;
-        /** 菊兰色 
+        /**  菊兰色 
          */
         public static final int cadetblue=0x7f060072;
         public static final int capture_text=0x7f0601a2;
@@ -400,10 +410,10 @@ containing a value of this type.
         public static final int category_name_gray=0x7f0600e2;
         public static final int category_text_color=0x7f0600e6;
         public static final int category_vertival_line=0x7f0600e4;
-        /** 碧绿色 
+        /**  碧绿色 
          */
         public static final int chartreuse=0x7f060065;
-        /** 茶色 
+        /**  茶色 
          */
         public static final int chocolate=0x7f060040;
         public static final int color_99000000=0x7f06012c;
@@ -416,96 +426,96 @@ containing a value of this type.
         public static final int color_shopping_category_bg=0x7f060101;
         public static final int color_shopping_item_title=0x7f060100;
         public static final int commentdiscuss_bottom_layout_color=0x7f0600fc;
-        /** 暗桔黄色 
+        /**  暗桔黄色 
          */
         public static final int coral=0x7f060018;
-        /** 中绿色
-
+        /**  中绿色
+ 
          */
         public static final int cornflowerblue=0x7f060071;
-        /** 柠檬绸色 
+        /**  柠檬绸色 
          */
         public static final int cornsilk=0x7f060007;
-        /** 淡灰色 
+        /**  淡灰色 
          */
         public static final int crimson=0x7f060038;
-        /** 浅绿色 
+        /**  浅绿色 
          */
         public static final int cyan=0x7f060084;
         public static final int dark_red=0x7f0600d1;
-        /** 中兰色 
+        /**  中兰色 
          */
         public static final int darkblue=0x7f060090;
-        /** 深天蓝色 
+        /**  深天蓝色 
          */
         public static final int darkcyan=0x7f06008a;
-        /** 中粉紫色 
+        /**  中粉紫色 
          */
         public static final int darkgoldenrod=0x7f060048;
-        /** 亮蓝色 
+        /**  亮蓝色 
          */
         public static final int darkgray=0x7f06004f;
-        /** 绿色 
+        /**  绿色 
          */
         public static final int darkgreen=0x7f06008d;
-        /** 暗灰色 
+        /**  暗灰色 
          */
         public static final int darkgrey=0x7f060050;
-        /** 银色 
+        /**  银色 
          */
         public static final int darkkhaki=0x7f060045;
-        /** 重褐色 
+        /**  重褐色 
          */
         public static final int darkmagenta=0x7f06005a;
-        /** 军兰色 
+        /**  军兰色 
          */
         public static final int darkolivegreen=0x7f060073;
-        /** 亮肉色 
+        /**  亮肉色 
          */
         public static final int darkorange=0x7f060017;
-        /** 赭色 
+        /**  赭色 
          */
         public static final int darkorchid=0x7f060053;
-        /** 暗洋红 
+        /**  暗洋红 
          */
         public static final int darkred=0x7f06005b;
-        /** 紫罗兰色 
+        /**  紫罗兰色 
          */
         public static final int darksalmon=0x7f060032;
-        /** 亮绿色 
+        /**  亮绿色 
          */
         public static final int darkseagreen=0x7f060058;
-        /** 中绿宝石
+        /**  中绿宝石 
          */
         public static final int darkslateblue=0x7f060076;
-        /** 橙绿色 
+        /**  橙绿色 
          */
         public static final int darkslategray=0x7f06007c;
-        /** 暗瓦灰色 
+        /**  暗瓦灰色 
          */
         public static final int darkslategrey=0x7f06007d;
-        /** 中春绿色 
+        /**  中春绿色 
          */
         public static final int darkturquoise=0x7f060088;
-        /** 苍绿色 
+        /**  苍绿色 
          */
         public static final int darkviolet=0x7f060055;
-        /** 红橙色 
+        /**  红橙色 
          */
         public static final int deeppink=0x7f06001c;
-        /** 暗宝石绿 
+        /**  暗宝石绿 
          */
         public static final int deepskyblue=0x7f060089;
         public static final int del_search_history_strokecolor=0x7f060117;
         public static final int del_search_history_textcolor=0x7f060116;
         public static final int dilaog_title_text_color=0x7f0600b2;
-        /** 石蓝色 
+        /**  石蓝色 
          */
         public static final int dimgray=0x7f06006e;
-        /** 暗灰色 
+        /**  暗灰色 
          */
         public static final int dimgrey=0x7f06006f;
-        /** 亮海蓝色 
+        /**  亮海蓝色 
          */
         public static final int dodgerblue=0x7f060081;
         public static final int fill_order_bg=0x7f060158;
@@ -522,44 +532,44 @@ containing a value of this type.
         public static final int fill_order_virtual_used_color=0x7f060155;
         public static final int filter_bg=0x7f060106;
         public static final int filter_selected_color=0x7f060114;
-        /** 暗金黄色 
+        /**  暗金黄色 
          */
         public static final int firebrick=0x7f060049;
-        /** 雪白色 
+        /**  雪白色 
          */
         public static final int floralwhite=0x7f060005;
         public static final int font_gray=0x7f0600da;
         public static final int font_red=0x7f0600d9;
-        /** 海绿色 
+        /**  海绿色 
          */
         public static final int forestgreen=0x7f06007f;
-        /** 深粉红色 
+        /**  深粉红色 
          */
         public static final int fuchsia=0x7f06001d;
-        /** 洋李色 
+        /**  洋李色 
          */
         public static final int gainsboro=0x7f060037;
         public static final int get_coupon_text=0x7f0600f9;
-        /** 鲜肉色 
+        /**  鲜肉色 
          */
         public static final int ghostwhite=0x7f060025;
-        /** 桃色 
+        /**  桃色 
          */
         public static final int gold=0x7f060012;
-        /** 苍紫罗兰色
-
+        /**  苍紫罗兰色
+ 
          */
         public static final int goldenrod=0x7f06003a;
-        /** 天蓝色 
+        /**  天蓝色 
          */
         public static final int gray=0x7f06005f;
-        /** 水鸭色 
+        /**  水鸭色 
          */
         public static final int green=0x7f06008c;
-        /** 苍宝石绿 
+        /**  苍宝石绿 
          */
         public static final int greenyellow=0x7f06004d;
-        /** 灰色 
+        /**  灰色 
          */
         public static final int grey=0x7f060060;
         public static final int home_no_network_hint=0x7f0600ec;
@@ -568,10 +578,10 @@ containing a value of this type.
         public static final int home_sales_produce_price=0x7f0600ef;
         public static final int home_sales_title=0x7f0600ee;
         public static final int home_slide_prompt_bg=0x7f0600f8;
-        /** 天蓝色 
+        /**  天蓝色 
          */
         public static final int honeydew=0x7f06002c;
-        /** 珊瑚色 
+        /**  珊瑚色 
          */
         public static final int hotpink=0x7f060019;
         public static final int im_button_text_disable=0x7f060170;
@@ -589,13 +599,13 @@ containing a value of this type.
         public static final int im_default_circle_indicator_page_color=0x7f060172;
         public static final int im_default_circle_indicator_stroke_color=0x7f060173;
         public static final int im_input_tool_font_color=0x7f06016e;
-        /** 秘鲁色 
+        /**  秘鲁色 
          */
         public static final int indianred=0x7f060042;
         /**  暗橄榄绿 
          */
         public static final int indigo=0x7f060074;
-        /** 白色 
+        /**  白色 
          */
         public static final int ivory=0x7f060001;
         public static final int jshop_banner_bottom_bk=0x7f060176;
@@ -605,19 +615,19 @@ containing a value of this type.
         public static final int jshop_nobanner_bottom_bk=0x7f060175;
         public static final int jshop_nobanner_text_color=0x7f060178;
         public static final int jshop_noim_text_color=0x7f060179;
-        /** 艾利斯兰 
+        /**  艾利斯兰 
          */
         public static final int khaki=0x7f06002e;
-        /** 暗肉色 
+        /**  暗肉色 
          */
         public static final int lavender=0x7f060033;
-        /** 海贝色 
+        /**  海贝色 
          */
         public static final int lavenderblush=0x7f060009;
-        /** 黄绿色 
+        /**  黄绿色 
          */
         public static final int lawngreen=0x7f060066;
-        /** 花白色 
+        /**  花白色 
          */
         public static final int lemonchiffon=0x7f060006;
         public static final int li_tag_blue=0x7f0600b0;
@@ -684,55 +694,55 @@ containing a value of this type.
         public static final int lib_story_search_item_color_pressed=0x7f0600ce;
         public static final int light_gray=0x7f0600d4;
         public static final int lightblack=0x7f0600e1;
-        /** 黄绿色 
+        /**  黄绿色 
          */
         public static final int lightblue=0x7f06004e;
-        /** 黄褐色 
+        /**  黄褐色 
          */
         public static final int lightcoral=0x7f06002f;
-        /** 淡紫色 
+        /**  淡紫色 
          */
         public static final int lightcyan=0x7f060034;
-        /** 老花色 
+        /**  老花色 
          */
         public static final int lightgoldenrodyellow=0x7f060021;
-        /** 蓟色 
+        /**  蓟色 
          */
         public static final int lightgray=0x7f06003d;
-        /** 中紫色 
+        /**  中紫色 
          */
         public static final int lightgreen=0x7f060057;
-        /** 亮灰色 
+        /**  亮灰色 
          */
         public static final int lightgrey=0x7f06003e;
-        /** 粉红色 
+        /**  粉红色 
          */
         public static final int lightpink=0x7f060014;
-        /** 橙色 
+        /**  橙色 
          */
         public static final int lightsalmon=0x7f060016;
-        /** 森林绿 
+        /**  森林绿 
          */
         public static final int lightseagreen=0x7f060080;
-        /**  紫罗兰蓝色
+        /**  紫罗兰蓝色 
          */
         public static final int lightskyblue=0x7f06005d;
-        /** 中暗蓝色 
+        /**  中暗蓝色 
          */
         public static final int lightslategray=0x7f060068;
-        /** 亮蓝灰 
+        /**  亮蓝灰 
          */
         public static final int lightslategrey=0x7f060069;
-        /** 粉蓝色 
+        /**  粉蓝色 
          */
         public static final int lightsteelblue=0x7f06004b;
-        /** 象牙色 
+        /**  象牙色 
          */
         public static final int lightyellow=0x7f060002;
-        /** 春绿色 
+        /**  春绿色 
          */
         public static final int lime=0x7f060086;
-        /** 中海蓝 
+        /**  中海蓝 
          */
         public static final int limegreen=0x7f06007b;
         public static final int limit_buy_border_bg=0x7f0600dd;
@@ -742,7 +752,7 @@ containing a value of this type.
         public static final int line_dark=0x7f0600ad;
         public static final int line_dialog_title=0x7f0600ae;
         public static final int line_light=0x7f0600ac;
-        /** 亮金黄色 
+        /**  亮金黄色 
          */
         public static final int linen=0x7f060022;
         public static final int logistics_black=0x7f06014d;
@@ -763,52 +773,52 @@ containing a value of this type.
         public static final int lottery_number_blue=0x7f0600a1;
         public static final int lottery_panel_tab_selected=0x7f0600a6;
         public static final int lottery_panel_tab_unselected=0x7f0600a7;
-        /** 紫红色 
+        /**  紫红色 
          */
         public static final int magenta=0x7f06001e;
-        /** 紫色 
+        /**  紫色 
          */
         public static final int maroon=0x7f060063;
-        /** 暗灰色 
+        /**  暗灰色 
          */
         public static final int mediumaquamarine=0x7f060070;
-        /** 蓝色 
+        /**  蓝色 
          */
         public static final int mediumblue=0x7f06008f;
-        /** 褐玫瑰红
+        /**  褐玫瑰红 
          */
         public static final int mediumorchid=0x7f060047;
-        /** 暗紫罗兰色 
+        /**  暗紫罗兰色 
          */
         public static final int mediumpurple=0x7f060056;
-        /** 青绿色 
+        /**  青绿色 
          */
         public static final int mediumseagreen=0x7f06007a;
-        /** 草绿色 
+        /**  草绿色 
          */
         public static final int mediumslateblue=0x7f060067;
-        /** 酸橙色 
+        /**  酸橙色 
          */
         public static final int mediumspringgreen=0x7f060087;
-        /** 靛青色 
+        /**  靛青色 
          */
         public static final int mediumturquoise=0x7f060075;
-        /** 印第安红 
+        /**  印第安红 
          */
         public static final int mediumvioletred=0x7f060043;
         public static final int message_list_bg=0x7f06011d;
         public static final int message_list_item_has_read_color=0x7f06011e;
         public static final int message_list_item_stroke=0x7f06011c;
-        /** 闪兰色 
+        /**  闪兰色 
          */
         public static final int midnightblue=0x7f060082;
-        /** 幽灵白 
+        /**  幽灵白 
          */
         public static final int mintcream=0x7f060026;
-        /** 白杏色 
+        /**  白杏色 
          */
         public static final int mistyrose=0x7f06000c;
-        /** 桔黄色 
+        /**  桔黄色 
          */
         public static final int moccasin=0x7f06000f;
         public static final int modify_order_address_anme_text_color=0x7f0600ff;
@@ -819,10 +829,10 @@ containing a value of this type.
         public static final int my_personal_label_pressed_bg=0x7f06011b;
         public static final int my_personal_login_shadow_color=0x7f060119;
         public static final int my_personal_login_textcolor=0x7f060118;
-        /** 鹿皮色 
+        /**  鹿皮色 
          */
         public static final int navajowhite=0x7f060010;
-        /** 暗蓝色 
+        /**  暗蓝色 
          */
         public static final int navy=0x7f060091;
         public static final int new_easy_buy_address_anme_text_color=0x7f06015f;
@@ -835,59 +845,59 @@ containing a value of this type.
         public static final int new_easy_buy_address_text_color=0x7f06015b;
         public static final int new_easy_buy_address_text_color_hint=0x7f06015d;
         public static final int new_easy_buy_address_text_color_input=0x7f06015c;
-        /** 红色 
+        /**  红色 
          */
         public static final int oldlace=0x7f060020;
-        /** 灰色 
+        /**  灰色 
          */
         public static final int olive=0x7f060061;
-        /** 灰石色 
+        /**  灰石色 
          */
         public static final int olivedrab=0x7f06006c;
-        /** 亮粉红色 
+        /**  亮粉红色 
          */
         public static final int orange=0x7f060015;
         public static final int orange_line=0x7f0600d5;
-        /** 西红柿色 
+        /**  西红柿色 
          */
         public static final int orangered=0x7f06001b;
-        /** 金麒麟色 
+        /**  金麒麟色 
          */
         public static final int orchid=0x7f06003b;
-        /** 亮珊瑚色 
+        /**  亮珊瑚色 
          */
         public static final int palegoldenrod=0x7f060030;
-        /** 暗紫色 
+        /**  暗紫色 
          */
         public static final int palegreen=0x7f060054;
-        /** 亮钢兰色 
+        /**  亮钢兰色 
          */
         public static final int paleturquoise=0x7f06004c;
-        /** 暗深红色 
+        /**  暗深红色 
          */
         public static final int palevioletred=0x7f060039;
-        /** 淡紫红 
+        /**  淡紫红 
          */
         public static final int papayawhip=0x7f06000a;
         public static final int payment_method_black=0x7f0600a3;
         public static final int payment_method_gray=0x7f0600a4;
         public static final int payment_method_red=0x7f0600a5;
         public static final int payment_title_unavailable=0x7f0600b3;
-        /** 纳瓦白 
+        /**  纳瓦白 
          */
         public static final int peachpuff=0x7f060011;
         public static final int personel_login_edit_hint=0x7f06013a;
-        /** 巧可力色 
+        /**  巧可力色 
          */
         public static final int peru=0x7f060041;
-        /** 金色 
+        /**  金色 
          */
         public static final int pink=0x7f060013;
-        /** 实木色 
+        /**  实木色 
          */
         public static final int plum=0x7f060036;
         public static final int possible_result_points=0x7f06019f;
-        /** 火砖色 
+        /**  火砖色 
          */
         public static final int powderblue=0x7f06004a;
         public static final int product_detail_background=0x7f060107;
@@ -908,35 +918,35 @@ containing a value of this type.
         public static final int product_options_active=0x7f0600db;
         public static final int product_options_passive=0x7f0600dc;
         public static final int promotion_message_layout_listview_background_color=0x7f0600d7;
-        /** 橄榄色 
+        /**  橄榄色 
          */
         public static final int purple=0x7f060062;
-        /** 红紫色 
+        /**  红紫色 
          */
         public static final int red=0x7f06001f;
         public static final int result_view=0x7f0601a0;
         /**  暗黄褐色 
          */
         public static final int rosybrown=0x7f060046;
-        /** 钢兰色 
+        /**  钢兰色 
          */
         public static final int royalblue=0x7f060078;
-        /** 暗海兰色 
+        /**  暗海兰色 
          */
         public static final int saddlebrown=0x7f060059;
-        /** 古董白 
+        /**  古董白 
          */
         public static final int salmon=0x7f060024;
-        /** 浅黄色 
+        /**  浅黄色 
          */
         public static final int sandybrown=0x7f06002a;
         public static final int scan_icon_title=0x7f060143;
-        /** 暗瓦灰色 
+        /**  暗瓦灰色 
          */
         public static final int seagreen=0x7f06007e;
         public static final int search_empty=0x7f0600d8;
         public static final int search_history_textcolor=0x7f060115;
-        /** 米绸色 
+        /**  米绸色 
          */
         public static final int seashell=0x7f060008;
         public static final int shake_coupon_button_color=0x7f060128;
@@ -961,7 +971,7 @@ containing a value of this type.
         public static final int shape_stroke_color_red=0x7f0600b5;
         public static final int shape_stroke_color_white=0x7f0600b6;
         public static final int shopping_cart_delete_bg_color=0x7f06014f;
-        /** 褐色 
+        /**  褐色 
          */
         public static final int sienna=0x7f060052;
         public static final int signin_black=0x7f06013e;
@@ -972,38 +982,38 @@ containing a value of this type.
         public static final int signin_lightgrey=0x7f060142;
         public static final int signin_lightorange=0x7f06013f;
         public static final int signin_white=0x7f06013b;
-        /** 中紫罗兰色 
+        /**  中紫罗兰色 
          */
         public static final int silver=0x7f060044;
-        /** 亮天蓝色
+        /**  亮天蓝色 
          */
         public static final int skyblue=0x7f06005e;
-        /** 深绿褐色 
+        /**  深绿褐色 
          */
         public static final int slateblue=0x7f06006d;
-        /** 亮蓝灰 
+        /**  亮蓝灰 
          */
         public static final int slategray=0x7f06006a;
-        /** 灰石色 
+        /**  灰石色 
          */
         public static final int slategrey=0x7f06006b;
-        /** 黄色 
+        /**  黄色 
          */
         public static final int snow=0x7f060004;
-        /** 青色 
+        /**  青色 
          */
         public static final int springgreen=0x7f060085;
-        /** 暗灰蓝色 
+        /**  暗灰蓝色 
          */
         public static final int steelblue=0x7f060077;
-        /** 亮灰色 
+        /**  亮灰色 
          */
         public static final int tan=0x7f06003f;
-        /** 暗青色 
+        /**  暗青色 
          */
         public static final int teal=0x7f06008b;
         public static final int text_black=0x7f06009a;
-        /** 浅玫瑰色 
+        /**  浅玫瑰色 
          */
         public static final int text_color=0x7f06000d;
         public static final int text_gray=0x7f06009c;
@@ -1012,31 +1022,31 @@ containing a value of this type.
         public static final int text_red=0x7f06009f;
         public static final int text_red_light=0x7f0600a0;
         public static final int text_white=0x7f06009b;
-        /** 淡紫色 
+        /**  淡紫色 
          */
         public static final int thistle=0x7f06003c;
         public static final int time_checked_left_color=0x7f06011f;
         public static final int time_checked_right_color=0x7f060120;
         public static final int time_gray_left_text_color=0x7f060122;
         public static final int time_gray_text_color=0x7f060121;
-        /** 热粉红色 
+        /**  热粉红色 
          */
         public static final int tomato=0x7f06001a;
-        /** 黑色 
+        /**  黑色 
          */
         public static final int transparent=0x7f060093;
-        /** 皇家蓝 
+        /**  皇家蓝 
          */
         public static final int turquoise=0x7f060079;
         public static final int viewfinder_mask=0x7f0601a1;
-        /** 苍麒麟色 
+        /**  苍麒麟色 
          */
         public static final int violet=0x7f060031;
-        /** 米色 
+        /**  米色 
          */
         public static final int wheat=0x7f060029;
         public static final int white=0x7f060000;
-        /** 薄荷色 
+        /**  薄荷色 
          */
         public static final int whitesmoke=0x7f060027;
         public static final int widget_button_text_color=0x7f060102;
@@ -1045,7 +1055,7 @@ containing a value of this type.
         public static final int yan_bao_layout_bg_stroke=0x7f0600eb;
         public static final int yan_bao_nav_bg=0x7f0600e8;
         public static final int yan_bao_nav_bg_stroke=0x7f0600e9;
-        /** 亮黄色 
+        /**  亮黄色 
          */
         public static final int yellow=0x7f060003;
     }
@@ -1808,7 +1818,7 @@ containing a value of this type.
         public static final int about_money=0x7f080232;
         public static final int about_money_list=0x7f080d51;
         public static final int accept_agreement=0x7f080877;
-        public static final int action_settings=0x7f080d9e;
+        public static final int action_settings=0x7f080da1;
         public static final int action_view=0x7f08063b;
         public static final int add=0x7f08030e;
         public static final int addButton=0x7f080099;
@@ -1820,7 +1830,7 @@ containing a value of this type.
         public static final int adress=0x7f0803d7;
         public static final int adress1=0x7f0803d8;
         public static final int adress_value=0x7f0803d6;
-        public static final int ageEditText=0x7f080d90;
+        public static final int ageEditText=0x7f080d93;
         public static final int alarm_btn=0x7f0803db;
         public static final int alarm_txt1=0x7f0803d9;
         public static final int alarm_txt2=0x7f0803da;
@@ -2093,6 +2103,7 @@ containing a value of this type.
         public static final int cancelDel=0x7f080450;
         public static final int cancelOrderButton=0x7f080649;
         public static final int cancel_btn=0x7f0804cf;
+        public static final int cancel_order_button=0x7f080d84;
         public static final int captcha_image=0x7f08014f;
         public static final int captcha_input=0x7f080150;
         public static final int capture=0x7f08030d;
@@ -2673,7 +2684,7 @@ containing a value of this type.
         public static final int hui_name=0x7f08033c;
         public static final int hui_scope_text=0x7f080345;
         public static final int hui_scope_view=0x7f080344;
-        public static final int icon=0x7f080d98;
+        public static final int icon=0x7f080d9b;
         public static final int im_guide=0x7f08042f;
         public static final int image1=0x7f080185;
         public static final int image2=0x7f080186;
@@ -3024,14 +3035,14 @@ containing a value of this type.
         public static final int listview_modify_order_address_list=0x7f08051a;
         public static final int listview_new_easy_buy_address_list=0x7f0805ba;
         public static final int listview_new_easy_buy_self_pack_list=0x7f0805eb;
-        public static final int ll_add_to_car=0x7f080d9b;
+        public static final int ll_add_to_car=0x7f080d9e;
         public static final int ll_card_dialog=0x7f080a12;
         public static final int ll_login=0x7f080ba5;
         public static final int ll_pay_super=0x7f080ca9;
         public static final int ll_pay_type=0x7f080bc9;
         public static final int ll_user_getpass=0x7f080a9e;
         public static final int llayout=0x7f080d78;
-        public static final int lllayout=0x7f080d9d;
+        public static final int lllayout=0x7f080da0;
         public static final int load_otherorder_list_data_progress=0x7f080486;
         public static final int loadingErrorLayout=0x7f0800a2;
         public static final int loadingLayout=0x7f080085;
@@ -3354,7 +3365,7 @@ containing a value of this type.
         public static final int new_discuss_title_body=0x7f0801c9;
         public static final int new_easy_buy_address_list_title=0x7f0805b8;
         public static final int new_easy_buy_self_pack_list_title=0x7f0805e9;
-        public static final int nicknameEditText=0x7f080d87;
+        public static final int nicknameEditText=0x7f080d8a;
         public static final int noDataNormal=0x7f080441;
         public static final int noDataSearch=0x7f080442;
         public static final int no_cart_item=0x7f08022a;
@@ -3970,7 +3981,7 @@ containing a value of this type.
         public static final int pull_to_refresh_progress=0x7f080842;
         public static final int pull_to_refresh_text=0x7f080844;
         public static final int pull_to_refresh_updated_at=0x7f080845;
-        public static final int pwdEditText=0x7f080d8d;
+        public static final int pwdEditText=0x7f080d90;
         public static final int qiandao_above=0x7f080949;
         public static final int qiandao_back=0x7f08094a;
         public static final int qiandao_btn=0x7f080955;
@@ -4015,9 +4026,9 @@ containing a value of this type.
         public static final int r_layout_3=0x7f080039;
         public static final int r_layout_4=0x7f08003a;
         public static final int r_layout_5=0x7f08003b;
-        public static final int radioFemale=0x7f080d94;
-        public static final int radioGroup=0x7f080d92;
-        public static final int radioMale=0x7f080d93;
+        public static final int radioFemale=0x7f080d97;
+        public static final int radioGroup=0x7f080d95;
+        public static final int radioMale=0x7f080d96;
         public static final int radiobutton_new_easy_buy_address_payment_offline=0x7f0805d7;
         public static final int radiobutton_new_easy_buy_address_payment_online=0x7f0805d6;
         public static final int radiobutton_new_easy_buy_address_payment_pack=0x7f0805d8;
@@ -4047,7 +4058,7 @@ containing a value of this type.
         public static final int receiver_money_company_content=0x7f08068d;
         public static final int refresh=0x7f080466;
         public static final int refresh_time=0x7f08083c;
-        public static final int regButton=0x7f080d95;
+        public static final int regButton=0x7f080d98;
         public static final int region_item=0x7f0807f6;
         public static final int region_layout=0x7f0807f5;
         public static final int regist_layout=0x7f08086e;
@@ -4633,7 +4644,7 @@ containing a value of this type.
         public static final int second_img=0x7f080347;
         public static final int sel_phone_number=0x7f0803c8;
         public static final int selectImgBt=0x7f080440;
-        public static final int select_shop=0x7f080d7f;
+        public static final int select_shop=0x7f080d82;
         public static final int selectedImg=0x7f08043d;
         public static final int selectedListView=0x7f080452;
         public static final int selectedMode=0x7f080454;
@@ -4644,7 +4655,7 @@ containing a value of this type.
         public static final int send_prod_time=0x7f080681;
         public static final int send_prod_time_content=0x7f080682;
         public static final int serviceratings_table=0x7f0801d1;
-        public static final int set=0x7f080d9a;
+        public static final int set=0x7f080d9d;
         public static final int setpoint=0x7f0804e2;
         public static final int settle_accounts=0x7f080218;
         public static final int settle_count=0x7f08020b;
@@ -4722,8 +4733,8 @@ containing a value of this type.
         public static final int shake_title=0x7f0808ae;
         public static final int shooping_single_price_content=0x7f0808f1;
         public static final int shop_addr=0x7f080d70;
-        public static final int shop_car_add=0x7f080d9c;
-        public static final int shop_list=0x7f080d96;
+        public static final int shop_car_add=0x7f080d9f;
+        public static final int shop_list=0x7f080d99;
         public static final int shop_name=0x7f080d6f;
         public static final int shop_radiobutton=0x7f080d6e;
         public static final int shoping_cart_user_no_login_tips=0x7f080901;
@@ -4849,17 +4860,17 @@ containing a value of this type.
         public static final int sv_pay_info=0x7f080c81;
         public static final int switch_grid_list=0x7f08081e;
         public static final int tabhost_main=0x7f080d6b;
-        public static final int tableRow1=0x7f080d82;
-        public static final int tableRow2=0x7f080d83;
-        public static final int tableRow3=0x7f080d84;
-        public static final int tableRow4=0x7f080d85;
-        public static final int tableRow5=0x7f080d88;
-        public static final int tableRow6=0x7f080d8b;
-        public static final int tableRow7=0x7f080d8e;
-        public static final int tableRow8=0x7f080d91;
-        public static final int tabsLayout=0x7f080d97;
-        public static final int tabsText=0x7f080d99;
-        public static final int telEditText=0x7f080d8a;
+        public static final int tableRow1=0x7f080d85;
+        public static final int tableRow2=0x7f080d86;
+        public static final int tableRow3=0x7f080d87;
+        public static final int tableRow4=0x7f080d88;
+        public static final int tableRow5=0x7f080d8b;
+        public static final int tableRow6=0x7f080d8e;
+        public static final int tableRow7=0x7f080d91;
+        public static final int tableRow8=0x7f080d94;
+        public static final int tabsLayout=0x7f080d9a;
+        public static final int tabsText=0x7f080d9c;
+        public static final int telEditText=0x7f080d8d;
         public static final int templete_name=0x7f0801fc;
         public static final int templete_name_content=0x7f0801fd;
         public static final int templete_select2=0x7f080212;
@@ -4892,12 +4903,15 @@ containing a value of this type.
         public static final int textview_new_easy_buy_address_defalut_desc=0x7f0805e1;
         public static final int textview_new_easy_buy_address_defalut_oper=0x7f0805e2;
         public static final int textview_new_easy_buy_address_go_order_desc=0x7f0805be;
+        public static final int textview_new_easy_buy_address_list_item_addr=0x7f080d81;
         public static final int textview_new_easy_buy_address_list_item_address=0x7f0805ca;
         public static final int textview_new_easy_buy_address_list_item_alias=0x7f0805c5;
+        public static final int textview_new_easy_buy_address_list_item_area=0x7f080d7f;
         public static final int textview_new_easy_buy_address_list_item_default=0x7f0805c2;
         public static final int textview_new_easy_buy_address_list_item_name=0x7f0805c7;
         public static final int textview_new_easy_buy_address_list_item_payment=0x7f0805c9;
         public static final int textview_new_easy_buy_address_list_item_phone=0x7f0805c8;
+        public static final int textview_new_easy_buy_address_list_item_street=0x7f080d80;
         public static final int textview_new_easy_buy_address_payment_pack_name=0x7f0805dc;
         public static final int textview_new_easy_buy_address_payment_prompt=0x7f0805d9;
         public static final int textview_new_easy_buy_address_payment_title=0x7f0805d3;
@@ -4922,8 +4936,7 @@ containing a value of this type.
         public static final int textview_receiver_name_content=0x7f0805f8;
         public static final int textview_receiver_title=0x7f0805f2;
         public static final int textview_receiver_title_line=0x7f0805f3;
-        public static final int textview_select_shop_name=0x7f080d81;
-        public static final int textview_select_shop_tips=0x7f080d80;
+        public static final int textview_select_shop_tips=0x7f080d83;
         public static final int textview_self_address=0x7f080609;
         public static final int textview_self_address_content=0x7f08060a;
         public static final int textview_self_name=0x7f080607;
@@ -4967,14 +4980,14 @@ containing a value of this type.
         public static final int trace_view=0x7f0804cb;
         public static final int transport_payment_info_list=0x7f08069a;
         public static final int tv=0x7f0802e4;
-        public static final int tvAge=0x7f080d8f;
+        public static final int tvAge=0x7f080d92;
         public static final int tvName=0x7f0802fe;
-        public static final int tvNickname=0x7f080d86;
-        public static final int tvPasswd=0x7f080d8c;
+        public static final int tvNickname=0x7f080d89;
+        public static final int tvPasswd=0x7f080d8f;
         public static final int tvPrice=0x7f0802ff;
         public static final int tvQueue=0x7f0802ed;
         public static final int tvSendLink=0x7f080300;
-        public static final int tvTelNum=0x7f080d89;
+        public static final int tvTelNum=0x7f080d8c;
         public static final int tvTime=0x7f0802e2;
         public static final int tvTitle=0x7f0802ec;
         public static final int tv_bank_title_vc_pay_valuecard=0x7f080c68;
@@ -5295,49 +5308,50 @@ containing a value of this type.
         public static final int activity_new_addr=0x7f030001;
         public static final int activity_order_history=0x7f030002;
         public static final int activity_pay_complete=0x7f030003;
-        public static final int app_more_activity=0x7f030004;
-        public static final int fill_order=0x7f030005;
-        public static final int fill_order_commodity=0x7f030006;
-        public static final int fill_order_commodity_item=0x7f030007;
-        public static final int fill_order_virtual_item=0x7f030008;
-        public static final int fill_order_virtual_jdbean_item=0x7f030009;
-        public static final int loading_error_tips=0x7f03000a;
-        public static final int login_activity=0x7f03000b;
-        public static final int login_save_user_names=0x7f03000c;
-        public static final int login_selector_layout=0x7f03000d;
-        public static final int main=0x7f03000e;
-        public static final int modify_order_address_list=0x7f03000f;
-        public static final int my_account_center=0x7f030010;
-        public static final int my_fill_order=0x7f030011;
-        public static final int my_order_all_activity=0x7f030012;
-        public static final int my_order_list_activity=0x7f030013;
-        public static final int my_order_trace_item=0x7f030014;
-        public static final int new_easy_buy_address_list=0x7f030015;
-        public static final int new_easy_buy_address_list_head=0x7f030016;
-        public static final int new_easy_buy_address_list_item=0x7f030017;
-        public static final int new_easy_buy_address_modify=0x7f030018;
-        public static final int new_easy_buy_self_pack_list_item=0x7f030019;
-        public static final int new_easy_buy_self_pick_list=0x7f03001a;
-        public static final int new_fill_order=0x7f03001b;
-        public static final int number_picker_with_selector_wheel=0x7f03001c;
-        public static final int order_history_list_item=0x7f03001d;
-        public static final int order_list_item=0x7f03001e;
-        public static final int personel_activity=0x7f03001f;
-        public static final int personel_list_layout=0x7f030020;
-        public static final int product_list_item=0x7f030021;
-        public static final int register=0x7f030022;
-        public static final int register_activity=0x7f030023;
-        public static final int shop_list_activity=0x7f030024;
-        public static final int shop_list_item=0x7f030025;
-        public static final int shopping_cart_layout=0x7f030026;
-        public static final int shopping_cart_login_layout=0x7f030027;
-        public static final int shopping_cart_no_data_layout=0x7f030028;
-        public static final int shopping_cart_price_layout=0x7f030029;
-        public static final int shopping_cart_single_product_item=0x7f03002a;
-        public static final int tabs_bg=0x7f03002b;
-        public static final int title=0x7f03002c;
-        public static final int top1=0x7f03002d;
-        public static final int top2=0x7f03002e;
+        public static final int activity_welcome=0x7f030004;
+        public static final int app_more_activity=0x7f030005;
+        public static final int fill_order=0x7f030006;
+        public static final int fill_order_commodity=0x7f030007;
+        public static final int fill_order_commodity_item=0x7f030008;
+        public static final int fill_order_virtual_item=0x7f030009;
+        public static final int fill_order_virtual_jdbean_item=0x7f03000a;
+        public static final int loading_error_tips=0x7f03000b;
+        public static final int login_activity=0x7f03000c;
+        public static final int login_save_user_names=0x7f03000d;
+        public static final int login_selector_layout=0x7f03000e;
+        public static final int main=0x7f03000f;
+        public static final int modify_order_address_list=0x7f030010;
+        public static final int my_account_center=0x7f030011;
+        public static final int my_fill_order=0x7f030012;
+        public static final int my_order_all_activity=0x7f030013;
+        public static final int my_order_list_activity=0x7f030014;
+        public static final int my_order_trace_item=0x7f030015;
+        public static final int new_easy_buy_address_list=0x7f030016;
+        public static final int new_easy_buy_address_list_head=0x7f030017;
+        public static final int new_easy_buy_address_list_item=0x7f030018;
+        public static final int new_easy_buy_address_modify=0x7f030019;
+        public static final int new_easy_buy_self_pack_list_item=0x7f03001a;
+        public static final int new_easy_buy_self_pick_list=0x7f03001b;
+        public static final int new_fill_order=0x7f03001c;
+        public static final int number_picker_with_selector_wheel=0x7f03001d;
+        public static final int order_history_list_item=0x7f03001e;
+        public static final int order_list_item=0x7f03001f;
+        public static final int personel_activity=0x7f030020;
+        public static final int personel_list_layout=0x7f030021;
+        public static final int product_list_item=0x7f030022;
+        public static final int register=0x7f030023;
+        public static final int register_activity=0x7f030024;
+        public static final int shop_list_activity=0x7f030025;
+        public static final int shop_list_item=0x7f030026;
+        public static final int shopping_cart_layout=0x7f030027;
+        public static final int shopping_cart_login_layout=0x7f030028;
+        public static final int shopping_cart_no_data_layout=0x7f030029;
+        public static final int shopping_cart_price_layout=0x7f03002a;
+        public static final int shopping_cart_single_product_item=0x7f03002b;
+        public static final int tabs_bg=0x7f03002c;
+        public static final int title=0x7f03002d;
+        public static final int top1=0x7f03002e;
+        public static final int top2=0x7f03002f;
     }
     public static final class menu {
         public static final int fill_order=0x7f0b0000;
@@ -5348,13 +5362,7 @@ containing a value of this type.
         public static final int shop_list=0x7f0b0005;
     }
     public static final class raw {
-        public static final int a=0x7f040000;
-        public static final int b=0x7f040001;
-        public static final int c=0x7f040002;
-        public static final int d=0x7f040003;
-        public static final int e=0x7f040004;
-        public static final int f=0x7f040005;
-        public static final int rqdata=0x7f040006;
+        public static final int rqdata=0x7f040000;
     }
     public static final class string {
         public static final int accept_agreement=0x7f09033a;
@@ -5477,6 +5485,8 @@ containing a value of this type.
         public static final int camera_tag=0x7f09047b;
         public static final int camera_top_title=0x7f090480;
         public static final int cancel=0x7f0902d1;
+        public static final int cancel_order=0x7f09066c;
+        public static final int cancel_order_success_info=0x7f09066b;
         public static final int cancle=0x7f090080;
         public static final int card_not_available=0x7f0904a7;
         public static final int cart=0x7f090019;
@@ -6202,6 +6212,8 @@ containing a value of this type.
         public static final int order_status=0x7f0903b0;
         public static final int order_success=0x7f0900ca;
         public static final int order_success_description=0x7f0900cb;
+        public static final int order_success_info=0x7f09066a;
+        public static final int order_time_forbiden=0x7f090666;
         public static final int orignal_price=0x7f0903f5;
         public static final int over_cart=0x7f0903d5;
         public static final int over_cart_single_item=0x7f0903d6;
@@ -6512,6 +6524,7 @@ containing a value of this type.
         public static final int result_wifi=0x7f090653;
         public static final int retrieve_pay_pwd=0x7f090042;
         public static final int retry=0x7f0902da;
+        public static final int reveive_info_not_completed=0x7f090668;
         public static final int rule_error_dlt_optional_null=0x7f09004e;
         public static final int rule_error_ssq_optional_null=0x7f09004d;
         public static final int rule_title=0x7f0903f7;
@@ -6586,6 +6599,7 @@ containing a value of this type.
         public static final int shake_times=0x7f090575;
         public static final int shake_zhi=0x7f09057b;
         public static final int sheng_fen=0x7f0903d2;
+        public static final int shop_not_selected=0x7f090669;
         public static final int shopping_cart_header=0x7f0903cb;
         public static final int show_agreement=0x7f09033b;
         public static final int show_password=0x7f090339;
@@ -6641,6 +6655,7 @@ containing a value of this type.
         public static final int title_activity_new_addr=0x7f090665;
         public static final int title_activity_order_history=0x7f090660;
         public static final int title_activity_shop_list=0x7f09065f;
+        public static final int title_activity_welcome=0x7f090667;
         public static final int to_company=0x7f0903c2;
         public static final int to_json=0x7f090018;
         public static final int toast_aggrement_unchecked=0x7f0900a1;
@@ -7000,13 +7015,15 @@ containing a value of this type.
         /** 
         Base application theme, dependent on API level. This theme is replaced
         by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+
     
 
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
+
         
- 
+
     <style name="lib_story_btn_favorite">
         <item name="android:gravity">center</item>
         <item name="android:layout_gravity">right|center</item>
@@ -7057,10 +7074,12 @@ containing a value of this type.
         <item name="android:layout_height">80.0dip</item>
         <item name="android:layout_marginTop">10.0dip</item>
     </style>
-     
+
+    
 
         Base application theme for API 11+. This theme completely replaces
         AppBaseTheme from res/values/styles.xml on API 11+ devices.
+
     
  API 11 theme customizations can go here. 
 
@@ -7072,12 +7091,16 @@ containing a value of this type.
          */
         public static final int AppBaseTheme=0x7f0a0000;
         public static final int AppTheme=0x7f0a0001;
+        public static final int ButtonBar=0x7f0a003e;
+        public static final int ButtonBarButton=0x7f0a003f;
+        public static final int FullscreenActionBarStyle=0x7f0a0040;
+        public static final int FullscreenTheme=0x7f0a003d;
         public static final int IMCHATB5Font=0x7f0a001f;
         public static final int IMChatDefault=0x7f0a0020;
         public static final int IMChatDefault_NoTitleBar=0x7f0a0022;
         public static final int IMCustomListView=0x7f0a0021;
         public static final int JDTheme_Light_NoActionBar=0x7f0a0016;
-        /**   
+        /** 
     <style name="dan_fu_shi_tab_top">
         <item name="android:textSize">14.0sp</item>
         <item name="android:textColor">@color/pai3_zu3_tab_top_textcolor</item>
@@ -7138,6 +7161,7 @@ containing a value of this type.
         <item name="android:src">@drawable/jd_lottery_dice_01</item>
         <item name="android:scaleType">fitCenter</item>
     </style>
+
     
          */
         public static final int JDTheme_NoActionBar=0x7f0a0015;
@@ -7152,7 +7176,7 @@ containing a value of this type.
         public static final int cancle_btn_style=0x7f0a0013;
         public static final int cart_button=0x7f0a0029;
         public static final int common_button=0x7f0a0028;
-        /**   
+        /** 
     <style name="JshopAppBaseTheme" parent="@android:style/Theme.Light" />
     <style name="JshopMyAppTheme" parent="@style/JshopAppBaseTheme">
         <item name="android:windowNoTitle">true</item>
@@ -7290,6 +7314,7 @@ containing a value of this type.
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
     </style>
+
     
          */
         public static final int dialog=0x7f0a0023;
@@ -7298,7 +7323,7 @@ containing a value of this type.
         public static final int edit_text=0x7f0a002f;
         public static final int fill_order_line=0x7f0a0035;
         public static final int general_padding=0x7f0a0039;
-        /**   
+        /** 
     <style name="home_lotery_msg_title_style">
         <item name="android:textSize">@dimen/lottery_item_msg_size</item>
         <item name="android:textColor">@color/text_gray</item>
@@ -7316,6 +7341,7 @@ containing a value of this type.
         <item name="android:singleLine">true</item>
         <item name="android:marqueeRepeatLimit">marquee_forever</item>
     </style>
+
     
          */
         public static final int home_=0x7f0a0004;
@@ -7338,7 +7364,7 @@ containing a value of this type.
         public static final int line_vertical_gradient_style=0x7f0a000a;
         public static final int line_vertical_style=0x7f0a0009;
         public static final int line_yellow=0x7f0a0031;
-        /**   
+        /** 
     <style name="yellowStarRatingBar" parent="@android:style/Widget.RatingBar">
         <item name="android:maxHeight">35.0dip</item>
         <item name="android:progressDrawable">@drawable/yellow_star_rating_bar_full</item>
@@ -7370,11 +7396,12 @@ containing a value of this type.
         <item name="android:progressDrawable">@drawable/ratingbar</item>
         <item name="android:minHeight">16.0dip</item>
     </style>
+
     
          */
         public static final int login_activity_text_shadow_style=0x7f0a003a;
         public static final int msDialogTheme=0x7f0a0024;
-        /**  
+        /** 
     <style name="shake_style" parent="@android:style/Theme.Dialog">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowFrame">@null</item>
@@ -7432,6 +7459,7 @@ containing a value of this type.
         <item name="android:maxHeight">200.0dip</item>
         <item name="android:backgroundDimEnabled">true</item>
     </style>
+
     
          */
         public static final int new_easy_buy_line=0x7f0a003b;
@@ -7449,4 +7477,41 @@ containing a value of this type.
         public static final int titlebar_button=0x7f0a0002;
         public static final int upomp_bypay_MyDialog=0x7f0a001e;
     }
+    public static final class styleable {
+        /** Attributes that can be used with a ButtonBarContainerTheme.
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #ButtonBarContainerTheme_buttonBarButtonStyle com.weijia.mymod:buttonBarButtonStyle}</code></td><td></td></tr>
+           <tr><td><code>{@link #ButtonBarContainerTheme_buttonBarStyle com.weijia.mymod:buttonBarStyle}</code></td><td></td></tr>
+           </table>
+           @see #ButtonBarContainerTheme_buttonBarButtonStyle
+           @see #ButtonBarContainerTheme_buttonBarStyle
+         */
+        public static final int[] ButtonBarContainerTheme = {
+            0x7f01002f, 0x7f010030
+        };
+        /**
+          <p>This symbol is the offset where the {@link com.weijia.mymod.R.attr#buttonBarButtonStyle}
+          attribute's value can be found in the {@link #ButtonBarContainerTheme} array.
+
+
+          <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+          @attr name com.weijia.mymod:buttonBarButtonStyle
+        */
+        public static final int ButtonBarContainerTheme_buttonBarButtonStyle = 1;
+        /**
+          <p>This symbol is the offset where the {@link com.weijia.mymod.R.attr#buttonBarStyle}
+          attribute's value can be found in the {@link #ButtonBarContainerTheme} array.
+
+
+          <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+          @attr name com.weijia.mymod:buttonBarStyle
+        */
+        public static final int ButtonBarContainerTheme_buttonBarStyle = 0;
+    };
 }

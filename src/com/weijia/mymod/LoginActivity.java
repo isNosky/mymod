@@ -55,6 +55,7 @@ import com.rqmod.provider.GlobalVar;
 import com.rqmod.provider.MyModApp;
 import com.rqmod.util.Constant;
 import com.rqmod.util.HttpUtil;
+import com.rqmod.util.StringEncrypt;
 
 public class LoginActivity extends Activity {
 
@@ -263,7 +264,7 @@ public class LoginActivity extends Activity {
 							    	  
 							    	Message message= handler.obtainMessage() ; 
 							    	message.obj = jsonout; 
-							    	message.what = 1;
+							    	message.what = Constant.LOGIN_MSG;
 							    	handler.sendMessage(message); 
 							    	} 
 						    	}; 
@@ -287,7 +288,7 @@ public class LoginActivity extends Activity {
 							    	  
 							    	Message message= handler.obtainMessage() ; 
 							    	message.obj = jsonout; 
-							    	message.what = 1;
+							    	message.what = Constant.LOGIN_MSG;
 							    	handler.sendMessage(message); 
 							    	} 
 						    	}; 
@@ -342,7 +343,7 @@ public class LoginActivity extends Activity {
 		JSONObject jso = new JSONObject();
 		jso.put("PhoneNum", mUserNameTxt.getEditableText().toString());
 		jso.put("NickName", mUserNameTxt.getEditableText().toString());
-		jso.put("Password", mUserPassword.getEditableText().toString());
+		jso.put("Password", StringEncrypt.Encrypt(mUserPassword.getEditableText().toString(), "SHA-256"));
 		return jso;
 	}
 	
@@ -362,7 +363,7 @@ public class LoginActivity extends Activity {
 			try {
 				int iErrCode = jso.getInt("ErrorCode");
 				int iUserId = jso.getInt("UserID");
-				String strToken = jso.getString("Token");
+				String strToken = jso.getString("token");
 				//TODO:存入数据库
 				 ContentValues values = new ContentValues();
 				 String strNickName = mUserNameTxt.getEditableText().toString();
@@ -646,7 +647,7 @@ public class LoginActivity extends Activity {
 	        @Override
 	        public void handleMessage(Message msg){
 	            switch(msg.what){
-	            case 1:
+	            case Constant.LOGIN_MSG:
 	                //关闭
 	            	try {
 	            		JSONObject jsonout = (JSONObject) msg.obj;

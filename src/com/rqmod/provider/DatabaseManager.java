@@ -28,6 +28,7 @@ public class DatabaseManager {
 
     DatabaseManager(Context context) {  
             this.context = context;  
+            
     }  
 
     public SQLiteDatabase openDatabase() {  
@@ -50,7 +51,7 @@ public class DatabaseManager {
     private SQLiteDatabase openDatabase(String dbfile)  {  
             try {
             		
-					
+            	//deleteDbFile(dbfile);
                     if (!(new File(dbfile).exists())) {
                             InputStream is = this.context.getResources().openRawResource(R.raw.rqdata); //欲导入的数据库  
                             FileOutputStream fos = new FileOutputStream(dbfile);  
@@ -84,6 +85,14 @@ public class DatabaseManager {
     	}
 		return dbm;
     	
+    }
+    
+    public void deleteDbFile(String dbfile)
+    {
+    	File destDir2 = new File(dbfile);
+		if (destDir2.exists()) {
+			destDir2.delete();
+		}
     }
 }
 

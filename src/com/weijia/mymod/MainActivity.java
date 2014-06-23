@@ -33,6 +33,8 @@ public class MainActivity extends TabActivity {
         tabHost.setFocusable(true);  
 		prepareIntent();  
         setupIntent(); 
+        
+        //ListenShopCar();
 	}
 	 private void setupIntent(){  
 	        tabHost.addTab(buildTabSpec(HOME,R.drawable.home_w, homeIntent));  
@@ -63,4 +65,17 @@ public class MainActivity extends TabActivity {
 //	    {
 //	    	return tabHost;
 //	    }
+	    
+	    private void ListenShopCar()
+	    {
+	    	getTabWidget().getChildAt(1).setOnClickListener(new OnClickListener() { 
+	            @Override 
+	            public void onClick(View v) { 
+
+	            	tabHost.setCurrentTab(1);
+	            	//ShoppingCarActivity.this.finish();
+	            	
+	            } 
+	        }); 
+	    }
 }

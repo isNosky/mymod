@@ -17,63 +17,70 @@
             android:name="com.weijia.mymod.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Black.NoTitleBar" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:theme="@android:style/Theme.Light.NoTitleBar" >            
         </activity>
         <activity
             android:name="com.weijia.mymod.LoginActivity"
             android:theme="@android:style/Theme.Light.NoTitleBar" />
         <activity
             android:name="com.weijia.mymod.RegisterActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar" />
+            android:theme="@android:style/Theme.Light.NoTitleBar" />
         <activity
             android:name="com.weijia.mymod.MenuActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar" />
+            android:theme="@android:style/Theme.Light.NoTitleBar" />
         <activity
             android:name="com.weijia.mymod.PersonelActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar" />
+            android:theme="@android:style/Theme.Light.NoTitleBar" />
         <activity
             android:name="com.weijia.mymod.ShoppingCarActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar" />
+            android:theme="@android:style/Theme.Light.NoTitleBar" />
         <activity
             android:name="com.weijia.mymod.AccountMgrActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar" />
+            android:theme="@android:style/Theme.Light.NoTitleBar" />
         <activity
             android:name="com.weijia.mymod.MyOrderInfoListActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar" />
+            android:theme="@android:style/Theme.Light.NoTitleBar" />
         <activity
             android:name="com.weijia.mymod.NewEasyBuyAddressListActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar" />
+            android:theme="@android:style/Theme.Light.NoTitleBar" />
         <activity
             android:name="com.weijia.mymod.MyOderListActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar" />
+            android:theme="@android:style/Theme.Light.NoTitleBar" />
         <activity
             android:name="com.weijia.mymod.FillOrderActivity"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Black.NoTitleBar" >
+            android:theme="@android:style/Theme.Light.NoTitleBar" >
         </activity>
         <activity
             android:name="com.weijia.mymod.GoodsInfoActivity"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Black.NoTitleBar" >
+            android:theme="@android:style/Theme.Light.NoTitleBar" >
         </activity>
         <activity
             android:name="com.weijia.mymod.ShopListActivity"
             android:label="@string/title_activity_shop_list"
-            android:theme="@android:style/Theme.Black.NoTitleBar" >
+            android:theme="@android:style/Theme.Light.NoTitleBar" >
         </activity>
         <activity
             android:name="com.weijia.mymod.OrderHistoryActivity"
             android:label="@string/title_activity_order_history"
-            android:theme="@android:style/Theme.Black.NoTitleBar" >
+            android:theme="@android:style/Theme.Light.NoTitleBar" >
         </activity>
         <activity
             android:name="com.weijia.mymod.NewAddrActivity"
-            android:label="@string/title_activity_new_addr" >
+            android:label="@string/title_activity_new_addr"
+            android:theme="@android:style/Theme.Light.NoTitleBar" >
+        </activity>
+        <activity
+            android:name="com.weijia.mymod.WelcomeActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

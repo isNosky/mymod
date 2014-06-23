@@ -1539,7 +1539,7 @@
     <string name="new_easy_buy_address_button_new">新建</string>
     <string name="new_easy_buy_address_button_save">保存</string>
     <string name="new_easy_buy_address_list_top_title">轻松购：下单前确认</string>
-    <string name="new_easy_buy_address_list_item_default">默认轻松购地址</string>
+    <string name="new_easy_buy_address_list_item_default">默认地址</string>
     <string name="new_easy_buy_address_title_text_new">新建收货人</string>
     <string name="new_easy_buy_address_title_text_save">编辑收货人</string>
     <string name="new_easy_buy_address_message_add_succeed">添加成功</string>
@@ -1670,5 +1670,11 @@
     <string name="order_history_comment">备        注:</string>
     <string name="again_exit_app">再按一次退出程序</string>
     <string name="title_activity_new_addr">NewAddrActivity</string>
-
+    <string name="order_time_forbiden">该时间段不允许订餐</string>
+    <string name="title_activity_welcome">WelcomeActivity</string>
+	<string name="reveive_info_not_completed">收货人信息不完整，请点击更新</string>
+	<string name="shop_not_selected">门店信息没有选择，请点击选择</string>
+	<string name="order_success_info">下订单成功，请在个人信息页中查看订单详情</string>
+	<string name="cancel_order_success_info">取消订单成功</string>
+	<string name="cancel_order">订单取消</string>
 </resources>

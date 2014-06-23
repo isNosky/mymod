@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -167,25 +168,43 @@ public class ShoppingCarActivity extends Activity {
 								for(int i = 0; i < lvGood.getChildCount(); i++){  
 								      View view = lvGood.getChildAt(i);  
 								      CheckBox cb = (CheckBox)view.findViewById(R.id.cart_single_product_cb);
-								      TextView tvId = (TextView)findViewById(R.id.cart_single_product_id);
+								      TextView tvId = (TextView)view.findViewById(R.id.cart_single_product_id);
 								      if(cb.isChecked())
 								      {
 								    	  String strID = tvId.getText().toString();
-								    	  for(HashMap<String, Object> o : listItem)
-								    	  {
+								    	  for(HashMap<String, Object> o : listItem)								    	  
+								    	  {								    		  
 								    		  String strOID = (String) o.get("cart_single_product_id");
 								    		  if(strOID.equals(strID))
 								    		  {
 								    			  listItem.remove(o);
+								    			  i--;
 								    			  String[] whereArgs = {strID.substring(3)};
 								    			  db.delete("tbl_shopcar", "id=?", whereArgs);
 								    			  break;
 								    		  }
 								    	  }
+								    	  
+//								    	  for(Iterator iter = listItem.iterator(); iter.hasNext(); )  
+//								          { 								              
+//								              HashMap<String, Object> o = (HashMap<String, Object>) iter.next();
+//								    		  String strOID = (String) o.get("cart_single_product_id");
+//								    		  if(strOID.equals(strID))
+//								    		  {
+//								    			  iter.remove();  
+//								    			  String[] whereArgs = {strID.substring(3)};
+//								    			  db.delete("tbl_shopcar", "id=?", whereArgs);
+//								    			  continue;
+//								    		  }
+//								          }  
 								      }
 								}
 								mSimpleAdapter.notifyDataSetChanged();  
 								lvGood.invalidate();
+								
+								showTotalPrice();
+								listItem.clear();
+								updateShopCar();
 						}
             }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
 						 
@@ -220,9 +239,16 @@ public class ShoppingCarActivity extends Activity {
 	@Override
 	public void onResume()
 	{
-		super.onResume();
 //		showDialog("OnResume called");
-		//updateShopCar();
+		listItem.clear();
+		updateShopCar();
+		
+		super.onResume();
+	}
+	
+	private void showTotalPrice()
+	{
+		tvTotalPrice.setText("RMB:"+ String.valueOf(getTotalPrice()));
 	}
 	
 	private void updateShopCar()
@@ -238,9 +264,10 @@ public class ShoppingCarActivity extends Activity {
 			fTotalPrice = 0;
 			if(0 == goodscount)
 			{
-				vPrice.setVisibility(8);
+				vNodata.setVisibility(View.VISIBLE);
+				vPrice.setVisibility(View.INVISIBLE);
 //				loPrice.setVisibility(8);
-				lvGood.setVisibility(8);
+				lvGood.setVisibility(View.INVISIBLE);
 				btnOrder.setOnClickListener(new View.OnClickListener(){
 
 					@Override
@@ -290,7 +317,10 @@ public class ShoppingCarActivity extends Activity {
 				c.close();				
 				
 				
-				vNodata.setVisibility(8);
+				vNodata.setVisibility(View.INVISIBLE);
+				vPrice.setVisibility(View.VISIBLE);
+//				loPrice.setVisibility(8);
+				lvGood.setVisibility(View.VISIBLE);
 				//BaseAdapter mBaseAdapter = new BaseAdapter()
 				mSimpleAdapter = new SimpleAdapter(
 						ShoppingCarActivity.this, 
@@ -318,6 +348,17 @@ public class ShoppingCarActivity extends Activity {
 	                            	
 	                            	View vp = (View) v.getParent();
 	                            	TextView tvNum = (TextView)vp.findViewById(R.id.cart_single_product_et_num);
+	                            	TextView tvId =  (TextView)view.findViewById(R.id.cart_single_product_id);
+	                            	String strId = null;
+									try {
+										strId = tvId.getText().toString();
+										strId = strId.substring(3);
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+	                            	HashMap<String, Object> map = getMapById(Integer.parseInt(strId));
+	                            	
 									String strNum = tvNum.getText().toString();
 									int iNum = Integer.parseInt(strNum);
 	                            	if(iNum == 1)
@@ -341,6 +382,9 @@ public class ShoppingCarActivity extends Activity {
 		                            	fTotalPrice = fTotalPrice - fPrice + fNewPrice;
 		                            	tvTotalPrice.setText("总计:RMB " + String.valueOf(fTotalPrice));
 	                            	}
+	                            	
+	                            	map.remove("cart_single_product_et_num");
+	                            	map.put("cart_single_product_et_num", iNum);
 	                            }
 	                        });
 							
@@ -417,6 +461,19 @@ public class ShoppingCarActivity extends Activity {
 			String str = e.getMessage();
 			e.printStackTrace();
 		}
+	}
+	
+	private HashMap<String, Object> getMapById(int id)
+	{
+		for(HashMap<String, Object> map : listItem)
+		{
+			if(id == Integer.parseInt(map.get("cart_single_product_id").toString().substring(3))) 
+			{
+				return map;
+			}
+		}
+		
+		return null;
 	}
 	
 	private void showDialog(String msg){
@@ -556,4 +613,14 @@ public class ShoppingCarActivity extends Activity {
         };  
   
     } 
+	
+	private float getTotalPrice()
+	{
+		float totalprice = 0;
+		for(HashMap<String, Object> map : listItem)
+		{
+			totalprice += Integer.parseInt(map.get("cart_single_product_et_num").toString()) * Float.parseFloat(map.get("cart_single_product_price").toString().substring(4));
+		}
+		return totalprice;
+	}
 }

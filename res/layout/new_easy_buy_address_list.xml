@@ -10,8 +10,16 @@
             </LinearLayout>
         </LinearLayout>
     </FrameLayout>
-    <LinearLayout android:id="@id/layout_new_easy_buy_address_no_data" android:visibility="invisible" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_below="@id/new_easy_buy_address_list_title">
+    <LinearLayout android:id="@id/layout_new_easy_buy_address_no_data" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_below="@id/new_easy_buy_address_list_title">
         <TextView android:textSize="17.0sp" android:gravity="center" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" android:text="@string/new_easy_buy_address_no_data" />
     </LinearLayout>
-    <ListView android:id="@id/listview_new_easy_buy_address_list" android:visibility="invisible" android:layout_width="fill_parent" android:layout_height="wrap_content" android:listSelector="@color/transparent" android:cacheColorHint="@color/transparent" android:layout_below="@id/new_easy_buy_address_list_title" />
+
+    <ListView
+        android:id="@id/listview_new_easy_buy_address_list"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layout_addr_mgr_header"
+        android:cacheColorHint="@color/transparent"
+        android:listSelector="@color/transparent" />
+
 </RelativeLayout>

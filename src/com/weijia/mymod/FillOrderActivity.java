@@ -2,7 +2,9 @@ package com.weijia.mymod;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -20,10 +22,12 @@ import com.rqmod.provider.OrderDetail;
 import com.rqmod.util.Constant;
 import com.rqmod.util.HttpUtil;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -45,9 +49,17 @@ import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 
+@SuppressLint("NewApi")
 public class FillOrderActivity extends Activity {		
 
-	private MyModApp app;
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		initReceiveInfo();
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+
+	private GlobalVar app;
 	private final static int DIALOG=1;
 	
 	DatabaseManager dbm = null;
@@ -66,17 +78,26 @@ public class FillOrderActivity extends Activity {
 	TextView tvFillOrderMoney = null;
 	RelativeLayout rlInventory = null;
 	RelativeLayout llSelShop = null;
-	ArrayList<String> lstShops = new ArrayList<String>();
+	ArrayList<HashMap<String, Object>> lstShops = new ArrayList<HashMap<String, Object>>();
+	
+	int m_iStartA = -1;
+	int m_iEndA = -1;
+	int m_iStartB = -1;
+	int m_iEndB = -1;
+	
 	TextView tvShopName = null;
 	
-	int id = 0;
-	String nickname; 
-    String addr;
-    String phonenumber1; 
-    String phonenumber2; 
+	int id = -1;
+	String nickname = ""; 
+    String addr = "";
+    String phonenumber1 = ""; 
+    String phonenumber2 = ""; 
+    
+    int m_iShopId = -1;
     float totalprice = 0;
         
     JSONArray jaProduct = null;
+    ArrayList<String> ll = new ArrayList<String>();
     
     private final static String TBL_SHOP = "tbl_shop";
     private final static String TBL_SHOP_DELIVERY_TIMES = "tbl_shop_delivery_times";
@@ -86,7 +107,7 @@ public class FillOrderActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		//app = (MyModApp) getApplicationContext();
+		app = GlobalVar.getInstance();
 		
 		setContentView(R.layout.new_fill_order);
 		//tbhost = ((TabActivity)getParent()).getTabHost();
@@ -108,126 +129,34 @@ public class FillOrderActivity extends Activity {
 		tvReceiverInfo.setVisibility(View.VISIBLE);
 		rlReceiver.setVisibility(View.VISIBLE);
 		
-		tvShopName = (TextView)findViewById(R.id.textview_select_shop_name);
+		tvShopName = (TextView)findViewById(R.id.textview_select_shop_tips);
 		
 		dbm = DatabaseManager.getInstance(this);
 		db = dbm.openDatabase();
 		
-		Cursor c = db.rawQuery("select a.id,b.nickname,a.phonenumber1,a.phonenumber2,a.addr from tbl_addr a,tbl_user b where a.isdefault = 1 and a.subscriberid = b.id", null);
+		initReceiveInfo();
+		setAddrLayout();
+		setTotalPrice();
 		
-		while (c.moveToNext()) {			
-		    id = c.getInt(c.getColumnIndex("id"));  
-		    nickname = c.getString(c.getColumnIndex("nickname")); 
-		    addr = c.getString(c.getColumnIndex("addr"));
-		    phonenumber1 = c.getString(c.getColumnIndex("phonenumber1")); 
-		    phonenumber2 = c.getString(c.getColumnIndex("phonenumber2")); 
-		}  
-		c.close();
-		
-		tvReceiverName.setText(nickname);
-		tvMobileContent.setText((!phonenumber1.isEmpty())?phonenumber1:phonenumber2);
-		tvAddr.setText(addr);
-		
-		Cursor c1 = db.rawQuery("select sum(buycount*unitprice) totalprice from tbl_shopcar", null);
-		
-		while (c1.moveToNext()) {			
-			totalprice = c1.getFloat(c1.getColumnIndex("totalprice"));
-		}  
-		c1.close();
-		
-		String strOrg = tvFillOrderMoney.getText().toString();
-		tvFillOrderMoney.setText(strOrg +":RMB"+totalprice);	
 		
 		btnSubmitOrder.setOnClickListener(new OnClickListener(){
 
+			@SuppressLint("SimpleDateFormat")
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub			
 				
-				jaProduct = new JSONArray();
-				
-				Cursor c2 = db.rawQuery("select productid,buycount from tbl_shopcar", null);
-				
-				while (c2.moveToNext()) {		
-					 int iFoodId = c2.getInt(c2.getColumnIndex("productid"));
-					 int iBuyCount = c2.getInt(c2.getColumnIndex("buycount"));
-					 JSONObject jsonObject = new JSONObject();
-					 try {
-						jsonObject.put("ProductId", iFoodId);
-						jsonObject.put("Quantity", iBuyCount);
-						jsonObject.put("Amount", 300);
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					 
-					 jaProduct.put(jsonObject);
-				}  
-				c2.close();
-				if(Constant.FLAG_POST_IN_JSON)
-				{	
-					Thread thread = new Thread(){ 
-				    	@Override 
-					    public void run() { 	
-				    		
-			    			JSONObject jsoin = new JSONObject();
-			    			JSONObject jsonout = null;
-							try {
-								jsoin.put("UserID", app.getUserId());						
-								jsoin.put("ShopID", 1);	//当前写死，东仪路店
-								jsoin.put("deliveryAddressID", id);
-								jsoin.put("Amount", totalprice);						
-								jsoin.put("ProductIDs", jaProduct);
-								jsonout = HttpUtil.queryStringForPost(Constant.DOORDERSERVLET, jsoin);	
-					    	} catch (Exception e) { 
-					    		String str = e.getMessage();
-					    	} 
-					    	  
-					    	Message message= handler.obtainMessage() ; 
-					    	message.obj = jsonout; 
-					    	message.what = 1;
-					    	handler.sendMessage(message); 
-					    	} 
-				    	}; 
-				    	thread.start(); 
-				    	thread = null;
-					
-				}
-				else
+				if(CheckTime())
 				{
-					Thread thread = new Thread(){ 
-				    	@Override 
-					    public void run() { 	
-				    		
-				    		JSONObject jsoin = new JSONObject();
-				    		JSONObject jsonout = null;
-				    		
-							try {
-								HttpPost request = new HttpPost();
-								List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
-					            postParameters.add(new BasicNameValuePair("UserID", String.valueOf(GlobalVar.getInstance().getUserId())));
-					            postParameters.add(new BasicNameValuePair("Token", GlobalVar.getInstance().getToken()));
-					            postParameters.add(new BasicNameValuePair("ShopID", "1"));
-					            postParameters.add(new BasicNameValuePair("deliveryAddressID", String.valueOf(id)));
-					            postParameters.add(new BasicNameValuePair("Amount", String.valueOf(totalprice)));
-					            postParameters.add(new BasicNameValuePair("ProductIDs", jaProduct.toString()));
-					            
-					            jsonout = HttpUtil.queryStringForPost(Constant.DOORDERSERVLET, postParameters);
-					    	} catch (Exception e) { 
-					    		String str = e.getMessage();
-					    	} 
-					    	  
-					    	Message message= handler.obtainMessage() ; 
-					    	message.obj = jsonout; 
-					    	message.what = 1;
-					    	handler.sendMessage(message); 
-					    	} 
-				    	}; 
-				    	thread.start(); 
-				    	thread = null;
-					
-					    
-				}				
+					return;
+				}
+				
+				if(CheckShop())
+				{
+					return;
+				}
+				getJSONProduct();				
+				DoOrder();
 				
 			}});
 		
@@ -246,6 +175,7 @@ public class FillOrderActivity extends Activity {
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent(FillOrderActivity.this,GoodsInfoActivity.class);
+				intent.putExtra("goodstype", "shopcar");
 				startActivity(intent);
 			}});
 		
@@ -260,6 +190,186 @@ public class FillOrderActivity extends Activity {
 		getShops();
 	}
 
+	private boolean CheckTime()
+	{
+		SimpleDateFormat formatter = new SimpleDateFormat   ("HH:mm:ss");     
+		Date curDate = new Date(System.currentTimeMillis());//获取当前时间     
+		String str = formatter.format(curDate);     
+		
+		int iCurTime = str2int(str);
+		if(( (iCurTime > m_iStartA) &&  (iCurTime < m_iEndA) )
+				&& ((iCurTime > m_iStartB) &&  (iCurTime < m_iEndB)))
+		{
+			showDialog(getResources().getString(R.string.order_time_forbiden));
+			return true;
+		}
+		return false;
+	}
+	
+	@SuppressLint("NewApi")
+	private boolean CheckReceiveInfo()
+	{
+		if(-1 == m_iShopId)
+		{
+			showDialog(getResources().getString(R.string.reveive_info_not_completed));
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean CheckShop()
+	{
+		if(-1 == m_iShopId)
+		{
+			showDialog(getResources().getString(R.string.shop_not_selected));
+			return true;
+		}
+		return false;
+	}
+	
+	private void DoOrder()
+	{
+		if(Constant.FLAG_POST_IN_JSON)
+		{	
+			Thread thread = new Thread(){ 
+		    	@Override 
+			    public void run() { 	
+		    		
+	    			JSONObject jsoin = new JSONObject();
+	    			JSONObject jsonout = null;
+					try {
+						jsoin.put("UserID", app.getUserId());						
+						jsoin.put("ShopID", m_iShopId);	//当前写死，东仪路店
+						jsoin.put("deliveryAddressID", id);
+						jsoin.put("Amount", totalprice);						
+						jsoin.put("ProductIDs", jaProduct);
+						jsonout = HttpUtil.queryStringForPost(Constant.DOORDERSERVLET, jsoin);	
+			    	} catch (Exception e) { 
+			    		String str = e.getMessage();
+			    	} 
+			    	  
+			    	Message message= handler.obtainMessage() ; 
+			    	message.obj = jsonout; 
+			    	message.what = Constant.DOORDERSER_MSG;
+			    	handler.sendMessage(message); 
+			    	} 
+		    	}; 
+		    	thread.start(); 
+		    	thread = null;
+			
+		}
+		else
+		{
+			Thread thread = new Thread(){ 
+		    	@Override 
+			    public void run() { 	
+		    		
+		    		JSONObject jsoin = new JSONObject();
+		    		JSONObject jsonout = null;
+		    		
+					try {
+						HttpPost request = new HttpPost();
+						List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+			            postParameters.add(new BasicNameValuePair("UserID", String.valueOf(GlobalVar.getInstance().getUserId())));
+			            //postParameters.add(new BasicNameValuePair("UserID", String.valueOf(-1)));
+			            //postParameters.add(new BasicNameValuePair("Token", GlobalVar.getInstance().getToken()));
+			            postParameters.add(new BasicNameValuePair("ShopID", String.valueOf(m_iShopId)));
+			            postParameters.add(new BasicNameValuePair("deliveryAddressID", String.valueOf(id)));
+			            postParameters.add(new BasicNameValuePair("Amount", String.valueOf(totalprice)));
+			            postParameters.add(new BasicNameValuePair("ProductIDs", jaProduct.toString()));
+			            
+			            jsonout = HttpUtil.queryStringForPost(Constant.DOORDERSERVLET, postParameters);
+			    	} catch (Exception e) { 
+			    		String str = e.getMessage();
+			    	} 
+			    	  
+			    	Message message= handler.obtainMessage() ; 
+			    	message.obj = jsonout; 
+			    	message.what = Constant.DOORDERSER_MSG;
+			    	handler.sendMessage(message); 
+			    	} 
+		    	}; 
+		    	thread.start(); 
+		    	thread = null;
+			
+			    
+		}				
+	}
+	
+	private void getJSONProduct()
+	{
+		jaProduct = new JSONArray();
+		
+		Cursor c2 = db.rawQuery("select a.productid productid ,a.buycount buycount ,a.buycount*b.unitprice amount from tbl_shopcar a,tbl_product b where a.productid = b.id", null);
+		
+		while (c2.moveToNext()) {		
+			 int iFoodId = c2.getInt(c2.getColumnIndex("productid"));
+			 int iBuyCount = c2.getInt(c2.getColumnIndex("buycount"));
+			 float fAmount = c2.getInt(c2.getColumnIndex("amount"));
+			 JSONObject jsonObject = new JSONObject();
+			 try {
+				jsonObject.put("ProductId", iFoodId);
+				jsonObject.put("Quantity", iBuyCount);
+				jsonObject.put("Amount", fAmount);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			 
+			 jaProduct.put(jsonObject);
+		}  
+		c2.close();
+	}
+	
+	private void setTotalPrice()
+	{
+		Cursor c1 = db.rawQuery("select sum(buycount*unitprice) totalprice from tbl_shopcar", null);
+		
+		while (c1.moveToNext()) {			
+			totalprice = c1.getFloat(c1.getColumnIndex("totalprice"));
+		}  
+		c1.close();
+		
+		String strOrg = tvFillOrderMoney.getText().toString();
+		tvFillOrderMoney.setText(strOrg +":RMB"+totalprice);	
+	}
+	
+	private void setAddrLayout()
+	{
+		rlReceiver.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent(FillOrderActivity.this,NewAddrActivity.class);
+				startActivityForResult(intent,2);
+			}});
+		
+	}
+	
+	@SuppressLint("NewApi")
+	private void initReceiveInfo()
+	{
+		Cursor c = db.rawQuery("select id,name,phonenumber1,phonenumber2,addr from tbl_addr where isdefault = 1", null);
+		
+		nickname = ""; 
+		addr = "";
+		phonenumber1 = "";
+		phonenumber2 = "";
+		while (c.moveToNext()) {			
+		    id = c.getInt(c.getColumnIndex("id"));  
+		    nickname = c.getString(c.getColumnIndex("name")); 
+		    addr = c.getString(c.getColumnIndex("addr"));
+		    phonenumber1 = c.getString(c.getColumnIndex("phonenumber1")); 
+		    phonenumber2 = c.getString(c.getColumnIndex("phonenumber2")); 
+		}  
+		c.close();
+		
+		tvReceiverName.setText(nickname);
+		tvMobileContent.setText((!phonenumber1.isEmpty())?phonenumber1:phonenumber2);
+		tvAddr.setText(addr);
+	}
+	
 	@Override
 	@Deprecated
 	protected Dialog onCreateDialog(int id) {
@@ -275,11 +385,19 @@ public class FillOrderActivity extends Activity {
 				builder.setTitle("选择配送门店");
 				
 				//添加按钮，android.content.DialogInterface.OnClickListener.OnClickListener
-				String[] items = (String[]) lstShops.toArray(new String[lstShops.size()]);
+				//String[] items = (String[]) lstShops.toArray(new String[lstShops.size()]);
+				
+				for(int i = 0 ; i < lstShops.size() ; i++)
+				{
+					HashMap<String, Object> map = lstShops.get(i);
+					ll.add((String) map.get("shopname"));
+				}
+				String[] items = (String[]) ll.toArray(new String[ll.size()]);
 				builder.setItems(items, new android.content.DialogInterface.OnClickListener(){
 				    public void onClick(DialogInterface dialog, int which) {
-				        String hoddy=(String) lstShops.get(which);
-				        tvShopName.setText(hoddy);
+				    	m_iShopId = (Integer) lstShops.get(which).get("shopid");
+				        String hoddy=(String) ll.get(which);
+				        tvShopName.setText(tvShopName.getText().toString() + hoddy);
 				    }
 				});
 				//创建一个列表对话框
@@ -317,16 +435,20 @@ public class FillOrderActivity extends Activity {
         @Override
         public void handleMessage(Message msg){
             switch(msg.what){
-            case 1:
+            case Constant.DOORDERSER_MSG:
                 //关闭
             	try {
             		JSONObject jsonout = (JSONObject) msg.obj;
 					int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
-					String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
+					String strErrDesc = (jsonout.has(Constant.ERRDESC)? jsonout.getString(Constant.ERRDESC):"");
 					
 					if(Constant.ERR_CODE_SUCCESS == iErrorCode)
 					{
 						//下订单成功
+						showDialog(R.string.order_success_info);
+						FillOrderActivity.this.finish();
+						Intent intent = new Intent(FillOrderActivity.this,MyOderListActivity.class);
+						startActivity(intent);
 					}
 					else
 					{
@@ -342,7 +464,7 @@ public class FillOrderActivity extends Activity {
 				}            	
                 break;
 
-            case 2:
+            case Constant.GETSHOP_MSG:
                 //关闭
             	try {
             		JSONObject jsonout = (JSONObject) msg.obj;
@@ -364,7 +486,10 @@ public class FillOrderActivity extends Activity {
 								JSONArray jaProducts = jsonShop.getJSONArray("productIDs");
 								values.put("productids", jaProducts.toString());	
 								
-								lstShops.add(shopname);
+								HashMap<String, Object> map = new HashMap<String, Object>();
+								map.put("shopid", iShopID);
+								map.put("shopname", shopname);
+								lstShops.add(map);
 								
 								if(-1 == db.insert(TBL_SHOP, null, values))
 								{
@@ -386,24 +511,35 @@ public class FillOrderActivity extends Activity {
 //									}
 //								}	
 								
-								ContentValues valuests = new ContentValues();								
-								valuests.put("shopid", iShopID);
-								valuests.put("starttime", str2int(jsonShop.getString("nosalestarttime_a")));
-								valuests.put("endtime", str2int(jsonShop.getString("nosaleendtime_a")));
-								if(-1 == db.insert(TBL_SHOP_DELIVERY_TIMES, null, values))
-								{
-									//
+								ContentValues valuests = new ContentValues();				
+								if((jsonShop.has("nosalestarttime_a") && jsonShop.has("nosaleendtime_a"))
+										||(jsonShop.isNull("nosalestarttime_a") || jsonShop.isNull("nosaleendtime_a")))
+								{													
+									valuests.put("shopid", iShopID);
+									m_iStartA = str2int(jsonShop.getString("nosalestarttime_a"));
+									m_iEndA = str2int(jsonShop.getString("nosaleendtime_a"));
+									valuests.put("starttime", m_iStartA);
+									valuests.put("endtime", m_iEndA);
+									if(-1 == db.insert(TBL_SHOP_DELIVERY_TIMES, null, values))
+									{
+										//
+									}
 								}
 								
-//								valuests.clear();							
-//								valuests.put("shopid", iShopID);
-//								valuests.put("starttime", str2int(jsonShop.getString("nosalestarttime_b")));
-//								valuests.put("endtime", str2int(jsonShop.getString("nosaleendtime_b")));
-//								if(-1 == db.insert(TBL_SHOP_DELIVERY_TIMES, null, values))
-//								{
-//									//
-//								}
-								
+								if((jsonShop.has("nosalestarttime_b") && jsonShop.has("nosaleendtime_b"))
+									||(jsonShop.isNull("nosalestarttime_b") || jsonShop.isNull("nosaleendtime_b")))
+								{
+									valuests.clear();							
+									valuests.put("shopid", iShopID);
+									m_iStartB = str2int(jsonShop.getString("nosalestarttime_b"));
+									m_iEndB = str2int(jsonShop.getString("nosaleendtime_b"));
+									valuests.put("starttime", m_iStartB);
+									valuests.put("endtime", m_iEndB);
+									if(-1 == db.insert(TBL_SHOP_DELIVERY_TIMES, null, values))
+									{
+										//
+									}
+								}
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
 								String str = e.getMessage();
@@ -460,7 +596,7 @@ public class FillOrderActivity extends Activity {
 			    	  
 			    	Message message= handler.obtainMessage() ; 
 			    	message.obj = jsonout; 
-			    	message.what = 2;
+			    	message.what = Constant.GETSHOP_MSG;
 			    	handler.sendMessage(message); 
 			    	} 
 		    	}; 

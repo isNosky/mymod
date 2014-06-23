@@ -31,7 +31,7 @@
 	    <RelativeLayout
 	        android:id="@id/product_list_content_layout"
 	        android:layout_width="fill_parent"
-	        android:layout_height="414dp"
+	        android:layout_height="match_parent"
 	        android:layout_below="@id/food_class" >
 
        		<ListView

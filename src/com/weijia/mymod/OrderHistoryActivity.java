@@ -39,7 +39,7 @@ public class OrderHistoryActivity extends Activity {
 		
 		SimpleAdapter mSimpleAdapter = new SimpleAdapter(
 				OrderHistoryActivity.this, 
-				listItem, 
+				list, 
 				R.layout.order_history_list_item, 
 				new String[] {"order_history_optime", "order_history_status","order_history_comment"}, 
 				new int [] {R.id.order_history_optime,R.id.order_history_status,R.id.order_history_comment});

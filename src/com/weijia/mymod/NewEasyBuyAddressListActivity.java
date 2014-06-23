@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.rqmod.provider.DatabaseManager;
 import com.rqmod.provider.GlobalVar;
 import com.rqmod.util.Constant;
 import com.rqmod.util.HttpUtil;
@@ -18,9 +19,15 @@ import com.rqmod.util.HttpUtil;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
@@ -39,6 +46,11 @@ public class NewEasyBuyAddressListActivity extends Activity {
 	ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String,Object>>();	
 	SimpleAdapter mAdaptor = null;
 	
+	private final static String TBL_ADDR = "tbl_addr";
+	
+	SQLiteDatabase db = null;
+	DatabaseManager dbm = null;
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -50,14 +62,19 @@ public class NewEasyBuyAddressListActivity extends Activity {
 					Bundle b=data.getExtras();  //data为B中回传的Intent
 					
 					HashMap<String, Object> map = new HashMap<String, Object>();
+					map.put("textview_new_easy_buy_address_list_item_default", b.get("isdefault"));
+					map.put("textview_new_easy_buy_address_list_item_alias", b.get("textview_new_easy_buy_address_list_item_alias"));
 					map.put("textview_new_easy_buy_address_list_item_name", b.get("textview_new_easy_buy_address_list_item_name"));
 					map.put("textview_new_easy_buy_address_list_item_phone", b.get("textview_new_easy_buy_address_list_item_phone"));
-					map.put("textview_new_easy_buy_address_list_item_address", b.get("textview_new_easy_buy_address_list_item_address"));
+					map.put("textview_new_easy_buy_address_list_item_area", b.get("textview_new_easy_buy_address_list_item_area"));
+					map.put("textview_new_easy_buy_address_list_item_street", b.get("textview_new_easy_buy_address_list_item_street"));
+					map.put("textview_new_easy_buy_address_list_item_addr", b.get("textview_new_easy_buy_address_list_item_addr"));
 					listItem.add(map);
 					
 					mAdaptor.notifyDataSetChanged();  
 					lvAddr.invalidate();
 					
+					refreshView();
 					break;
 				default:
 			          break;
@@ -68,8 +85,39 @@ public class NewEasyBuyAddressListActivity extends Activity {
 				switch (resultCode) {
 				case RESULT_OK:
 					Bundle b=data.getExtras();  //data为B中回传的Intent
-					String strUser = b.getString("UserName");
-					String strPass = b.getString("Password");
+					
+					HashMap<String, Object> map = new HashMap<String, Object>();
+					String alias = (String) b.get("textview_new_easy_buy_address_list_item_alias");
+					String name = (String) b.get("textview_new_easy_buy_address_list_item_name");
+					String phone = (String) b.get("textview_new_easy_buy_address_list_item_phone");
+					String area = (String) b.get("textview_new_easy_buy_address_list_item_area");
+					String street = (String) b.get("textview_new_easy_buy_address_list_item_street");
+					String addr = (String) b.get("textview_new_easy_buy_address_list_item_addr");
+					String type = (String) b.get("operate_type");
+					int iPosition = b.getInt("position"); 
+					
+					listItem.remove(iPosition);
+					
+					if(type.equalsIgnoreCase("delete"))
+					{
+						
+					}
+					else
+					{
+						map.put("textview_new_easy_buy_address_list_item_alias", alias);
+						map.put("textview_new_easy_buy_address_list_item_name",name);
+						map.put("textview_new_easy_buy_address_list_item_phone", phone);
+						map.put("textview_new_easy_buy_address_list_item_area", area);
+						map.put("textview_new_easy_buy_address_list_item_street", street);
+						map.put("textview_new_easy_buy_address_list_item_addr", addr);
+						map.put("textview_new_easy_buy_address_list_item_default", b.get("isdefault"));
+						listItem.add(map);
+					}
+					
+					mAdaptor.notifyDataSetChanged();  
+					lvAddr.invalidate();
+					
+					refreshView();
 					break;
 				default:
 			          break;
@@ -80,51 +128,119 @@ public class NewEasyBuyAddressListActivity extends Activity {
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 	
+	
+	private void refreshView()
+	{
+		if(listItem.size() > 0)
+		{
+			lvAddr.setVisibility(ListView.VISIBLE);
+			llNoData.setVisibility(LinearLayout.INVISIBLE);
+		}
+		else
+		{
+			
+			llNoData.setVisibility(LinearLayout.VISIBLE);
+			lvAddr.setVisibility(ListView.INVISIBLE);
+		}		
+	}
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		try {
 			setContentView(R.layout.new_easy_buy_address_list);
+			
+			dbm = DatabaseManager.getInstance(this);
+			db = dbm.openDatabase();
+			
 			lvAddr = (ListView)findViewById(R.id.listview_new_easy_buy_address_list);
 			llNoData = (LinearLayout)findViewById(R.id.layout_new_easy_buy_address_no_data);			
 			
 			getAddrs();
 			
-			if(listItem.size() > 0)
-			{
-				lvAddr.setVisibility(ListView.VISIBLE);
-			}
-			else
-			{
-				
-				llNoData.setVisibility(LinearLayout.VISIBLE);
-				lvAddr.setVisibility(ListView.INVISIBLE);
-			}
+			refreshView();
+			
+			String [] from = new String[] {
+					"textview_new_easy_buy_address_list_item_alias",
+					"textview_new_easy_buy_address_list_item_name", 
+					"textview_new_easy_buy_address_list_item_phone",
+					"textview_new_easy_buy_address_list_item_area",
+					"textview_new_easy_buy_address_list_item_street",
+					"textview_new_easy_buy_address_list_item_addr",
+					};
+			int [] to = new int [] {
+					R.id.textview_new_easy_buy_address_list_item_alias,
+					R.id.textview_new_easy_buy_address_list_item_name,
+					R.id.textview_new_easy_buy_address_list_item_phone,
+					R.id.textview_new_easy_buy_address_list_item_area,
+					R.id.textview_new_easy_buy_address_list_item_street,
+					R.id.textview_new_easy_buy_address_list_item_addr};
 			
 			mAdaptor = new SimpleAdapter(
 					NewEasyBuyAddressListActivity.this, 
 					listItem, 
 					R.layout.new_easy_buy_address_list_item, 
-					new String[] {"textview_new_easy_buy_address_list_item_name", "textview_new_easy_buy_address_list_item_phone","textview_new_easy_buy_address_list_item_address"}, 
-					new int [] {R.id.textview_new_easy_buy_address_list_item_name,R.id.textview_new_easy_buy_address_list_item_phone,R.id.textview_new_easy_buy_address_list_item_address})
+					from,
+					to)
 			{
                 //在这个重写的函数里设置 每个 item 中按钮的响应事件
 				View view = null;
+				int iPos = -1;
                 @Override
                 public View getView(int position, View convertView,ViewGroup parent) {
 					try {
 						
+						iPos = position;
 						view = super.getView(position, convertView, parent);
 						
-						ImageButton btnMod=(ImageButton)view.findViewById(R.id.imageview_new_easy_buy_address_list_item_modify);
-						btnMod.setOnClickListener(new OnClickListener() {
-                            
-                            @Override
-                            public void onClick(View v) {
+						TextView tvDefault = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_default);
+						HashMap<String, Object> map = listItem.get(position);
+						if((Boolean) map.get("textview_new_easy_buy_address_list_item_default"))
+						{
+							tvDefault.setVisibility(TextView.VISIBLE);
+						}
+						else
+						{
+							tvDefault.setVisibility(TextView.INVISIBLE);
+						}
+						
+//						ImageButton btnMod=(ImageButton)view.findViewById(R.id.imageview_new_easy_buy_address_list_item_modify);
+//						btnMod.setOnClickListener(new OnClickListener() {
+//                            
+//                            @Override
+//                            public void onClick(View v) {
+//                            	Intent intent = new Intent(NewEasyBuyAddressListActivity.this,NewAddrActivity.class);
+//                            	//intent.putExtra("textview_new_easy_buy_address_list_item_alias", );
+//                            	intent.addFlags(1);
+//                            	startActivityForResult(intent, 1);
+//                            }
+//                        });
+						
+						view.setOnClickListener(new OnClickListener(){
+
+							@Override
+							public void onClick(View arg0) {
+								// TODO Auto-generated method stub
+								TextView tvAlias = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_alias);
+								TextView tvName = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_name);
+								TextView tvPhone = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_phone);
+								TextView tvArea = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_area);
+								TextView tvStreet = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_street);
+								TextView tvAddr = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_addr);
+                            	Intent intent = new Intent(NewEasyBuyAddressListActivity.this,NewAddrActivity.class);
+                            	intent.putExtra("textview_new_easy_buy_address_list_item_alias", tvAlias.getText());
+                            	intent.putExtra("textview_new_easy_buy_address_list_item_name", tvName.getText());
+                            	intent.putExtra("textview_new_easy_buy_address_list_item_phone", tvPhone.getText());
+                            	intent.putExtra("textview_new_easy_buy_address_list_item_area", tvArea.getText());
+                            	intent.putExtra("textview_new_easy_buy_address_list_item_street", tvStreet.getText());
+                            	intent.putExtra("textview_new_easy_buy_address_list_item_addr", tvAddr.getText());
                             	
-                            }
-                        });
+                            	intent.putExtra("position", iPos);
+                            	intent.addFlags(1);
+                            	startActivityForResult(intent, 1);								
+							}});
+						
 						
 					} catch (NumberFormatException e) {
 						// TODO Auto-generated catch block
@@ -193,7 +309,7 @@ public class NewEasyBuyAddressListActivity extends Activity {
 			    	  
 			    	Message message= handler.obtainMessage() ; 
 			    	message.obj = jsonout; 
-			    	message.what = 2;
+			    	message.what = Constant.GETADDR_MSG;
 			    	handler.sendMessage(message); 
 			    	} 
 		    	}; 
@@ -204,11 +320,48 @@ public class NewEasyBuyAddressListActivity extends Activity {
 		}	
     }
 	
+	private String getUserNameById(int id)
+	{
+		String name = "";
+		Cursor c = db.rawQuery("select nickname from tbl_user where id = " + id, null);// WHERE age >= ?", new String[]{"33"}); 
+		
+		while (c.moveToNext()) {
+			name = c.getString(c.getColumnIndex("nickname"));
+		}  
+		c.close();			
+		
+		return name;
+	}
+	
+	private void insertToDB(int iAddrID,boolean isdefault,String district,String street,String building,String phonenumber1 )
+	{
+		ContentValues values = new ContentValues();
+		values.put("id", iAddrID);
+		GlobalVar app = GlobalVar.getInstance();
+		values.put("subscriberid", app.getUserId());
+		values.put("isdefault", isdefault?1:0);
+		values.put("addr", district + street + building);
+		values.put("name", getUserNameById(app.getUserId()));
+		values.put("phonenumber1", phonenumber1);
+		
+		try {
+			if(-1 == db.insertOrThrow(TBL_ADDR  ,null , values))
+			{
+				Log.e("insertToDB", "Error");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			String str = e.getMessage();
+			e.printStackTrace();
+		}
+	}
+	
+	
 	private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg){
             switch(msg.what){
-            case 1:
+            case Constant.GETADDR_MSG:
                 //关闭
             	try {
             		JSONObject jsonout = (JSONObject) msg.obj;
@@ -217,11 +370,34 @@ public class NewEasyBuyAddressListActivity extends Activity {
 					
 					if(Constant.ERR_CODE_SUCCESS == iErrorCode)
 					{
-						HashMap<String, Object> map = new HashMap<String, Object>();
-						map.put("textview_new_easy_buy_address_list_item_name", 1);
-						map.put("textview_new_easy_buy_address_list_item_phone", 1);
-						map.put("textview_new_easy_buy_address_list_item_address", 1);
-						listItem.add(map);
+						JSONArray jsonAddrs = jsonout.getJSONArray("Addrs");
+						for(int shopid = 0 ; shopid < jsonAddrs.length() ; shopid++)
+						{
+							JSONObject jsonAddr = (JSONObject) jsonAddrs.get(shopid);
+							HashMap<String, Object> map = new HashMap<String, Object>();
+							int aid = jsonAddr.getInt("id");
+							map.put("textview_new_easy_buy_address_list_item_name", getUserNameById(jsonAddr.getInt("subscriberid")));
+							String phonenumber1 = jsonAddr.getString("phonenumber1");
+							map.put("textview_new_easy_buy_address_list_item_phone", phonenumber1);
+							String district = jsonAddr.getString("district");
+							map.put("textview_new_easy_buy_address_list_item_area", district);
+							String street = jsonAddr.getString("street");
+							map.put("textview_new_easy_buy_address_list_item_street", street);
+							String building = jsonAddr.getString("building");
+							map.put("textview_new_easy_buy_address_list_item_addr", building);
+							boolean isdefault = jsonAddr.getInt("isdefault")==0?false:true;
+							map.put("textview_new_easy_buy_address_list_item_default",isdefault );
+														
+							listItem.add(map);
+							
+							insertToDB(aid,isdefault,district,street,building,phonenumber1);
+							
+							mAdaptor.notifyDataSetChanged();  
+							lvAddr.invalidate();
+							refreshView();
+						}
+						
+						
 					}
 					else
 					{

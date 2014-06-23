@@ -63,14 +63,14 @@ public class HttpUtil {
 		HttpPost request = new HttpPost(url);
 		UrlEncodedFormEntity formEntity = null;
 		try {
-			formEntity = new UrlEncodedFormEntity(postParameters);
+			formEntity = new UrlEncodedFormEntity(postParameters,HTTP.UTF_8);
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         request.setEntity(formEntity);
 		request.setHeader("Accept", "application/json");
-		request.setHeader("Content-type", "application/x-www-form-urlencoded");
+		//request.setHeader("Content-type", "text/html; charset=utf-8");
 		
 		return request;
 	}
@@ -123,7 +123,7 @@ public class HttpUtil {
 		public static JSONObject queryStringForPost(String servlet,List<NameValuePair> postParameters){
 			// 根据url获得HttpPost对象
 			
-			HttpPost request = HttpUtil.getHttpPost(servlet,postParameters);
+			HttpPost request = HttpUtil.getHttpPost(servlet,postParameters);			
 			JSONObject jsoOut = null;
 			
 			try {

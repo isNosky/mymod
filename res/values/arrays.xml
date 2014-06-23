@@ -20,5 +20,16 @@
         <item>丈八街道</item>
         <item>长延堡街道</item>
         <item>大雁塔街道</item>
-    </string-array>    
+    </string-array>
+    
+    <string-array name="order_status">        
+        <item>提交</item>
+        <item>已确认</item>
+        <item>派送中</item>
+        <item>完成</item>
+        <item>客户取消</item>
+        <item>店长拒绝</item>
+    </string-array> 
+    
+    
 </resources>

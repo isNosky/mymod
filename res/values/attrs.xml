@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+
     <attr name="drawableLeft" format="reference" />
     <attr name="drawableRight" format="reference" />
     <attr name="textTitle" format="reference" />
@@ -47,4 +48,10 @@
     <attr name="jshop_textTitle" format="reference" />
     <attr name="jshop_drawableTitle" format="reference" />
     <attr name="jshop_textRight" format="reference" />
+
+    <declare-styleable name="ButtonBarContainerTheme">
+        <attr name="buttonBarStyle" format="reference" />
+        <attr name="buttonBarButtonStyle" format="reference" />
+    </declare-styleable>
+
 </resources>

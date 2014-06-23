@@ -140,6 +140,7 @@ public class PersonelActivity extends Activity {
 		if(0 == logincount)
 		{
 			btnExitLogin.setVisibility(View.GONE);
+			rlNotLoginInfo.setVisibility(View.VISIBLE);
 		}
 		else
 		{
@@ -148,26 +149,27 @@ public class PersonelActivity extends Activity {
 			btnExitLogin.setVisibility(View.VISIBLE);
 			
 			String strPhoneNum = "";
+			String strPassword = "";
 			Cursor c1 = null;
 			try {
 				c1 = db.rawQuery("select * from tbl_user where islogin=1", null);
 				
 				while (c1.moveToNext()) {
 					strPhoneNum = c1.getString(c1.getColumnIndex("phonenum"));
+					strPassword = c1.getString(c1.getColumnIndex("password"));
 				}  
-				c.close();
+				c1.close();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} 
-			
-			
+			}		
 			
 			tvUserName.setText(strPhoneNum);
 			tvUserLevel.setText("Õ≠≈∆”√ªß");
 			tvUserScore.setText("0");
 		}
-	}
+	}	
+	
 	class ClickListener implements View.OnClickListener {
         
         public void onClick(View v) {
@@ -199,6 +201,7 @@ public class PersonelActivity extends Activity {
     						public void onClick(DialogInterface dialog, int which) {
     															
     							logout();
+    							initTopUI();
     						}
     				}).setNegativeButton(getResources().getString(R.string.upomp_bypay_return), new DialogInterface.OnClickListener() {
     	             
@@ -216,8 +219,10 @@ public class PersonelActivity extends Activity {
     }
 	
 	private void logout()
-	{
-		
+	{		
+		String strSql = "update tbl_user set islogin=0";
+	    db.execSQL(strSql);
+	    
 		if(Constant.FLAG_POST_IN_JSON)
 		{	
 			Thread thread = new Thread(){ 
@@ -236,7 +241,7 @@ public class PersonelActivity extends Activity {
 			    	  
 			    	Message message= handler.obtainMessage() ; 
 			    	message.obj = jsonout; 
-			    	message.what = 1;
+			    	message.what = Constant.LOGOUT_MSG;
 			    	handler.sendMessage(message); 
 			    	} 
 		    	}; 
@@ -265,7 +270,7 @@ public class PersonelActivity extends Activity {
 			    	  
 			    	Message message= handler.obtainMessage() ; 
 			    	message.obj = jsonout; 
-			    	message.what = 1;
+			    	message.what = Constant.LOGOUT_MSG;
 			    	handler.sendMessage(message); 
 			    	} 
 		    	}; 
@@ -279,7 +284,7 @@ public class PersonelActivity extends Activity {
         @Override
         public void handleMessage(Message msg){
             switch(msg.what){
-            case 1:
+            case Constant.LOGOUT_MSG:
                 //πÿ±’
             	try {
             		JSONObject jsonout = (JSONObject) msg.obj;
@@ -329,4 +334,6 @@ public class PersonelActivity extends Activity {
 		AlertDialog alert = builder.create();
 		alert.show();
 	}
+    
+    
 }

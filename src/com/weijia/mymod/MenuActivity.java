@@ -289,12 +289,7 @@ public class MenuActivity extends Activity {
 			HashMap<String, Object> map1 = listItem.get(ii);
 			TextView tv1 = (TextView)(map1.get("textview_obj"));
 			tv1.setOnClickListener(lsnr);
-		}
-
-		//模拟第一个tab页被点击
-		HashMap<String, Object> maptmp = listItem.get(0);
-		TextView tvtmp = (TextView)(maptmp.get("textview_obj"));
-		tvtmp.performClick();
+		}		
     }
 	
 	private void getMenuByType(int product_type)
@@ -369,14 +364,14 @@ public class MenuActivity extends Activity {
 			    	try { 							    		
 			    		JSONObject jsoin = new JSONObject();
 			    		jsoin.put("Token", app.getToken());
-						jsonout = HttpUtil.queryStringForPost(Constant.LOGINSERVLET, jsoin);
+						jsonout = HttpUtil.queryStringForPost(Constant.GETMENUSERVLET, jsoin);
 			    	} catch (Exception e) { 
 			    		String str = e.getMessage();
 			    	} 
 			    	  
 			    	Message message= handler.obtainMessage() ; 
 			    	message.obj = jsonout; 
-			    	message.what = 1;
+			    	message.what = Constant.GETMENU_MSG;
 			    	handler.sendMessage(message); 
 			    	} 
 		    	}; 
@@ -404,7 +399,7 @@ public class MenuActivity extends Activity {
 				    	  
 				    	Message message= handler.obtainMessage() ; 
 				    	message.obj = jsonout; 
-				    	message.what = 1;
+				    	message.what = Constant.GETMENU_MSG;
 				    	handler.sendMessage(message); 
 				    	} 
 			    	}; 
@@ -418,7 +413,7 @@ public class MenuActivity extends Activity {
         @Override
         public void handleMessage(Message msg){
             switch(msg.what){
-            case 1:
+            case Constant.GETMENU_MSG:
                 //关闭
             	try {
             		JSONObject jsonout = (JSONObject) msg.obj;
@@ -503,6 +498,11 @@ public class MenuActivity extends Activity {
 				e.printStackTrace();
 			}
 		}
+		
+		//模拟第一个tab页被点击
+		HashMap<String, Object> maptmp = listItem.get(0);
+		TextView tvtmp = (TextView)(maptmp.get("textview_obj"));
+		tvtmp.performClick();
 		return 0;
 	}	
 	

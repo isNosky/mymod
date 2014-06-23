@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.rqmod.provider.AsyncViewTask;
 import com.rqmod.provider.DatabaseManager;
 import com.rqmod.provider.GlobalVar;
 import com.rqmod.provider.ImageManager;
@@ -21,12 +22,14 @@ import com.rqmod.provider.OrderDetail;
 import com.rqmod.util.Constant;
 import com.rqmod.util.HttpUtil;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources.NotFoundException;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -47,14 +50,18 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.SimpleAdapter.ViewBinder;
 
+@SuppressLint("NewApi")
 public class MyOderListActivity extends Activity {
 	private Button oneMonthOrders;
     private Button preMonthOrders;
     private ListView mOneMonthList;
     private ListView mPreMonthList;
+    private ListView m_CurrList;
     
     DatabaseManager dbm = null;
 	SQLiteDatabase db = null;
+	
+	ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String,Object>>();
 	
 	int Ids[] = {R.id.my_order_one_month_orders,R.id.my_order_pre_month_orders};
 	
@@ -93,13 +100,15 @@ public class MyOderListActivity extends Activity {
 				
 				if(R.id.my_order_one_month_orders == arg0.getId())
 				{
-					setOrderList(mOneMonthList);
+					m_CurrList = mOneMonthList;
+					getOrders();					
 					oneMonthOrders.setSelected(true);
 					preMonthOrders.setSelected(false);	
 				}
 				if(R.id.my_order_pre_month_orders == arg0.getId())
 				{
-					setOrderList(mPreMonthList);	
+					m_CurrList = mPreMonthList;
+					getOrders();					
 					oneMonthOrders.setSelected(false);
 					preMonthOrders.setSelected(true);	
 				}
@@ -109,13 +118,19 @@ public class MyOderListActivity extends Activity {
 		oneMonthOrders.setOnClickListener(lsnr);
 		preMonthOrders.setOnClickListener(lsnr);
 		
-		getOrders();
+		
 		
 		oneMonthOrders.performClick();
 	}
 	
 	private void getOrders()
 	{		
+		String strSQL = "delete from tbl_order";
+		db.execSQL(strSQL);
+		
+		strSQL = "delete from tbl_order_detail";
+		db.execSQL(strSQL);
+		
 		if(Constant.FLAG_POST_IN_JSON)
 		{
 			
@@ -143,7 +158,7 @@ public class MyOderListActivity extends Activity {
 			    	  
 			    	Message message= handler.obtainMessage() ; 
 			    	message.obj = jsonout; 
-			    	message.what = 1;
+			    	message.what = Constant.GETORDERS_MSG;
 			    	handler.sendMessage(message); 
 			    	} 
 		    	}; 
@@ -182,7 +197,7 @@ public class MyOderListActivity extends Activity {
 			    	  
 			    	Message message= handler.obtainMessage() ; 
 			    	message.obj = jsonout; 
-			    	message.what = 2;
+			    	message.what = Constant.ORDERHISTORY_MSG;
 			    	handler.sendMessage(message); 
 			    	} 
 		    	}; 
@@ -191,10 +206,27 @@ public class MyOderListActivity extends Activity {
           
 		}
 	}
+	
+	private String getOrderStatus(String orderstatus)
+	{
+		try {
+			String [] orderstatusarray = getResources().getStringArray(R.array.order_status);
+			return orderstatusarray[Integer.parseInt(orderstatus)];
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return orderstatus;
+	}
+	
 	private void setOrderList(ListView lv)
 	{
-		ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String,Object>>();
-		try {	
+		
+		try {
+			listItem.clear();
 			Cursor c = db.rawQuery("SELECT * FROM tbl_order", null);// WHERE age >= ?", new String[]{"33"});  
 			while (c.moveToNext()) {  
 			    int id = c.getInt(c.getColumnIndex("orderid"));  
@@ -206,10 +238,10 @@ public class MyOderListActivity extends Activity {
 				map.put("order_item_Text", id);
 			    map.put("order_item_totalPrice", totalprice);
 			    map.put("order_item_subtime", createtime);
-			    map.put("order_item_status", orderstatus);			    
+			    map.put("order_item_status", getOrderStatus(orderstatus));			    
 			    
 			    ArrayList<HashMap<String, Object>> listItem2 = new ArrayList<HashMap<String,Object>>();
-			    Cursor c1 = db.rawQuery("SELECT foodid,quantity,amount FROM tbl_order_detail where orderid = " + id, null);// WHERE age >= ?", new String[]{"33"});  
+			    Cursor c1 = db.rawQuery("SELECT * FROM tbl_order_detail where orderid = " + id, null);// WHERE age >= ?", new String[]{"33"});  
 			    while (c1.moveToNext()) {  
 			    	
 				    int foodid = c1.getInt(c1.getColumnIndex("foodid")) ;
@@ -217,17 +249,19 @@ public class MyOderListActivity extends Activity {
 				    //float amount = c1.getFloat(c1.getColumnIndex("amount")); 
 				    
 				    Cursor c2 = db.rawQuery("SELECT * FROM tbl_product where id = " + foodid, null);
-				    c2.moveToFirst();
-				    String picptah = c2.getString(c2.getColumnIndex("picturepath"));
-				    Bitmap bmp = ImageManager.getInstance(this).getBitmap(picptah);				    
-				    String productname = c2.getString(c2.getColumnIndex("productname"));				    
+				    if(c2.moveToNext())
+				    {
+				    	String picptah = c2.getString(c2.getColumnIndex("picturepath"));
 				    
-				    HashMap<String, Object> map2 = new HashMap<String, Object>();  
-				    map2.put("product_list_item_image", bmp);
-				    map2.put("order_product_item_name", productname);
-				    
-				    listItem2.add(map2);
-				    
+					    //Bitmap bmp = ImageManager.getInstance(this).getBitmap(picptah);				    
+					    String productname = c2.getString(c2.getColumnIndex("productname"));				    
+					    
+					    HashMap<String, Object> map2 = new HashMap<String, Object>();  
+					    map2.put("product_list_item_image", picptah);
+					    map2.put("order_product_item_name", productname);
+					    
+					    listItem2.add(map2);
+				    }
 				    c2.close();
 			    }	
 			    map.put("product_list_item", listItem2);		
@@ -260,7 +294,7 @@ public class MyOderListActivity extends Activity {
 			int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
 			String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
 			
-			JSONArray jsonOrders = jsonout.getJSONArray("Orders");
+			JSONArray jsonOrders = jsonout.getJSONArray("Orders");			
 			
 			for(int jsorder = 0 ; jsorder < jsonOrders.length() ; jsorder++)
 			{
@@ -273,7 +307,8 @@ public class MyOderListActivity extends Activity {
 					try {
 		            	ContentValues values = new ContentValues();
 						values.put("orderid", jsonOrder.getInt("orderID"));
-						values.put("totalprice", jsonOrder.getDouble("sumOfMoney"));
+						boolean b = jsonOrder.isNull("sumOfMoney") || !jsonOrder.has("sumOfMoney") || jsonOrder.get("sumOfMoney").toString().isEmpty();
+						values.put("totalprice", b?"0.0":String.valueOf(jsonOrder.getDouble("sumOfMoney")));
 						values.put("createtime", jsonOrder.getString("createTime"));
 						values.put("addrid", jsonOrder.getInt("orderFormAddressID"));
 						values.put("deliveriername", jsonOrder.getString("orderDeliveryName"));
@@ -295,7 +330,7 @@ public class MyOderListActivity extends Activity {
 							valuesdetail.put("quantity", od.getInt("quantity"));
 							valuesdetail.put("amount", od.getInt("amount"));
 							
-							if(-1 == db.insert(TBL_ORDER_DETAIL, null, values))
+							if(-1 == db.insertOrThrow(TBL_ORDER_DETAIL, null, valuesdetail))
 							{
 								//
 							}
@@ -321,6 +356,8 @@ public class MyOderListActivity extends Activity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		setOrderList(m_CurrList);
 	}
 	
 	private void handleGetOrderHistoryMsg(Message msg)
@@ -403,19 +440,56 @@ public class MyOderListActivity extends Activity {
 		Bundle bundle = new Bundle();
 		bundle.putParcelableArrayList("OrderHistoryList", (ArrayList<? extends Parcelable>) listItem);
 		Intent intent = new Intent(MyOderListActivity.this,OrderHistoryActivity.class);
+		intent.putExtras(bundle);
 		startActivity(intent);
 	}
+	
+	private void handleCancelOrderMsg(Message msg)
+	{
+		
+		ArrayList<ContentValues> listItem = new ArrayList<ContentValues>();
+		try {
+    		JSONObject jsonout = (JSONObject) msg.obj;
+			int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
+			String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
+			
+			if(Constant.ERR_CODE_SUCCESS == iErrorCode)
+			{
+				showDialog(getResources().getString(R.string.cancel_order_success_info));
+				MyOderListActivity.this.finish();
+			}
+			else
+			{
+				showDialog(strErrDesc);
+			}
+			
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			String str = e.getMessage();
+			e.printStackTrace();
+		} catch (Throwable e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		getOrders();
+		setOrderList(m_CurrList);
+	}
+	
 	
 	private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg){
             switch(msg.what){
-            case 1:
+            case Constant.GETORDERS_MSG:
                 //¹Ø±Õ
             	handleGetOrderMsg(msg);
             	break;
-            case 2:
+            case Constant.ORDERHISTORY_MSG:
             	handleGetOrderHistoryMsg(msg);
+                break;                
+            case Constant.CANCELORDERS_MSG:
+            	handleCancelOrderMsg(msg);
                 break;
             }
         }
@@ -456,7 +530,7 @@ public class MyOderListActivity extends Activity {
 		}
 
 		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
+		public View getView(final int position, View convertView, ViewGroup parent) {
 			// TODO Auto-generated method stub
 			if (convertView == null) { 
 				convertView = mInflater.inflate(R.layout.order_list_item, null); 					
@@ -467,6 +541,7 @@ public class MyOderListActivity extends Activity {
 			TextView tvCreateTime = (TextView)convertView.findViewById(R.id.order_item_subtime); 
 			TextView tvStatus = (TextView)convertView.findViewById(R.id.order_item_status); 
 			Button btnTrace = (Button)convertView.findViewById(R.id.order_item_track);
+			Button btnCancel = (Button)convertView.findViewById(R.id.cancel_order_button);
 			
 			RelativeLayout llayout = (RelativeLayout)convertView.findViewById(R.id.product_gallery_order_layout);
 			ImageView iv = (ImageView)llayout.findViewById(R.id.product_list_item_image);
@@ -491,9 +566,12 @@ public class MyOderListActivity extends Activity {
 			else if(1 == listItem2.size())
 			{
 				HashMap<String, Object> map2 = listItem2.get(0); 
-				Bitmap bmp = (Bitmap) map2.get("product_list_item_image");
+				//Bitmap bmp = (Bitmap) map2.get("product_list_item_image");
+				String pic = (String) map2.get("product_list_item_image");
+				iv.setTag(pic);
+				new AsyncViewTask().execute(iv);
 				String name = (String) map2.get("order_product_item_name");
-				iv.setImageBitmap(bmp);
+				//iv.setImageBitmap(bmp);
 				tv.setText(name);
 			}
 			else
@@ -501,35 +579,53 @@ public class MyOderListActivity extends Activity {
 				for(int i = 0 ; i < listItem2.size() ; i++)
 				{
 					HashMap<String, Object> map2 = listItem2.get(i); 
-					Bitmap bmp = (Bitmap) map2.get("product_list_item_image");
-					String name = (String) map2.get("order_product_item_name");
-					iv.setImageBitmap(bmp);
-					iv.setId(i);
-					if(0 == i)
-					{
-						RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(								
-			                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);							
-						llayout.addView(iv);
+					//Bitmap bmp = (Bitmap) map2.get("product_list_item_image");
+					String pic = (String) map2.get("product_list_item_image");
+					ImageView iivv = null;
+					try {
+						iivv = new ImageView(MyOderListActivity.this);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-					else
-					{
-						RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(								
-			                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-							lp.addRule(RelativeLayout.RIGHT_OF,i-1);
-						llayout.addView(iv);
+					iivv.setTag(pic);
+					new AsyncViewTask().execute(iivv);
+					String name = (String) map2.get("order_product_item_name");
+					//iv.setImageBitmap(bmp);
+					iivv.setId(i);
+					try {
+						if(0 == i)
+						{
+							RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(								
+						            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);							
+							llayout.addView(iivv);
+						}
+						else
+						{
+							RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(								
+						            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+								lp.addRule(RelativeLayout.RIGHT_OF,i-1);
+							llayout.addView(iivv);
+						}
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
 			}
 			
-			btnTrace.setOnClickListener(new OnClickListener(){
-
-				@Override
-				public void onClick(View arg0) {
-					// TODO Auto-generated method stub
-					
-					int orderId = 0;
-					getOrdersHistory(orderId);
-				}});
+			lvButtonListener lbl = new lvButtonListener(position);
+			
+			btnTrace.setOnClickListener(lbl);
+			
+			if(!order_item_status.equalsIgnoreCase("�ύ"))
+			{
+				btnCancel.setVisibility(Button.INVISIBLE);
+			}
+			
+			btnCancel.setOnClickListener(lbl);
+			
+			llayout.setOnClickListener(lbl);
 			
 			return convertView;
 		}
@@ -544,5 +640,77 @@ public class MyOderListActivity extends Activity {
 			mData = data;
 		}
     	
+    }
+    
+    class lvButtonListener implements OnClickListener { 
+        private int position ; 
+
+        lvButtonListener( int pos) { 
+            position = pos; 
+        } 
+        
+        @Override 
+        public void onClick( View v) { 
+            int vid= v.getId(); 
+            HashMap<String, Object> map = listItem.get(position);
+            int orderId = (Integer) map.get("order_item_Text");
+            
+            switch(vid)
+            {
+            case R.id.order_item_track:
+            	getOrdersHistory(orderId);
+            	break;
+            case R.id.cancel_order_button:
+            	cancelOrder(orderId);
+            	break;
+            case R.id.product_gallery_order_layout:
+            	Intent intent = new Intent(MyOderListActivity.this,GoodsInfoActivity.class);
+            	intent.putExtra("goodstype", "order");
+				intent.putExtra("tbl_order_detail", orderId);
+				startActivity(intent);
+				break;
+            }
+        } 
+        
+        
+    } 
+    
+    private void cancelOrder(final int orderId)
+    {
+    	if(Constant.FLAG_POST_IN_JSON)
+		{
+			
+		}
+		else
+		{            
+			Thread thread = new Thread(){ 
+		    	@Override 
+			    public void run() { 	
+		    		JSONObject jsonout = null;
+			    	try { 							    		
+			    		//MyModApp app = (MyModApp)FillOrderActivity.this.getApplication();
+						HttpPost request = new HttpPost();
+						List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+			            //postParameters.add(new BasicNameValuePair("CellphoneNumber", app.getCellphoneNumber()));  
+						postParameters.add(new BasicNameValuePair("UserId", String.valueOf(GlobalVar.getInstance().getUserId())));
+						postParameters.add(new BasicNameValuePair("OrderId", String.valueOf(orderId)));
+						postParameters.add(new BasicNameValuePair("Token", GlobalVar.getInstance().getToken()));
+			            
+			            jsonout = HttpUtil.queryStringForPost(Constant.CANCELORDERSSERVLET , postParameters);
+			    	} catch (Exception e) { 
+			    		String str = e.getMessage();
+			    		e.printStackTrace();
+			    	} 
+			    	  
+			    	Message message= handler.obtainMessage() ; 
+			    	message.obj = jsonout; 
+			    	message.what = Constant.CANCELORDERS_MSG;
+			    	handler.sendMessage(message); 
+			    	} 
+		    	}; 
+		    	thread.start(); 
+		    	thread = null;  
+          
+		}
     }
 }
