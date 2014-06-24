@@ -68,6 +68,7 @@ public class RegisterActivity extends Activity {
 					if(!strPass.equals(strConfirmPass))
 					{
 						showDialog(getResources().getString(R.string.must_password_equal));
+						return;
 					}					
 					
 					if(Constant.FLAG_POST_IN_JSON)

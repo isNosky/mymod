@@ -155,6 +155,10 @@ public class FillOrderActivity extends Activity {
 				{
 					return;
 				}
+				if(CheckReceiveInfo())
+				{
+					return;
+				}
 				getJSONProduct();				
 				DoOrder();
 				
