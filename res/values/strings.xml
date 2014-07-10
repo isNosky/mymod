@@ -351,6 +351,7 @@
     <string name="upomp_bypay_updatelist">更新列表</string>
     <string name="upomp_bypay_balance">余额查询</string>
     <string name="upomp_bypay_changepswsucceed">修改密码成功!</string>
+    <string name="upomp_bypay_changepswfail">修改密码失败!</string>
     <string name="upomp_bypay_newpsw">"新   密   码  :"</string>
     <string name="upomp_bypay_enternewpsw">确认新密码:</string>
     <string name="upomp_bypay_logined">已登录</string>
@@ -1369,7 +1370,7 @@
     <string name="coupon_gift_card_no_coupon">还没有优惠券哦！</string>
     <string name="coupon_gift_card_coupon_loading_error">优惠券加载失败!</string>
     <string name="product_inventory_title_string">商品清单</string>
-    <string name="product_inventory_return_cart_string">返回购物车修改>></string>
+    <string name="product_inventory_return_cart_string">返回修改>></string>
     <string name="product_inventory_string">查看商品清单</string>
     <string name="product_delete_string">请问您是否要删除这%1$s种商品?</string>
     <string name="order_commodity_no_stock">无货啦!</string>
@@ -1672,9 +1673,18 @@
     <string name="title_activity_new_addr">NewAddrActivity</string>
     <string name="order_time_forbiden">该时间段不允许订餐</string>
     <string name="title_activity_welcome">WelcomeActivity</string>
-	<string name="reveive_info_not_completed">收货人信息不完整，请点击更新</string>
-	<string name="shop_not_selected">门店信息没有选择，请点击选择</string>
-	<string name="order_success_info">下订单成功，请在个人信息页中查看订单详情</string>
-	<string name="cancel_order_success_info">取消订单成功</string>
-	<string name="cancel_order">订单取消</string>
+    <string name="reveive_info_not_completed">收货人信息不完整，请点击更新</string>
+    <string name="shop_not_selected">门店信息没有选择，请点击选择</string>
+    <string name="order_success_info">下订单成功，请在个人信息页中查看订单详情</string>
+    <string name="cancel_order_success_info">取消订单成功</string>
+    <string name="cancel_order">订单取消</string>
+    <string name="title_activity_mod_pass">ModPassActivity</string>
+    <string name="username_hint">请输入12字符以内的字母和数字</string>
+    <string name="password_hint">请输入16字符以内的字母、数字或者符号</string>
+    <string name="no_goods_selected">尚未选择任何商品,请选择后结算</string>
+    <string name="title_activity_image">ImageActivity</string>
+    <string name="title_activity_software_param">SoftwareParamActivity</string>
+	<string name="token_invalid_login_tip">您的登录信息已经失效，请重新登录</string>
+    <string name="goto_network_setting">去设置网络</string>
+    <string name="no_network_tip">网络未连接</string>
 </resources>

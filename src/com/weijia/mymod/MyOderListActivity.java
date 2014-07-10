@@ -1,10 +1,14 @@
 package com.weijia.mymod;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpPost;
@@ -81,13 +85,10 @@ public class MyOderListActivity extends Activity {
 		preMonthOrders = (Button)findViewById(R.id.my_order_pre_month_orders);
 		mOneMonthList = (ListView)findViewById(R.id.my_order_list_one_month);
 		mPreMonthList = (ListView)findViewById(R.id.my_order_list_pre_month);
-//		oneMonthOrders.setSelected(true);
-//		preMonthOrders.setSelected(false);		
 		
 		OnClickListener lsnr = new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
 				Button btn = (Button)findViewById(arg0.getId());
 				btn.setTextColor(getResources().getColor(R.color.green));
 				for(int i = 0 ; i < Ids.length ; i++ )
@@ -101,14 +102,14 @@ public class MyOderListActivity extends Activity {
 				if(R.id.my_order_one_month_orders == arg0.getId())
 				{
 					m_CurrList = mOneMonthList;
-					getOrders();					
+					getOrders(R.id.my_order_one_month_orders);					
 					oneMonthOrders.setSelected(true);
 					preMonthOrders.setSelected(false);	
 				}
 				if(R.id.my_order_pre_month_orders == arg0.getId())
 				{
 					m_CurrList = mPreMonthList;
-					getOrders();					
+					getOrders(R.id.my_order_pre_month_orders);					
 					oneMonthOrders.setSelected(false);
 					preMonthOrders.setSelected(true);	
 				}
@@ -119,11 +120,11 @@ public class MyOderListActivity extends Activity {
 		preMonthOrders.setOnClickListener(lsnr);
 		
 		
-		
+		GlobalVar.getInstance().saveActivity(this);
 		oneMonthOrders.performClick();
 	}
 	
-	private void getOrders()
+	private void getOrders(final int iType)
 	{		
 		String strSQL = "delete from tbl_order";
 		db.execSQL(strSQL);
@@ -141,15 +142,41 @@ public class MyOderListActivity extends Activity {
 		    	@Override 
 			    public void run() { 	
 		    		JSONObject jsonout = null;
-			    	try { 							    		
-			    		
-						HttpPost request = new HttpPost();
+			    	try {
 						List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 			            //postParameters.add(new BasicNameValuePair("CellphoneNumber", app.getCellphoneNumber()));   
 						postParameters.add(new BasicNameValuePair("SubscriberID", String.valueOf(GlobalVar.getInstance().getUserId())));
 						postParameters.add(new BasicNameValuePair("Token", GlobalVar.getInstance().getToken()));
 						//postParameters.add(new BasicNameValuePair("OrderID", "6"));
-			            
+						SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");     
+						Date curDate = new Date(System.currentTimeMillis());//获取当前时间  
+						Calendar calendar = Calendar.getInstance();
+						calendar.setTime(curDate);
+						
+						
+			            if(R.id.my_order_one_month_orders == iType)
+			            {
+			            	String str = formatter.format(curDate);  
+			            	calendar.add(Calendar.MONTH, -1);
+			            	Date monthago = calendar.getTime();
+			            	String str2 = formatter.format(monthago);  
+			            	postParameters.add(new BasicNameValuePair("start_date", str));
+			            	postParameters.add(new BasicNameValuePair("end_date", str2));
+			            }
+			            else if(R.id.my_order_pre_month_orders == iType)
+			            {
+			            	String str = formatter.format(curDate);  
+			            	calendar.add(Calendar.MONTH, -1);
+			            	Date monthago = calendar.getTime();
+			            	String str2 = formatter.format(monthago);  
+			            	
+			            	calendar.add(Calendar.MONTH, -4);
+			            	Date monthsago = calendar.getTime();
+			            	String str3 = formatter.format(monthsago);  
+			            	
+			            	postParameters.add(new BasicNameValuePair("start_date", str2));
+			            	postParameters.add(new BasicNameValuePair("end_date", str3));			            	
+			            }
 			            jsonout = HttpUtil.queryStringForPost(Constant.GETORDERSSERVLET, postParameters);
 			    	} catch (Exception e) { 
 			    		String str = e.getMessage();
@@ -180,9 +207,7 @@ public class MyOderListActivity extends Activity {
 		    	@Override 
 			    public void run() { 	
 		    		JSONObject jsonout = null;
-			    	try { 							    		
-			    		//MyModApp app = (MyModApp)FillOrderActivity.this.getApplication();
-						HttpPost request = new HttpPost();
+			    	try { 					
 						List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 			            //postParameters.add(new BasicNameValuePair("CellphoneNumber", app.getCellphoneNumber()));  
 						postParameters.add(new BasicNameValuePair("UserId", String.valueOf(GlobalVar.getInstance().getUserId())));
@@ -289,13 +314,18 @@ public class MyOderListActivity extends Activity {
 	
 	private void handleGetOrderMsg(Message msg)
 	{
+		String strSQL = "delete from tbl_order";
+		db.execSQL(strSQL);
+		strSQL = "delete from tbl_order_detail";
+		db.execSQL(strSQL);
+		
 		try {
     		JSONObject jsonout = (JSONObject) msg.obj;
 			int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
 			String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
 			
 			JSONArray jsonOrders = jsonout.getJSONArray("Orders");			
-			
+			boolean bHasOrder = false;
 			for(int jsorder = 0 ; jsorder < jsonOrders.length() ; jsorder++)
 			{
 				JSONObject jsonOrder = (JSONObject) jsonOrders.get(jsorder);
@@ -313,8 +343,16 @@ public class MyOderListActivity extends Activity {
 						values.put("addrid", jsonOrder.getInt("orderFormAddressID"));
 						values.put("deliveriername", jsonOrder.getString("orderDeliveryName"));
 						values.put("deliveriertel", jsonOrder.getString("orderDeliveryTel"));
-						values.put("orderstatus", jsonOrder.getString("orderCurrentStatus"));
+						String order_item_status = jsonOrder.getString("orderCurrentStatus");
+						values.put("orderstatus", order_item_status);
 						values.put("orderfromshopid", jsonOrder.getInt("orderFromShop"));
+						if((!order_item_status.equalsIgnoreCase("完成"))
+								&& (!order_item_status.equalsIgnoreCase("客户取消"))
+								&& (!order_item_status.equalsIgnoreCase("店长拒绝")))
+						{
+							bHasOrder = true;
+						}
+						
 						if(-1 == db.insert(TBL_ORDER, null, values))
 						{
 							//
@@ -348,12 +386,24 @@ public class MyOderListActivity extends Activity {
 					showDialog(strErrDesc);
 				}
 			}
+			
+			if(bHasOrder)
+			{
+				Timer timer = new Timer();
+				TimerTask task = new TimerTask() {
+				   @Override
+				   public void run() {
+					   Message message= handler.obtainMessage() ; 
+					   message.what = Constant.TIMER_MSG;
+					   handler.sendMessage(message); 
+				   }
+				  };
+				timer.schedule(task, 1000 * 10); //10秒后
+			}
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			String str = e.getMessage();
 			e.printStackTrace();
 		} catch (Throwable e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -472,17 +522,50 @@ public class MyOderListActivity extends Activity {
 			e.printStackTrace();
 		}
 		
-		getOrders();
+		getOrders(R.id.my_order_one_month_orders);
 		setOrderList(m_CurrList);
 	}
 	
-	
+	public void RedirectLogin()
+    {
+    	AlertDialog.Builder dialog=new AlertDialog.Builder(MyOderListActivity.this);
+		dialog.setTitle(getResources().getString(R.string.token_invalid_login_tip))
+			.setIcon(android.R.drawable.ic_dialog_info)
+			.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					Intent intent = new Intent(MyOderListActivity.this,LoginActivity.class);
+					intent.setFlags(Constant.LOGIN_MSG);
+					startActivityForResult(intent,Constant.LOGIN_MSG);
+				}
+		}).create().show();
+    }
 	private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg){
+        	
+        	JSONObject jsonout = (JSONObject) msg.obj;
+			try {
+				int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
+				
+				switch(iErrorCode)
+				{
+				case Constant.ERR_CODE_SUCCESS:
+					break;
+				case Constant.ERR_CODE_TOKEN_INVALID:
+					RedirectLogin();
+					break;
+				default:
+					break;
+				}
+				
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
             switch(msg.what){
             case Constant.GETORDERS_MSG:
-                //鹿脴卤脮
             	handleGetOrderMsg(msg);
             	break;
             case Constant.ORDERHISTORY_MSG:
@@ -491,6 +574,9 @@ public class MyOderListActivity extends Activity {
             case Constant.CANCELORDERS_MSG:
             	handleCancelOrderMsg(msg);
                 break;
+            case Constant.TIMER_MSG:
+            	oneMonthOrders.performClick();
+            	break;
             }
         }
     };
@@ -499,7 +585,7 @@ public class MyOderListActivity extends Activity {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage(msg)
 		       .setCancelable(false)
-		       .setPositiveButton("脠路露篓", new DialogInterface.OnClickListener() {
+		       .setPositiveButton("确定", new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
 		           }
 		       });
@@ -592,20 +678,22 @@ public class MyOderListActivity extends Activity {
 					new AsyncViewTask().execute(iivv);
 					String name = (String) map2.get("order_product_item_name");
 					//iv.setImageBitmap(bmp);
-					iivv.setId(i);
+					iivv.setId(i+4096);
+					iivv.setPadding(2, 1, 2, 1);
 					try {
 						if(0 == i)
 						{
 							RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(								
 						            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);							
-							llayout.addView(iivv);
+							llayout.addView(iivv,lp);
 						}
 						else
 						{
 							RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(								
 						            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-								lp.addRule(RelativeLayout.RIGHT_OF,i-1);
-							llayout.addView(iivv);
+								lp.addRule(RelativeLayout.RIGHT_OF,i+4095);
+								//lp.addRule(RelativeLayout.ALIGN_RIGHT
+							llayout.addView(iivv,lp);
 						}
 					} catch (Exception e) {
 						// TODO Auto-generated catch block

@@ -1,5 +1,7 @@
 package com.weijia.mymod;
 
+import com.rqmod.provider.GlobalVar;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.TabActivity;
@@ -17,7 +19,7 @@ public class MainActivity extends TabActivity {
 	private TabHost tabHost;
 	
 	private static final String HOME = "主页";    
-	private static final String BOX = "购物车";    
+	//private static final String BOX = "购物车";    
 	private static final String MY = "我的"; 
 	
 	private Intent homeIntent;
@@ -34,11 +36,12 @@ public class MainActivity extends TabActivity {
 		prepareIntent();  
         setupIntent(); 
         
+        GlobalVar.getInstance().saveActivity(this);
         //ListenShopCar();
 	}
 	 private void setupIntent(){  
 	        tabHost.addTab(buildTabSpec(HOME,R.drawable.home_w, homeIntent));  
-	        tabHost.addTab(buildTabSpec(BOX,R.drawable.box, boxIntent));  
+	        //tabHost.addTab(buildTabSpec(BOX,R.drawable.box, boxIntent));  
 	        tabHost.addTab(buildTabSpec(MY,R.drawable.my, myIntent));  
 
 	    }  

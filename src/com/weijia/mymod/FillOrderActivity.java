@@ -55,7 +55,8 @@ public class FillOrderActivity extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
-		initReceiveInfo();
+		setReceiveInfo(data);
+		//initReceiveInfo();
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
@@ -146,7 +147,19 @@ public class FillOrderActivity extends Activity {
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub			
 				
-				if(CheckTime())
+				if(CheckLogined())
+				{
+					Intent intent = new Intent(FillOrderActivity.this,LoginActivity.class);
+					startActivity(intent);
+					return;
+				}
+				
+//				if(CheckTime())
+//				{
+//					return;
+//				}
+				
+				if(CheckReceiveInfo())
 				{
 					return;
 				}
@@ -155,10 +168,7 @@ public class FillOrderActivity extends Activity {
 				{
 					return;
 				}
-				if(CheckReceiveInfo())
-				{
-					return;
-				}
+				
 				getJSONProduct();				
 				DoOrder();
 				
@@ -192,15 +202,22 @@ public class FillOrderActivity extends Activity {
 			}});
 		
 		getShops();
+		
+		GlobalVar.getInstance().saveActivity(this);
 	}
 
-	private boolean CheckTime()
+	private int getCurTime()
 	{
-		SimpleDateFormat formatter = new SimpleDateFormat   ("HH:mm:ss");     
+		SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");     
 		Date curDate = new Date(System.currentTimeMillis());//获取当前时间     
 		String str = formatter.format(curDate);     
 		
-		int iCurTime = str2int(str);
+		return str2int(str);
+	}
+	
+	private boolean CheckTime()
+	{
+		int iCurTime = getCurTime();
 		if(( (iCurTime > m_iStartA) &&  (iCurTime < m_iEndA) )
 				&& ((iCurTime > m_iStartB) &&  (iCurTime < m_iEndB)))
 		{
@@ -213,7 +230,7 @@ public class FillOrderActivity extends Activity {
 	@SuppressLint("NewApi")
 	private boolean CheckReceiveInfo()
 	{
-		if(-1 == m_iShopId)
+		if(nickname.isEmpty() || addr.isEmpty() || phonenumber1.isEmpty())		
 		{
 			showDialog(getResources().getString(R.string.reveive_info_not_completed));
 			return true;
@@ -226,6 +243,18 @@ public class FillOrderActivity extends Activity {
 		if(-1 == m_iShopId)
 		{
 			showDialog(getResources().getString(R.string.shop_not_selected));
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean CheckLogined()
+	{
+		GlobalVar app = GlobalVar.getInstance();		
+		if(-1 == app.getUserId())
+		{
+			showDialog(getResources().getString(R.string.login_first));
+			
 			return true;
 		}
 		return false;
@@ -345,16 +374,33 @@ public class FillOrderActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent(FillOrderActivity.this,NewAddrActivity.class);
+				Intent intent = new Intent(FillOrderActivity.this,NewEasyBuyAddressListActivity.class);
+				//Intent intent = new Intent(FillOrderActivity.this,NewAddrActivity.class);
+				intent.setFlags(101);
 				startActivityForResult(intent,2);
 			}});
 		
 	}
 	
+	private void setReceiveInfo(Intent data)
+	{
+		if(null == data)
+			return;
+    	nickname = data.getStringExtra("textview_new_easy_buy_address_list_item_name");
+    	phonenumber1 = data.getStringExtra("textview_new_easy_buy_address_list_item_phone");
+    	addr = data.getStringExtra("textview_new_easy_buy_address_list_item_area")
+    			+ data.getStringExtra("textview_new_easy_buy_address_list_item_street")
+    			+data.getStringExtra("textview_new_easy_buy_address_list_item_addr");
+    	tvReceiverName.setText(nickname);
+		tvMobileContent.setText((!phonenumber1.isEmpty())?phonenumber1:phonenumber2);
+		tvAddr.setText(addr);
+	}
+	
 	@SuppressLint("NewApi")
 	private void initReceiveInfo()
 	{
-		Cursor c = db.rawQuery("select id,name,phonenumber1,phonenumber2,addr from tbl_addr where isdefault = 1", null);
+		GlobalVar app = GlobalVar.getInstance(); 
+		Cursor c = db.rawQuery("select id,name,phonenumber1,phonenumber2,addr from tbl_addr where isdefault = 1 and subscriberid = " + app.getUserId(), null);
 		
 		nickname = ""; 
 		addr = "";
@@ -391,9 +437,18 @@ public class FillOrderActivity extends Activity {
 				//添加按钮，android.content.DialogInterface.OnClickListener.OnClickListener
 				//String[] items = (String[]) lstShops.toArray(new String[lstShops.size()]);
 				
+				int iCurTime = getCurTime();
 				for(int i = 0 ; i < lstShops.size() ; i++)
 				{
 					HashMap<String, Object> map = lstShops.get(i);
+					int iInterval = (Integer)map.get("servernowtime") - (Integer)map.get("preshopquerytime");
+					
+					if(( (iCurTime >= (Integer)map.get("nosalestarttime_a")) &&  (iCurTime <= (Integer)map.get("nosaleendtime_a")) )
+							|| ((iCurTime >= (Integer)map.get("nosalestarttime_b")) &&  (iCurTime <= (Integer)map.get("nosaleendtime_b"))
+							||(iInterval > 10)))
+					{
+						continue;
+					}
 					ll.add((String) map.get("shopname"));
 				}
 				String[] items = (String[]) ll.toArray(new String[ll.size()]);
@@ -435,6 +490,26 @@ public class FillOrderActivity extends Activity {
 		alert.show();
 	}
 	
+	private void clearShopCar()
+	{
+		String strSQL = "delete from tbl_shopcar";
+		db.execSQL(strSQL);
+	}
+	
+	public void RedirectLogin()
+    {
+    	AlertDialog.Builder dialog=new AlertDialog.Builder(FillOrderActivity.this);
+		dialog.setTitle(getResources().getString(R.string.token_invalid_login_tip))
+			.setIcon(android.R.drawable.ic_dialog_info)
+			.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					Intent intent = new Intent(FillOrderActivity.this,LoginActivity.class);
+					intent.setFlags(Constant.LOGIN_MSG);
+					startActivityForResult(intent,Constant.LOGIN_MSG);
+				}
+		}).create().show();
+    }
 	private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg){
@@ -446,18 +521,24 @@ public class FillOrderActivity extends Activity {
 					int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
 					String strErrDesc = (jsonout.has(Constant.ERRDESC)? jsonout.getString(Constant.ERRDESC):"");
 					
-					if(Constant.ERR_CODE_SUCCESS == iErrorCode)
+					switch(iErrorCode)
 					{
+					case Constant.ERR_CODE_SUCCESS:
 						//下订单成功
 						showDialog(R.string.order_success_info);
+						clearShopCar();
 						FillOrderActivity.this.finish();
 						Intent intent = new Intent(FillOrderActivity.this,MyOderListActivity.class);
 						startActivity(intent);
-					}
-					else
-					{
+						break;
+					case Constant.ERR_CODE_TOKEN_INVALID:
+						RedirectLogin();
+						break;
+					default:
 						showDialog(strErrDesc);
+						break;
 					}
+					
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					String str = e.getMessage();
@@ -474,9 +555,10 @@ public class FillOrderActivity extends Activity {
             		JSONObject jsonout = (JSONObject) msg.obj;
 					int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
 					String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
-					
-					if(Constant.ERR_CODE_SUCCESS == iErrorCode)
+										
+					switch(iErrorCode)
 					{
+					case Constant.ERR_CODE_SUCCESS:
 						JSONArray jsonShops = jsonout.getJSONArray("Shops");
 						for(int shopid = 0 ; shopid < jsonShops.length() ; shopid++)
 						{
@@ -489,12 +571,6 @@ public class FillOrderActivity extends Activity {
 								values.put("shopname", shopname);
 								JSONArray jaProducts = jsonShop.getJSONArray("productIDs");
 								values.put("productids", jaProducts.toString());	
-								
-								HashMap<String, Object> map = new HashMap<String, Object>();
-								map.put("shopid", iShopID);
-								map.put("shopname", shopname);
-								lstShops.add(map);
-								
 								if(-1 == db.insert(TBL_SHOP, null, values))
 								{
 									//
@@ -514,16 +590,20 @@ public class FillOrderActivity extends Activity {
 //										//
 //									}
 //								}	
+								int iStartA = 0;
+								int iEndA = 0;
+								int iStartB = 0;
+								int iEndB = 0;
 								
 								ContentValues valuests = new ContentValues();				
 								if((jsonShop.has("nosalestarttime_a") && jsonShop.has("nosaleendtime_a"))
 										||(jsonShop.isNull("nosalestarttime_a") || jsonShop.isNull("nosaleendtime_a")))
 								{													
 									valuests.put("shopid", iShopID);
-									m_iStartA = str2int(jsonShop.getString("nosalestarttime_a"));
-									m_iEndA = str2int(jsonShop.getString("nosaleendtime_a"));
-									valuests.put("starttime", m_iStartA);
-									valuests.put("endtime", m_iEndA);
+									iStartA = str2int(jsonShop.getString("nosalestarttime_a"));
+									iEndA = str2int(jsonShop.getString("nosaleendtime_a"));
+									valuests.put("starttime", iStartA);
+									valuests.put("endtime", iEndA);
 									if(-1 == db.insert(TBL_SHOP_DELIVERY_TIMES, null, values))
 									{
 										//
@@ -535,26 +615,51 @@ public class FillOrderActivity extends Activity {
 								{
 									valuests.clear();							
 									valuests.put("shopid", iShopID);
-									m_iStartB = str2int(jsonShop.getString("nosalestarttime_b"));
-									m_iEndB = str2int(jsonShop.getString("nosaleendtime_b"));
-									valuests.put("starttime", m_iStartB);
-									valuests.put("endtime", m_iEndB);
+									iStartB = str2int(jsonShop.getString("nosalestarttime_b"));
+									iEndB = str2int(jsonShop.getString("nosaleendtime_b"));
+									valuests.put("starttime", iStartB);
+									valuests.put("endtime", iEndB);
 									if(-1 == db.insert(TBL_SHOP_DELIVERY_TIMES, null, values))
 									{
 										//
 									}
 								}
+								
+								int preshopquerytime = 0;
+								int servernowtime = 0;
+								if((jsonShop.has("preshopquerytime") && jsonShop.has("servernowtime"))
+										||(jsonShop.isNull("preshopquerytime") || jsonShop.isNull("servernowtime")))
+									{
+										preshopquerytime = str2int(jsonShop.getString("preshopquerytime"));
+										servernowtime = str2int(jsonShop.getString("servernowtime"));
+									}
+								
+								HashMap<String, Object> map = new HashMap<String, Object>();
+								map.put("shopid", iShopID);
+								map.put("shopname", shopname);
+								map.put("nosalestarttime_a", iStartA);
+								map.put("nosaleendtime_a", iStartA);
+								map.put("nosalestarttime_b", iStartB);
+								map.put("nosaleendtime_b", iStartB);
+								map.put("preshopquerytime", preshopquerytime);
+								map.put("servernowtime", servernowtime);
+								lstShops.add(map);
+								
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
 								String str = e.getMessage();
 								e.printStackTrace();
 							}
 						}
-					}
-					else
-					{
+						break;
+					case Constant.ERR_CODE_TOKEN_INVALID:
+						RedirectLogin();
+						break;
+					default:
 						showDialog(strErrDesc);
+						break;
 					}
+					
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					String str = e.getMessage();

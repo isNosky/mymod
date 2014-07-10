@@ -5,7 +5,7 @@
     android:orientation="vertical" >
 
     <RelativeLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@drawable/android_title_bg"
         android:gravity="center_vertical" >
@@ -39,7 +39,8 @@
             android:layout_alignParentRight="true"
             android:gravity="center"
             android:orientation="horizontal"             
-			android:background="@drawable/product_add_to_car_button_selector" >
+			android:background="@drawable/product_add_to_car_button_selector" 
+			android:visibility="gone">
 
 			<ImageView
                 android:id="@+id/shop_car_add"
@@ -57,14 +58,15 @@
 			    android:textColor="@color/im_button_text_normal"
 			    android:textSize="@dimen/im_button_text_size" />
 
-            <!--  
+              
             <ImageView
                 android:id="@+id/set"
                 android:layout_width="30dp"
                 android:layout_height="wrap_content"
                 android:src="@drawable/actionbar_more_icon" />
-            -->
+            
         </LinearLayout>
+
     </RelativeLayout>
 
 </LinearLayout>

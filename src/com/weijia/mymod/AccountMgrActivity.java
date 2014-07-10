@@ -1,5 +1,7 @@
 package com.weijia.mymod;
 
+import com.rqmod.provider.GlobalVar;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.widget.RelativeLayout;
 public class AccountMgrActivity extends Activity implements View.OnClickListener {
 	
 	private RelativeLayout easyBuyLayout;
+	private RelativeLayout my_account_safe;
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 	
@@ -26,6 +29,11 @@ public class AccountMgrActivity extends Activity implements View.OnClickListener
 		}
 		easyBuyLayout = (RelativeLayout)findViewById(R.id.my_easy_buy);
 		easyBuyLayout.setOnClickListener((OnClickListener) this);
+		
+		my_account_safe = (RelativeLayout)findViewById(R.id.my_account_safe);
+		my_account_safe.setOnClickListener((OnClickListener) this);
+		
+		GlobalVar.getInstance().saveActivity(this);
 	}
 		
 	public void onClick(View v) {
@@ -36,8 +44,14 @@ public class AccountMgrActivity extends Activity implements View.OnClickListener
             	Intent intent = new Intent(AccountMgrActivity.this, NewEasyBuyAddressListActivity.class);
                 //intent.putExtra("title", getString(0x7f0b0367));
                 startActivity(intent);
+                break;
             }
-            break;
+            case R.id.my_account_safe:
+            {
+            	Intent intent = new Intent(AccountMgrActivity.this, ModPassActivity.class);                
+                startActivity(intent);
+                break;
+            }            
         }
 	}
 }

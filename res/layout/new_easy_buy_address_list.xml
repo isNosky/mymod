@@ -20,6 +20,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/layout_addr_mgr_header"
         android:cacheColorHint="@color/transparent"
-        android:listSelector="@color/transparent" />
+        android:listSelector="@color/transparent" 
+        android:clickable="true"
+        />
 
 </RelativeLayout>

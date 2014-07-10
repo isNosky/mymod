@@ -18,9 +18,12 @@ import com.rqmod.provider.GlobalVar;
 import com.rqmod.provider.ImageManager;
 import com.rqmod.util.Constant;
 import com.rqmod.util.HttpUtil;
+import com.rqmod.util.MyProgressDialog;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.app.TabActivity;
 import android.content.ContentValues;
 import android.content.Context;
@@ -41,6 +44,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -55,6 +61,13 @@ public class MenuActivity extends Activity {
 	
 	
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		
+		getMenu();
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+
 	private static final String TBL_SHOPCAR = "tbl_shopcar";
 	private static final int TEXTVIEW_ID_OFFSET = 2048;
 	//int [] Ids = {R.id.quanbu,R.id.zhushi,R.id.yinliao,R.id.zhou};
@@ -63,9 +76,13 @@ public class MenuActivity extends Activity {
 	LinearLayout llShopCar = null;
 	SQLiteDatabase db = null;
 	DatabaseManager dbm = null;
-
+	Button btnJieSuan = null;
 	TabHost tabHost = null;
+	TextView tvTotalPrice = null;
+	float fTotalPrice = 0;
 	ArrayList<HashMap<String, Object>> listItem = new ArrayList<HashMap<String,Object>>();		
+	
+	//private ProgressDialog _processBar = null;
 	
 	long mExitTime = 0;
 	@Override
@@ -78,7 +95,8 @@ public class MenuActivity extends Activity {
                      mExitTime = System.currentTimeMillis();
 
              } else {
-                     finish();
+                     GlobalVar.getInstance().exitSystem();
+                     GlobalVar.getInstance().clearDB(this);
              }
              return true;
 		 }
@@ -91,18 +109,20 @@ public class MenuActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		// 设置标题
 		setTitle("魏家凉皮-菜品");
-		// 设置当前Activity界面布局
+	
 		setContentView(R.layout.activity_main);
 		dbm = DatabaseManager.getInstance(this);
 		db = dbm.openDatabase();
 		
+		GlobalVar.getInstance().saveActivity(this);
+		
 		tabHost = ((TabActivity)getParent()).getTabHost();
-		
+		tvTotalPrice = (TextView)findViewById(R.id.cart_count_price_tv);
 		lvMenu = (ListView)findViewById(R.id.product_list);	
-
 		
+		clearShopCar();
 		getMenu();
-		initView();		
+		//initView();		
 		
 		vShopCar = (ImageView)findViewById(R.id.shop_car_add);
 		llShopCar = (LinearLayout)findViewById(R.id.ll_add_to_car);
@@ -129,7 +149,7 @@ public class MenuActivity extends Activity {
 				    	  values.put("productname", strName);
 				    	  values.put("productid", productid);
 				    	  values.put("unitprice", Float.parseFloat(strPrice.substring(4)));
-				    	  values.put("buycount", 1);
+				    	  values.put("buycount", 0);
 				    	  
 						  Cursor count = db.rawQuery("select count(*) goodscount from tbl_shopcar where productid = " + productid, null);
 						  count.moveToFirst();
@@ -183,23 +203,55 @@ public class MenuActivity extends Activity {
 							tabHost.setCurrentTab(1);
 						}
 				}).setNegativeButton(getResources().getString(R.string.menu_remain), new DialogInterface.OnClickListener() {
-	             
-
-	            public void onClick(DialogInterface dialog, int which) {
+	              public void onClick(DialogInterface dialog, int which) {
 	                // TODO Auto-generated method stub
 	                dialog.cancel();//取消弹出框
 	            }
 	        }).create().show();
-			}
-			
+			}			
 		});
+		
+		btnJieSuan = (Button)findViewById(R.id.cart_settle_accounts_but);
+		
+		btnJieSuan.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				
+				if(CheckGoods())
+				{
+					return;
+				}
+				
+				Bundle bd = new Bundle();
+				Intent intent = new Intent(MenuActivity.this,FillOrderActivity.class);
+				startActivity(intent);
+			}});
 	}
 	
+	private boolean CheckGoods()
+	{
+		if(getTotalPrice() == 0)
+		{
+			showDialog(getResources().getString(R.string.no_goods_selected));
+			return true;
+		}
+		return false;
+	}
+	private void showDialog(String msg){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(msg)
+		       .setCancelable(false)
+		       .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		           }
+		       });
+		AlertDialog alert = builder.create();
+		alert.show();
+	}
 	private void initView() {
         // 获取xml的RelativeLayout
-		LinearLayout layout = (LinearLayout) findViewById(R.id.lllayout);
-
-		
+		LinearLayout layout = (LinearLayout) findViewById(R.id.lllayout);		
 		try {
 			Cursor c = db.rawQuery("SELECT * FROM tbl_product_type", null);// WHERE age >= ?", new String[]{"33"});  
 			while (c.moveToNext()) {  
@@ -280,7 +332,8 @@ public class MenuActivity extends Activity {
 						type = (Integer) map.get("type");
 					}
 				}
-				getMenuByType(type);
+				getMenuByType(type);			
+				//_processBar.dismiss();
 			}
 		};
 		
@@ -291,6 +344,34 @@ public class MenuActivity extends Activity {
 			tv1.setOnClickListener(lsnr);
 		}		
     }
+	
+	private int getNumInCar(int productid)
+	{
+		String strSQL = "select count(*) num from tbl_shopcar where productid = " + productid;
+		Cursor count = db.rawQuery(strSQL, null);
+		count.moveToFirst();
+		int num = 0;
+		int iColIdx = count.getColumnIndex("num");
+		if(-1 != iColIdx)
+		{
+			num =  count.getInt(iColIdx);
+		}
+		count.close();
+		if(0 == num)
+		{
+			return num;
+		}
+		
+		String strSQL2 = "select buycount from tbl_shopcar where productid = " + productid;
+		Cursor count2 = db.rawQuery(strSQL2, null);
+		count2.moveToFirst();
+		int iColIdx2 = count2.getColumnIndex("buycount");	
+		int num2 = 0;
+		num2 =  count2.getInt(iColIdx2);
+		count2.close();
+		
+		return num2;
+	}
 	
 	private void getMenuByType(int product_type)
 	{
@@ -313,21 +394,35 @@ public class MenuActivity extends Activity {
 			    float price = c.getFloat(c.getColumnIndex("unitprice"));
 			    HashMap<String, Object> map = new HashMap<String, Object>();  
 			    //Bitmap bmp = ImageManager.getInstance(this).getBitmap(picptah);
-				map.put("product_item_image", picptah);
-			    map.put("product_item_name", pname);
-			    map.put("product_item_id", "编号:"+String.valueOf(id));
-			    map.put("product_item_adword", desc);
-			    map.put("product_item_martPrice", "RMB:"+ Float.toString(price));  
+				map.put("cart_single_product_image", picptah);
+			    map.put("cart_single_product_name", pname);
+			    map.put("cart_single_product_id", "编号:"+String.valueOf(id));
+			    map.put("cart_single_product_desc", desc);
+			    map.put("cart_single_product_et_num", getNumInCar(id));
+			    map.put("cart_single_product_price", "RMB:"+ Float.toString(price));  
 			    listItem1.add(map);
 			}  
 			c.close();
 
+			String [] from = new String[] {
+					"cart_single_product_image", 
+					"cart_single_product_name",
+					"cart_single_product_id",
+					"cart_single_product_desc", 
+					"cart_single_product_price"};
+			int [] to = new int[]{
+					R.id.cart_single_product_image,
+					R.id.cart_single_product_name,
+					R.id.cart_single_product_id, 
+					R.id.cart_single_product_desc,
+					R.id.cart_single_product_price
+			};
 			MenuAdaptor mSimpleAdapter = new MenuAdaptor(
 					MenuActivity.this, 
 					listItem1, 
-					R.layout.product_list_item, 
-					new String[] {"product_item_image", "product_item_name","product_item_id","product_item_adword", "product_item_martPrice"}, 
-					new int [] {R.id.product_item_image,R.id.product_item_name,R.id.product_item_id, R.id.product_item_adword,R.id.product_item_martPrice});
+					R.layout.shopping_cart_single_product_item, 
+					from, 
+					to);
 			
 			mSimpleAdapter.setViewBinder(new ViewBinder(){
 
@@ -345,15 +440,21 @@ public class MenuActivity extends Activity {
 				
 			});
 			lvMenu.setAdapter(mSimpleAdapter);
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			String str = e.getMessage();
 			e.printStackTrace();
 		}
+		finally
+		{
+			MyProgressDialog.stop();
+		}
 	}
 
 	private void getMenu()
 	{
+		MyProgressDialog.show(MenuActivity.this, false, false);
 		if(Constant.FLAG_POST_IN_JSON)
 		{								
 	 		Thread thread = new Thread(){ 
@@ -365,6 +466,7 @@ public class MenuActivity extends Activity {
 			    		JSONObject jsoin = new JSONObject();
 			    		jsoin.put("Token", app.getToken());
 						jsonout = HttpUtil.queryStringForPost(Constant.GETMENUSERVLET, jsoin);
+						
 			    	} catch (Exception e) { 
 			    		String str = e.getMessage();
 			    	} 
@@ -393,6 +495,8 @@ public class MenuActivity extends Activity {
 							GlobalVar app = GlobalVar.getInstance();
 				            postParameters.add(new BasicNameValuePair("Token", app.getToken()));	            
 						    jsonout = HttpUtil.queryStringForPost(Constant.GETMENUSERVLET, postParameters);
+						    
+						    //MyProgressDialog.show(MenuActivity.this, false, false);
 				    	} catch (Exception e) { 
 				    		String str = e.getMessage();
 				    	} 
@@ -409,6 +513,21 @@ public class MenuActivity extends Activity {
 		}	
 	}
 	
+	public void RedirectLogin()
+    {
+    	AlertDialog.Builder dialog=new AlertDialog.Builder(MenuActivity.this);
+		dialog.setTitle(getResources().getString(R.string.token_invalid_login_tip))
+			.setIcon(android.R.drawable.ic_dialog_info)
+			.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					Intent intent = new Intent(MenuActivity.this,LoginActivity.class);
+					intent.setFlags(Constant.LOGIN_MSG);
+					startActivityForResult(intent,Constant.LOGIN_MSG);
+				}
+		}).create().show();
+    }
+	
 	private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg){
@@ -420,14 +539,18 @@ public class MenuActivity extends Activity {
 					int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
 					String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
 					
-					if(Constant.ERR_CODE_SUCCESS == iErrorCode)
+					switch(iErrorCode)
 					{
+					case Constant.ERR_CODE_SUCCESS:
 						HandleLoginResult(jsonout);
+						break;
+					case Constant.ERR_CODE_TOKEN_INVALID:
+						RedirectLogin();
+						break;
+					default:
+						break;
 					}
-					else
-					{
-						
-					}
+					
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					String str = e.getMessage();
@@ -499,12 +622,102 @@ public class MenuActivity extends Activity {
 			}
 		}
 		
+		initView();
+		
 		//模拟第一个tab页被点击
 		HashMap<String, Object> maptmp = listItem.get(0);
 		TextView tvtmp = (TextView)(maptmp.get("textview_obj"));
 		tvtmp.performClick();
+		
+		
 		return 0;
 	}	
+	private HashMap<String, Object> getMapById(int id)
+	{
+		for(HashMap<String, Object> map : listItem)
+		{
+			if(id == Integer.parseInt(map.get("cart_single_product_id").toString().substring(3))) 
+			{
+				return map;
+			}
+		}
+		
+		return null;
+	}
+	
+	private void addToDB(int productid,String strName,String strPrice)
+	{
+		  Cursor count = db.rawQuery("select count(*) goodscount from tbl_shopcar where productid = " + productid, null);
+		  count.moveToFirst();
+		  int iColIdx = count.getColumnIndex("goodscount");
+		  int goodscount = count.getInt(iColIdx);
+		  count.close();
+		  
+		  if(goodscount > 1)
+		  {
+			  
+		  }
+		  else if(goodscount == 1)
+		  {
+			  Cursor buycount = db.rawQuery("select buycount from tbl_shopcar where productid = " + productid, null);
+			  buycount.moveToFirst();
+			  int iColIdx1 = buycount.getColumnIndex("buycount");
+			  int iBuycount = buycount.getInt(iColIdx1);
+			  buycount.close();
+			  
+			  try {
+				  String strSql = "update tbl_shopcar set buycount = " + String.valueOf(iBuycount +1) + " where productid = " + String.valueOf(productid);
+				  db.execSQL(strSql);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				String str = e.getMessage();
+				e.printStackTrace();
+			}
+		  }
+		  else
+		  {
+			  ContentValues values = new ContentValues();
+		   	  	values.put("productname", strName);
+		   	  	values.put("productid", productid);
+		   	  	values.put("unitprice", Float.parseFloat(strPrice.substring(4)));
+		   	  	values.put("buycount", 1);
+	    	  if(-1 == db.insert(TBL_SHOPCAR, null, values))
+	    	  {
+	    		  
+	    	  }
+		  }
+	}
+	
+	private void deleteFromDB(int productid,int count)
+	{
+		String strSQL = "";
+		if(-1 == count)
+		{
+			strSQL = "delete from tbl_shopcar" + " where productid = " + String.valueOf(productid);;
+		}
+		else
+		{
+			strSQL = "update tbl_shopcar set buycount = " + String.valueOf(count) + " where productid = " + String.valueOf(productid);
+		}
+		
+		db.execSQL(strSQL);
+	}
+	private void clearShopCar()
+	{
+		String strSQL = "delete from tbl_shopcar";
+		db.execSQL(strSQL);
+	}
+	private double getTotalPrice()
+	{
+		String strSQL = "select sum(buycount*unitprice) totalprice from tbl_shopcar";
+		Cursor count = db.rawQuery(strSQL, null);
+		count.moveToFirst();
+		int iColIdx = count.getColumnIndex("totalprice");
+		double totalprice =  count.getDouble(iColIdx);
+		count.close();
+		
+		return totalprice;
+	}
 	
 	class MenuAdaptor extends SimpleAdapter{
 		
@@ -513,7 +726,6 @@ public class MenuActivity extends Activity {
 		
 		@Override
 		public int getCount() {
-			// TODO Auto-generated method stub
 			return mlistData.size();
 		}
 
@@ -529,29 +741,176 @@ public class MenuActivity extends Activity {
 			return position;
 		}
 
+		@SuppressLint("NewApi")
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			// TODO Auto-generated method stub
-			convertView = mInflater.inflate(R.layout.product_list_item, null);
-	        ImageView image = (ImageView) convertView.findViewById(R.id.product_item_image);
-	        TextView product_item_name = (TextView) convertView.findViewById(R.id.product_item_name);
-	        TextView product_item_id = (TextView) convertView.findViewById(R.id.product_item_id);
-	        TextView product_item_adword = (TextView) convertView.findViewById(R.id.product_item_adword);
-	        TextView product_item_martPrice = (TextView) convertView.findViewById(R.id.product_item_martPrice);
-	        
+			
+			convertView = mInflater.inflate(R.layout.shopping_cart_single_product_item, null);
+			final View viewItem = convertView;  
+	        ImageView image = (ImageView) convertView.findViewById(R.id.cart_single_product_image);
+	        TextView product_item_name = (TextView) convertView.findViewById(R.id.cart_single_product_name);
+	        TextView product_item_id = (TextView) convertView.findViewById(R.id.cart_single_product_id);
+	        TextView product_item_adword = (TextView) convertView.findViewById(R.id.cart_single_product_desc);
+	        TextView product_item_martPrice = (TextView) convertView.findViewById(R.id.cart_single_product_price);
+	        TextView product_et_num = (TextView) convertView.findViewById(R.id.cart_single_product_et_num);
 	        HashMap<String, Object> map = (HashMap<String, Object>) mlistData.get(position);
-	        String strTag = (String) map.get("product_item_image");
+	        final String strTag = (String) map.get("cart_single_product_image");
 	        image.setTag(strTag);
 	        new AsyncViewTask().execute(image);
-	        String name = (String)map.get("product_item_name");
+	        String name = (String)map.get("cart_single_product_name");
 	        product_item_name.setText(name);
-	        String id = (String)map.get("product_item_id");
+	        String id = (String)map.get("cart_single_product_id");
 	        product_item_id.setText(id);
-	        String adword = (String)map.get("product_item_adword");
+	        String adword = (String)map.get("cart_single_product_desc");
 	        product_item_adword.setText(adword);
-	        String price = (String)map.get("product_item_martPrice");
+	        String price = (String)map.get("cart_single_product_price");
 	        product_item_martPrice.setText(price);
+	        Integer etnum = (Integer)map.get("cart_single_product_et_num");
+	        product_et_num.setText(String.valueOf(etnum.intValue()));
 	        
+	        CheckBox cb = (CheckBox) convertView.findViewById(R.id.cart_single_product_cb);
+	        ImageButton btnReduce=(ImageButton)convertView.findViewById(R.id.cart_single_product_num_reduce);
+	        ImageButton btnAdd=(ImageButton)convertView.findViewById(R.id.cart_single_product_num_add);
+	        cb.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+
+				@Override
+				public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
+					
+					View vp = (View) arg0.getParent();
+					View vpp = (View) vp.getParent();
+					View view = vpp.findViewById(R.id.cart_single_product_detail_layout);
+					View vppp = (View) vpp.getParent();
+					View view2 = vppp.findViewById(R.id.cart_single_product_price_layout);
+					//加入后台数据库
+					TextView tvName = (TextView)view.findViewById(R.id.cart_single_product_name);
+					TextView tvPrice = (TextView)view2.findViewById(R.id.cart_single_product_price);
+					TextView tvEtNum = (TextView)view2.findViewById(R.id.cart_single_product_et_num);
+					TextView tvPrdtId = (TextView)view.findViewById(R.id.cart_single_product_id);
+
+					String strName = tvName.getText().toString();
+					String strPrice = tvPrice.getText().toString();
+					String strPrdtId = tvPrdtId.getText().toString();
+					String strEtNum = tvEtNum.getText().toString();
+					
+					int productid = Integer.parseInt(strPrdtId.substring(3));
+					
+				    if(arg1)
+					{
+				    	tvEtNum.setText(String.valueOf(1));
+			    		addToDB(productid,strName,strPrice);
+				    	//ImageButton btnAdd=(ImageButton)view2.findViewById(R.id.cart_single_product_num_add);
+				    	//btnAdd.performClick();
+			    		//strEtNum = tvEtNum.getText().toString();
+			    		if(0 == strEtNum.compareToIgnoreCase("0"))
+			            {
+	        				ImageButton btnReduce=(ImageButton)view2.findViewById(R.id.cart_single_product_num_reduce);	
+			            	btnReduce.setEnabled(true);
+			            }
+					}
+					else
+					{
+						tvEtNum.setText(String.valueOf(0));
+						deleteFromDB(productid,-1);
+						strEtNum = tvEtNum.getText().toString();
+						if(0 == strEtNum.compareToIgnoreCase("0"))
+			            {
+	        				ImageButton btnReduce=(ImageButton)view2.findViewById(R.id.cart_single_product_num_reduce);	
+			            	btnReduce.setEnabled(false);
+			            }
+					}
+				    tvTotalPrice.setText("总计:RMB " + String.valueOf(getTotalPrice()));
+				}});
+	        
+	        btnReduce.setEnabled(false);
+	        btnReduce.setOnClickListener(new OnClickListener() {
+                
+                @Override
+                public void onClick(View v) {
+                	
+                	View vp = (View) v.getParent();
+                	TextView tvNum = (TextView)vp.findViewById(R.id.cart_single_product_et_num);
+                	TextView tvId =  (TextView)viewItem.findViewById(R.id.cart_single_product_id);
+                	String strId = tvId.getText().toString();
+					strId = strId.substring(3);
+					CheckBox cb = (CheckBox) viewItem.findViewById(R.id.cart_single_product_cb);
+					String strNum = tvNum.getText().toString();
+					int iNum = Integer.parseInt(strNum);
+					
+					if(--iNum < 0)
+					{
+						iNum = 0;
+					}
+					tvNum.setText(String.valueOf(iNum));
+                	if(iNum == 0)
+                	{
+                		//减按钮disable
+                		v.setEnabled(false);
+                		//从购物车中删除此条目
+                		deleteFromDB(Integer.parseInt(strId),-1);
+                		//checkbox去勾选
+                		
+                		cb.setChecked(false);
+                		return;
+                	}
+                	else
+                	{
+                    	deleteFromDB(Integer.parseInt(strId),Integer.parseInt(String.valueOf(iNum)));
+                    	tvTotalPrice.setText("总计:RMB " + String.valueOf(getTotalPrice()));
+                	}
+                }
+            });
+			
+			
+            btnAdd.setOnClickListener(new OnClickListener() {
+                
+                @Override
+                public void onClick(View v) {
+                	
+                	View vp = (View) v.getParent();
+                	TextView tvNum = (TextView)vp.findViewById(R.id.cart_single_product_et_num);
+					String strNum = tvNum.getText().toString();
+					int iNum = Integer.parseInt(strNum);
+					
+					CheckBox cb = (CheckBox) viewItem.findViewById(R.id.cart_single_product_cb);                	
+                	if(0 == iNum)
+					{
+						cb.setChecked(true);
+						return;
+					}
+                	tvNum.setText(String.valueOf(++iNum));
+                	
+                	TextView tvPrice = (TextView)vp.findViewById(R.id.cart_single_product_price);
+                	String strPrice = tvPrice.getText().toString();
+                	
+                	TextView tvId =  (TextView)viewItem.findViewById(R.id.cart_single_product_id);
+                	String strId = tvId.getText().toString();	
+					strId = strId.substring(3);
+					
+                	addToDB(Integer.parseInt(strId),"",strPrice);
+                	tvTotalPrice.setText("总计:RMB " + String.valueOf(getTotalPrice()));
+                	
+                	ImageButton btnReduce=(ImageButton)viewItem.findViewById(R.id.cart_single_product_num_reduce);
+                	btnReduce.setEnabled(true);
+                	//checkbox勾选
+            		
+            		if(!cb.isChecked())
+            		{
+            			cb.setChecked(true);
+            		}
+                }
+            });
+	        
+            
+            
+            image.setOnClickListener(new OnClickListener(){
+
+				@Override
+				public void onClick(View arg0) {
+					Intent intent = new Intent(MenuActivity.this,ImageActivity.class);
+					intent.putExtra("image_tag", strTag);
+					startActivity(intent);
+					
+				}});
 	        return convertView; 
 		}
 
@@ -559,7 +918,6 @@ public class MenuActivity extends Activity {
 				List<? extends Map<String, ?>> data, int resource,
 				String[] from, int[] to) {
 			super(context, data, resource, from, to);
-			// TODO Auto-generated constructor stub
 			this.mInflater = LayoutInflater.from(context); 
 			mlistData = (List<HashMap<String, Object>>) data;
 		}	

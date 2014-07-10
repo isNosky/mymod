@@ -17,7 +17,7 @@
             android:name="com.weijia.mymod.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar" >            
+            android:theme="@android:style/Theme.Light.NoTitleBar" >
         </activity>
         <activity
             android:name="com.weijia.mymod.LoginActivity"
@@ -82,10 +82,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.weijia.mymod.ModPassActivity"
+            android:label="@string/title_activity_mod_pass"
+            android:theme="@android:style/Theme.Light.NoTitleBar" >
+        </activity>
+        <activity
+            android:name="com.weijia.mymod.ImageActivity"
+            android:label="@string/title_activity_image"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
+        </activity>
+        <activity
+            android:name="com.weijia.mymod.SoftwareParamActivity"
+            android:label="@string/title_activity_software_param" >
+        </activity>
     </application>
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" >
     </uses-permission>
     <uses-permission android:name="android.permission.INTERNET" />
-
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 </manifest>

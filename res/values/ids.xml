@@ -3451,5 +3451,5 @@
     <item type="id" name="order_history_status"></item>
     <item type="id" name="order_history_comment_hint"></item>
     <item type="id" name="order_history_comment"></item>
-    
+    <item type="id" name="shopping_cart_count_price_framelayout"></item>
 </resources>

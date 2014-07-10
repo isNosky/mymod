@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import com.rqmod.provider.AsyncViewTask;
 import com.rqmod.provider.DatabaseManager;
+import com.rqmod.provider.GlobalVar;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -115,6 +116,8 @@ public class GoodsInfoActivity extends Activity {
 			
 		});
 		lvGoodsInfo.setAdapter(mSimpleAdapter);
+		
+		GlobalVar.getInstance().saveActivity(this);
 	}
 
 	@Override

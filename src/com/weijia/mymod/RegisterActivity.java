@@ -13,8 +13,10 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.rqmod.provider.GlobalVar;
 import com.rqmod.util.Constant;
 import com.rqmod.util.HttpUtil;
+import com.rqmod.util.StringEncrypt;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -27,9 +29,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.StrictMode;
 import android.text.TextUtils;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
@@ -42,6 +49,7 @@ public class RegisterActivity extends Activity {
 	Button btnRegister = null;
 	String strUser = "";
 	String strPass = "";
+	CheckBox cbShowPass = null;
 	
 	@SuppressLint("NewApi")
 	@Override
@@ -51,10 +59,12 @@ public class RegisterActivity extends Activity {
 		try {
 			setContentView(R.layout.register_activity);
 			
+			GlobalVar.getInstance().saveActivity(this);
+			
 			etUserName = (EditText)findViewById(R.id.register_input_name);
 			etPassword = (EditText)findViewById(R.id.register_input_password);
 			etConfirmPassword = (EditText)findViewById(R.id.register_input_confirm_password);
-			
+			cbShowPass = (CheckBox)findViewById(R.id.show_password);
 			btnRegister = (Button)findViewById(R.id.register_top);
 			
 			btnRegister.setOnClickListener(new OnClickListener(){
@@ -82,7 +92,7 @@ public class RegisterActivity extends Activity {
 								try {
 									jsoin.put("CellphoneNumber", strUser);
 									jsoin.put("NickName", strUser);
-									jsoin.put("Password", strPass);
+									jsoin.put("Password", StringEncrypt.Encrypt(strPass,"SHA-256"));
 									jsoin.put("CellphoneOSType", "Android");
 									jsoin.put("CellphoneBrand", android.os.Build.BRAND + " " + android.os.Build.MODEL);
 									jsoin.put("Age", "25");
@@ -115,7 +125,7 @@ public class RegisterActivity extends Activity {
 									List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 						            postParameters.add(new BasicNameValuePair("CellphoneNumber", strUser));
 						            postParameters.add(new BasicNameValuePair("NickName", strUser));
-						            postParameters.add(new BasicNameValuePair("Password", strPass));
+						            postParameters.add(new BasicNameValuePair("Password", StringEncrypt.Encrypt(strPass,"SHA-256")));
 						            postParameters.add(new BasicNameValuePair("CellphoneOSType", "Android"));
 						            postParameters.add(new BasicNameValuePair("CellphoneBrand", android.os.Build.BRAND + " " + android.os.Build.MODEL));
 						            postParameters.add(new BasicNameValuePair("Age", "25"));
@@ -134,11 +144,7 @@ public class RegisterActivity extends Activity {
 					    	}; 
 					    	thread.start(); 
 					    	thread = null;
-			            
 					}
-					
-					
-					
 				}});
 			
 //			if(!nameCheck())
@@ -146,7 +152,42 @@ public class RegisterActivity extends Activity {
 //				showDialog(getResources().getString(R.string.must_login_use_phone_num));
 //			}
 			
-			
+			cbShowPass.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+
+				@Override
+				public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
+					
+					String pwTextString = "";
+					if(etPassword == null) {
+					    pwTextString = "";
+					} else {
+					    pwTextString = etPassword.getText().toString();
+					}
+					if(arg1) {
+						etPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+					} else {
+						etPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+					}
+					if(!TextUtils.isEmpty(pwTextString)) {
+						etPassword.setSelection(pwTextString.length());
+					}
+					
+					pwTextString = "";
+					if(etConfirmPassword == null) {
+					    pwTextString = "";
+					} else {
+					    pwTextString = etConfirmPassword.getText().toString();
+					}
+					if(arg1) {
+						etConfirmPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+					} else {
+						etConfirmPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+					}
+					if(!TextUtils.isEmpty(pwTextString)) {
+						etConfirmPassword.setSelection(pwTextString.length());
+					}
+					
+				}});
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			String str = e.getMessage();
@@ -239,6 +280,21 @@ public class RegisterActivity extends Activity {
 
     }
 	
+	public void RedirectLogin()
+    {
+    	AlertDialog.Builder dialog=new AlertDialog.Builder(RegisterActivity.this);
+		dialog.setTitle(getResources().getString(R.string.token_invalid_login_tip))
+			.setIcon(android.R.drawable.ic_dialog_info)
+			.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					Intent intent = new Intent(RegisterActivity.this,LoginActivity.class);
+					intent.setFlags(Constant.LOGIN_MSG);
+					startActivityForResult(intent,Constant.LOGIN_MSG);
+				}
+		}).create().show();
+    }
+	
 	private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg){
@@ -252,6 +308,15 @@ public class RegisterActivity extends Activity {
 					
 					if(Constant.ERR_CODE_SUCCESS == iErrorCode)
 					{
+						
+					}
+					else
+					{
+						showDialog(getResources().getString(R.string.register_fail));
+					}
+					switch(iErrorCode)
+					{
+					case Constant.ERR_CODE_SUCCESS:
 						showDialog(getResources().getString(R.string.register_success));
 						
 						Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
@@ -259,11 +324,15 @@ public class RegisterActivity extends Activity {
 						intent.putExtra("Password", strPass);
 						setResult(RESULT_OK,intent); 
 						finish();
-					}
-					else
-					{
+						break;
+					case Constant.ERR_CODE_TOKEN_INVALID:
+						RedirectLogin();
+						break;
+					default:
 						showDialog(getResources().getString(R.string.register_fail));
+						break;
 					}
+					
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					String str = e.getMessage();

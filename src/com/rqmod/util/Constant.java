@@ -17,14 +17,15 @@ public class Constant {
 	 public final static String CANCELORDERSSERVLET = "CancelOrdersServlet";
 	 public final static String ORDERHISTORYSERVLET = "OrderHistoryServlet";
 	 public final static String GETADDRSERVLET = "GetAddrServlet";
-	 
+
+	 //public final static String URL = "http://192.168.1.100:8080/DcSystem/";
 	 public final static String URL = "http://42.96.203.30:8080/DcSystem/";
-	 
 	 public final static String ERRDESC = "ErrorDesc";
 	 public final static String ERRCODE = "ErrorCode";
 	 
 	 public final static int ERR_CODE_SUCCESS = 0;
 	 public final static int ERR_CODE_FAIL = -1;
+	 public final static int ERR_CODE_TOKEN_INVALID = -2;
 	 
 	 public final static String PARA_USER_ID = "UserID";
 	 
@@ -41,4 +42,6 @@ public class Constant {
 	 public final static int CANCELORDERS_MSG	= 11;
 	 public final static int ORDERHISTORY_MSG	= 12;
 	 public final static int GETADDR_MSG	= 13;
+	 
+	 public final static int TIMER_MSG	= 14;
 }

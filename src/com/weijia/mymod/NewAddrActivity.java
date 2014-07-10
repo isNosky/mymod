@@ -94,8 +94,8 @@ public class NewAddrActivity extends Activity {
 			etAlias.setText(intent.getStringExtra("textview_new_easy_buy_address_list_item_alias"));
 			etName.setText(intent.getStringExtra("textview_new_easy_buy_address_list_item_name"));
 			etMobile.setText(intent.getStringExtra("textview_new_easy_buy_address_list_item_phone"));
-			tvArea.setText(tvArea.getText().toString() + intent.getStringExtra("textview_new_easy_buy_address_list_item_area"));
-			tvStreet.setText(tvStreet.getText().toString() + intent.getStringExtra("textview_new_easy_buy_address_list_item_street"));
+			tvArea.setText(tvArea.getText().toString()+ ":" + intent.getStringExtra("textview_new_easy_buy_address_list_item_area"));
+			tvStreet.setText(tvStreet.getText().toString()+ ":" + intent.getStringExtra("textview_new_easy_buy_address_list_item_street"));
 			etAddr.setText(intent.getStringExtra("textview_new_easy_buy_address_list_item_addr"));
 			
 			btnDelete.setVisibility(Button.VISIBLE);
@@ -147,6 +147,8 @@ public class NewAddrActivity extends Activity {
 				
 				finish();
 			}});
+		
+		GlobalVar.getInstance().saveActivity(this);
 	}
 
 	@Override
@@ -168,7 +170,8 @@ public class NewAddrActivity extends Activity {
 				builder.setItems(items, new android.content.DialogInterface.OnClickListener(){
 				    public void onClick(DialogInterface dialog, int which) {
 				        String hoddy=(String) items[which];
-				        tvArea.setText(tvArea.getText().toString() + ":" + hoddy);
+				        String str[] = tvArea.getText().toString().split(":");
+				        tvArea.setText(str[0] + ":" + hoddy);
 				    }
 				});
 				//创建一个列表对话框
@@ -193,7 +196,8 @@ public class NewAddrActivity extends Activity {
 				builder.setItems(itemstreet, new android.content.DialogInterface.OnClickListener(){
 				    public void onClick(DialogInterface dialog, int which) {
 				        String hoddy=(String) itemstreet[which];
-				        tvStreet.setText(tvStreet.getText().toString() + ":" + hoddy);
+				        String str[] = tvStreet.getText().toString().split(":");
+				        tvStreet.setText(str[0] + ":" + hoddy);
 				    }
 				});
 				//创建一个列表对话框
@@ -305,6 +309,21 @@ public class NewAddrActivity extends Activity {
 		return str;
 	}
 	
+	public void RedirectLogin()
+    {
+    	AlertDialog.Builder dialog=new AlertDialog.Builder(NewAddrActivity.this);
+		dialog.setTitle(getResources().getString(R.string.token_invalid_login_tip))
+			.setIcon(android.R.drawable.ic_dialog_info)
+			.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					Intent intent = new Intent(NewAddrActivity.this,LoginActivity.class);
+					intent.setFlags(Constant.LOGIN_MSG);
+					startActivityForResult(intent,Constant.LOGIN_MSG);
+				}
+		}).create().show();
+    }
+	
 	private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg){
@@ -315,9 +334,10 @@ public class NewAddrActivity extends Activity {
             		JSONObject jsonout = (JSONObject) msg.obj;
 					int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
 					String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
-					
-					if(Constant.ERR_CODE_SUCCESS == iErrorCode)
+										
+					switch(iErrorCode)
 					{
+					case Constant.ERR_CODE_SUCCESS:
 						int AddrID = jsonout.getInt("AddrID");
 						insertToDB(AddrID);
 						
@@ -334,11 +354,15 @@ public class NewAddrActivity extends Activity {
 						
 						setResult(RESULT_OK,intent); 
 						finish();
+						break;
+					case Constant.ERR_CODE_TOKEN_INVALID:
+						RedirectLogin();
+						break;
+					default:
+						
+						break;
 					}
-					else
-					{
-						showDialog(getResources().getString(R.string.register_fail));
-					}
+					
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					String str = e.getMessage();

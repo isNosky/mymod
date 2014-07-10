@@ -1,11 +1,13 @@
 package com.weijia.mymod;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,7 +28,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,7 +47,8 @@ public class PersonelActivity extends Activity {
 	DatabaseManager dbm = null;
 	SQLiteDatabase db = null;
 	Button btnExitLogin = null;
-	
+	private PopupWindow popup = null;
+	private ListView menulistview = null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -50,13 +56,13 @@ public class PersonelActivity extends Activity {
 		dbm = DatabaseManager.getInstance(this);
 		db = dbm.openDatabase();
 		
+		GlobalVar.getInstance().saveActivity(this);
+		
 		try {
 			PersonelActivity.ClickListener myClickListener = new PersonelActivity.ClickListener();
 			
 			setContentView(R.layout.personel_activity);
-			
-			
-			
+	
 			Button btnLogin = (Button)findViewById(R.id.personal_click_for_login);
 			btnLogin.setOnClickListener(new View.OnClickListener() {
 				
@@ -86,7 +92,12 @@ public class PersonelActivity extends Activity {
 			e.printStackTrace();
 		}
 	}
-	
+		
+	private void initPopuWindows() {
+		
+		menulistview = new ListView(this);
+		popup = new PopupWindow(menulistview, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+	}
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub		
@@ -112,7 +123,8 @@ public class PersonelActivity extends Activity {
                      mExitTime = System.currentTimeMillis();
 
              } else {
-                     finish();
+            	 GlobalVar.getInstance().exitSystem();
+            	 GlobalVar.getInstance().clearDB(this);
              }
              return true;
 		 }
@@ -170,9 +182,28 @@ public class PersonelActivity extends Activity {
 		}
 	}	
 	
+	private boolean checkLogin()
+	{
+		GlobalVar app = GlobalVar.getInstance();
+		int iUserID = app.getUserId();
+		if(-1 == iUserID)
+		{
+			Intent intent = new Intent(PersonelActivity.this,LoginActivity.class);
+			startActivityForResult(intent, 0);
+			return true;
+		}
+		return false;
+	}
+	
 	class ClickListener implements View.OnClickListener {
         
         public void onClick(View v) {
+        	
+        	if(checkLogin())
+        	{
+        		return;
+        	}
+        	
             Intent intent = null;
             switch(v.getId()) {
                
@@ -222,6 +253,27 @@ public class PersonelActivity extends Activity {
 	{		
 		String strSql = "update tbl_user set islogin=0";
 	    db.execSQL(strSql);
+	    
+	    strSql = "delete from tbl_user";
+	    db.execSQL(strSql);
+	    
+	    strSql = "delete from tbl_order";
+	    db.execSQL(strSql);
+	    
+	    strSql = "delete from tbl_order_history";
+	    db.execSQL(strSql);
+	    
+	    strSql = "delete from tbl_addr";
+	    db.execSQL(strSql);
+	    
+	    strSql = "delete from tbl_shopcar";
+	    db.execSQL(strSql);
+	    
+	    GlobalVar app = GlobalVar.getInstance();
+	    app.setUserId(-1);
+	    app.setCellphoneNumber("");
+	    app.setPassword("");
+	    app.setToken("");
 	    
 		if(Constant.FLAG_POST_IN_JSON)
 		{	
@@ -280,6 +332,21 @@ public class PersonelActivity extends Activity {
 		}		
 	}
 	
+	public void RedirectLogin()
+    {
+    	AlertDialog.Builder dialog=new AlertDialog.Builder(PersonelActivity.this);
+		dialog.setTitle(getResources().getString(R.string.token_invalid_login_tip))
+			.setIcon(android.R.drawable.ic_dialog_info)
+			.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					Intent intent = new Intent(PersonelActivity.this,LoginActivity.class);
+					intent.setFlags(Constant.LOGIN_MSG);
+					startActivityForResult(intent,Constant.LOGIN_MSG);
+				}
+		}).create().show();
+    }
+	
 	private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg){
@@ -290,13 +357,14 @@ public class PersonelActivity extends Activity {
             		JSONObject jsonout = (JSONObject) msg.obj;
 					int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
 					String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
-					
-					if(Constant.ERR_CODE_SUCCESS == iErrorCode)
+										
+					switch(iErrorCode)
 					{
-						 try {
-							    GlobalVar app = GlobalVar.getInstance();
-							    String strSql = "update tbl_user set islogin = 0" + " where id = " + String.valueOf(app.getUserId());
-							    db.execSQL(strSql);
+					case Constant.ERR_CODE_SUCCESS:
+						try {
+						    GlobalVar app = GlobalVar.getInstance();
+						    String strSql = "update tbl_user set islogin = 0" + " where id = " + String.valueOf(app.getUserId());
+						    db.execSQL(strSql);
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							String str = e.getMessage();
@@ -305,11 +373,16 @@ public class PersonelActivity extends Activity {
 						initTopUI();
 						//×¢Ïú³É¹¦
 						showDialog(getResources().getString(R.string.jshop_logout_success));
-					}
-					else
-					{
+
+						break;
+					case Constant.ERR_CODE_TOKEN_INVALID:
+						RedirectLogin();
+						break;
+					default:
 						showDialog(strErrDesc);
+						break;
 					}
+					
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					String str = e.getMessage();

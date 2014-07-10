@@ -113,6 +113,8 @@ public class LoginActivity extends Activity {
     DatabaseManager dbm = null;
 	SQLiteDatabase db = null;
 	
+	int iFlag = -1;
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -144,6 +146,9 @@ public class LoginActivity extends Activity {
 			dbm = DatabaseManager.getInstance(this);
 			db = dbm.openDatabase();
 			
+			Intent intent = getIntent();
+	        iFlag = intent.getFlags();
+			
 	        initBtn();
 	        initEditTxt();
 	        handleClickEvent();
@@ -155,6 +160,8 @@ public class LoginActivity extends Activity {
 			e.printStackTrace();
 			System.out.println(str);
 		}
+		
+		GlobalVar.getInstance().saveActivity(this);
 	}
 	private void initBtn() {
         //nameTextView = (TextView)findViewById(R.id.login_input_name);
@@ -351,7 +358,7 @@ public class LoginActivity extends Activity {
 	{
 		List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
         postParameters.add(new BasicNameValuePair("LoginName", mUserNameTxt.getEditableText().toString()));
-        postParameters.add(new BasicNameValuePair("Password", mUserPassword.getEditableText().toString()));
+        postParameters.add(new BasicNameValuePair("Password", StringEncrypt.Encrypt(mUserPassword.getEditableText().toString(), "SHA-256")));
 
         return postParameters;
 	}
@@ -371,7 +378,7 @@ public class LoginActivity extends Activity {
 				 values.put("id", iUserId);
 				 String strPhoneNum = mUserNameTxt.getEditableText().toString();
 				 values.put("phonenum", strPhoneNum);
-				 String strPassword = mUserPassword.getEditableText().toString();
+				 String strPassword = StringEncrypt.Encrypt(mUserPassword.getEditableText().toString(), "SHA-256");
 				 values.put("password", strPassword);
 				 values.put("islogin", 1);
 				 
@@ -381,6 +388,11 @@ public class LoginActivity extends Activity {
 				 int userscount = count.getInt(iColIdx);
 				 count.close();
 				 
+				 GlobalVar.getInstance().setToken(strToken);
+				 GlobalVar.getInstance().setUserId(iUserId);
+				 GlobalVar.getInstance().setCellphoneNumber(strPhoneNum);
+				 GlobalVar.getInstance().setPassword(strPassword);
+				 
 				 if(0 == userscount)
 				 {
 					 if(-1 == db.insert(TBL_USER, null, values))				 
@@ -389,12 +401,7 @@ public class LoginActivity extends Activity {
 					 }
 					 else
 					 {
-						 //TODO:登录成功呈现界面
-						 //rlNotLoginInfo.setVisibility(View.GONE);
-						Intent intent = new Intent(LoginActivity.this, PersonelActivity.class);
-						setResult(RESULT_OK,intent); 
-						LoginActivity.this.finish();
-						 
+						
 					 }
 				 }
 				 else
@@ -408,14 +415,18 @@ public class LoginActivity extends Activity {
 							String str = e.getMessage();
 							e.printStackTrace();
 						}
-					 Intent intent = new Intent(LoginActivity.this, PersonelActivity.class);
-						setResult(RESULT_OK,intent); 
-						LoginActivity.this.finish();
 				 }
-				 GlobalVar.getInstance().setToken(strToken);
-				 GlobalVar.getInstance().setUserId(iUserId);
-				 GlobalVar.getInstance().setCellphoneNumber(strPhoneNum);
-				 
+				 Intent intent = null;
+				 if(iFlag == Constant.LOGIN_MSG)
+				 {
+					 intent = new Intent(LoginActivity.this, PersonelActivity.class);
+				 }
+				 else
+				 {
+					 intent = new Intent(LoginActivity.this, MenuActivity.class);
+				 }
+				 setResult(RESULT_OK,intent); 
+				 LoginActivity.this.finish();
 				return 1;
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block

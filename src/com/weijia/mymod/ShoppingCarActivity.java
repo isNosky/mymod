@@ -18,6 +18,7 @@ import java.util.Map;
 import com.rqmod.provider.AsyncViewTask;
 import com.rqmod.provider.DatabaseManager;
 import com.rqmod.provider.DbUlity;
+import com.rqmod.provider.GlobalVar;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -255,7 +256,9 @@ public class ShoppingCarActivity extends Activity {
 	{
 		
 		try {
-			Cursor count = db.rawQuery("select count(*) goodscount from tbl_shopcar", null);
+//			GlobalVar app = GlobalVar.getInstance();
+//			Cursor count = db.rawQuery("select count(*) goodscount from tbl_shopcar where id = " + app.getUserId(), null);
+			Cursor count = db.rawQuery("select count(*) goodscount from tbl_shopcar" , null);
 			count.moveToFirst();
 			int iColIdx = count.getColumnIndex("goodscount");
 			int goodscount = count.getInt(iColIdx);

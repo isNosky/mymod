@@ -3,6 +3,7 @@ package com.weijia.mymod;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.rqmod.provider.GlobalVar;
 import com.weijia.mymod.MyOderListActivity.OrderAdpatorView;
 
 import android.os.Bundle;
@@ -21,6 +22,8 @@ public class OrderHistoryActivity extends Activity {
 		setContentView(R.layout.activity_order_history);		
 		
 		lvOrderHistory = (ListView)findViewById(R.id.order_history_list);
+		
+		GlobalVar.getInstance().saveActivity(this);
 		
 		Bundle bundle = getIntent().getExtras();
 		ArrayList listItem = bundle.getParcelableArrayList("OrderHistoryList");

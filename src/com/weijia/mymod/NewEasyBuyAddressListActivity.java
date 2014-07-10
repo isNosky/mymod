@@ -17,7 +17,9 @@ import com.rqmod.util.Constant;
 import com.rqmod.util.HttpUtil;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -31,6 +33,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -50,6 +55,8 @@ public class NewEasyBuyAddressListActivity extends Activity {
 	
 	SQLiteDatabase db = null;
 	DatabaseManager dbm = null;
+	
+	int m_iFlag = -1;
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -154,9 +161,17 @@ public class NewEasyBuyAddressListActivity extends Activity {
 			dbm = DatabaseManager.getInstance(this);
 			db = dbm.openDatabase();
 			
+			GlobalVar.getInstance().saveActivity(this);
+			
 			lvAddr = (ListView)findViewById(R.id.listview_new_easy_buy_address_list);
 			llNoData = (LinearLayout)findViewById(R.id.layout_new_easy_buy_address_no_data);			
 			
+			Intent intent = getIntent();
+			m_iFlag = intent.getFlags();
+//			if(101 == m_iFlag)
+//			{
+//				setTheme(android.R.style.Theme_NoDisplay);
+//			}
 			getAddrs();
 			
 			refreshView();
@@ -228,17 +243,33 @@ public class NewEasyBuyAddressListActivity extends Activity {
 								TextView tvArea = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_area);
 								TextView tvStreet = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_street);
 								TextView tvAddr = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_addr);
-                            	Intent intent = new Intent(NewEasyBuyAddressListActivity.this,NewAddrActivity.class);
-                            	intent.putExtra("textview_new_easy_buy_address_list_item_alias", tvAlias.getText());
-                            	intent.putExtra("textview_new_easy_buy_address_list_item_name", tvName.getText());
-                            	intent.putExtra("textview_new_easy_buy_address_list_item_phone", tvPhone.getText());
-                            	intent.putExtra("textview_new_easy_buy_address_list_item_area", tvArea.getText());
-                            	intent.putExtra("textview_new_easy_buy_address_list_item_street", tvStreet.getText());
-                            	intent.putExtra("textview_new_easy_buy_address_list_item_addr", tvAddr.getText());
-                            	
-                            	intent.putExtra("position", iPos);
-                            	intent.addFlags(1);
-                            	startActivityForResult(intent, 1);								
+                            
+								if(101 == m_iFlag)
+								{
+									Intent intent = new Intent(NewEasyBuyAddressListActivity.this,FillOrderActivity.class);
+	                            	intent.putExtra("textview_new_easy_buy_address_list_item_alias", tvAlias.getText());
+	                            	intent.putExtra("textview_new_easy_buy_address_list_item_name", tvName.getText());
+	                            	intent.putExtra("textview_new_easy_buy_address_list_item_phone", tvPhone.getText());
+	                            	intent.putExtra("textview_new_easy_buy_address_list_item_area", tvArea.getText());
+	                            	intent.putExtra("textview_new_easy_buy_address_list_item_street", tvStreet.getText());
+	                            	intent.putExtra("textview_new_easy_buy_address_list_item_addr", tvAddr.getText());
+	                            	intent.putExtra("position", iPos);
+									setResult(RESULT_OK,intent); 									
+									NewEasyBuyAddressListActivity.this.finish();
+								}
+								else
+								{
+									Intent intent = new Intent(NewEasyBuyAddressListActivity.this,NewAddrActivity.class);
+	                            	intent.putExtra("textview_new_easy_buy_address_list_item_alias", tvAlias.getText());
+	                            	intent.putExtra("textview_new_easy_buy_address_list_item_name", tvName.getText());
+	                            	intent.putExtra("textview_new_easy_buy_address_list_item_phone", tvPhone.getText());
+	                            	intent.putExtra("textview_new_easy_buy_address_list_item_area", tvArea.getText());
+	                            	intent.putExtra("textview_new_easy_buy_address_list_item_street", tvStreet.getText());
+	                            	intent.putExtra("textview_new_easy_buy_address_list_item_addr", tvAddr.getText());
+	                            	intent.putExtra("position", iPos);
+	                            	intent.addFlags(1);
+	                            	startActivityForResult(intent, 1);	
+								}
 							}});
 						
 						
@@ -255,6 +286,91 @@ public class NewEasyBuyAddressListActivity extends Activity {
                 }
 			};
 			lvAddr.setAdapter(mAdaptor);
+//			lvAddr.setOnItemClickListener(new OnItemClickListener() {  
+//				  
+//	            @Override  
+//	            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,  
+//	                    long arg3) {  
+//	            	showDialog("点击第"+arg2+"个项目");  
+//	            }  
+//	        });
+			
+			lvAddr.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					// TODO Auto-generated method stub
+					View view = arg1;
+					TextView tvAlias = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_alias);
+					TextView tvName = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_name);
+					TextView tvPhone = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_phone);
+					TextView tvArea = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_area);
+					TextView tvStreet = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_street);
+					TextView tvAddr = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_addr);
+                	
+					Intent intent = new Intent(NewEasyBuyAddressListActivity.this,NewAddrActivity.class);
+                	intent.putExtra("textview_new_easy_buy_address_list_item_alias", tvAlias.getText());
+                	intent.putExtra("textview_new_easy_buy_address_list_item_name", tvName.getText());
+                	intent.putExtra("textview_new_easy_buy_address_list_item_phone", tvPhone.getText());
+                	intent.putExtra("textview_new_easy_buy_address_list_item_area", tvArea.getText());
+                	intent.putExtra("textview_new_easy_buy_address_list_item_street", tvStreet.getText());
+                	intent.putExtra("textview_new_easy_buy_address_list_item_addr", tvAddr.getText());
+                	
+                	intent.putExtra("position", arg2);
+					if(101 == m_iFlag)
+					{
+						setResult(RESULT_OK,intent); 									
+						NewEasyBuyAddressListActivity.this.finish();
+					}
+					else
+					{									
+                    	intent.addFlags(1);
+                    	startActivityForResult(intent, 1);	
+					}
+					
+				}});
+			
+//			lvAddr.setOnItemSelectedListener(new OnItemSelectedListener(){
+//
+//				@Override
+//				public void onItemSelected(AdapterView<?> arg0, View arg1,
+//						int arg2, long arg3) {
+//					// TODO Auto-generated method stub
+//					View view = arg1;
+//					TextView tvAlias = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_alias);
+//					TextView tvName = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_name);
+//					TextView tvPhone = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_phone);
+//					TextView tvArea = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_area);
+//					TextView tvStreet = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_street);
+//					TextView tvAddr = (TextView)view.findViewById(R.id.textview_new_easy_buy_address_list_item_addr);
+//                	
+//					Intent intent = new Intent(NewEasyBuyAddressListActivity.this,NewAddrActivity.class);
+//                	intent.putExtra("textview_new_easy_buy_address_list_item_alias", tvAlias.getText());
+//                	intent.putExtra("textview_new_easy_buy_address_list_item_name", tvName.getText());
+//                	intent.putExtra("textview_new_easy_buy_address_list_item_phone", tvPhone.getText());
+//                	intent.putExtra("textview_new_easy_buy_address_list_item_area", tvArea.getText());
+//                	intent.putExtra("textview_new_easy_buy_address_list_item_street", tvStreet.getText());
+//                	intent.putExtra("textview_new_easy_buy_address_list_item_addr", tvAddr.getText());
+//                	
+//                	intent.putExtra("position", arg2);
+//					if(101 == m_iFlag)
+//					{
+//						setResult(RESULT_OK,intent); 									
+//						NewEasyBuyAddressListActivity.this.finish();
+//					}
+//					else
+//					{									
+//                    	intent.addFlags(1);
+//                    	startActivityForResult(intent, 1);	
+//					}
+//				}
+//
+//				@Override
+//				public void onNothingSelected(AdapterView<?> arg0) {
+//					// TODO Auto-generated method stub
+//					
+//				}});
 			
 			llAddAddr = (LinearLayout) findViewById(R.id.receive_addr_add_layout);
 			llAddAddr.setOnClickListener(new OnClickListener(){
@@ -356,7 +472,20 @@ public class NewEasyBuyAddressListActivity extends Activity {
 		}
 	}
 	
-	
+	public void RedirectLogin()
+    {
+    	AlertDialog.Builder dialog=new AlertDialog.Builder(NewEasyBuyAddressListActivity.this);
+		dialog.setTitle(getResources().getString(R.string.token_invalid_login_tip))
+			.setIcon(android.R.drawable.ic_dialog_info)
+			.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					Intent intent = new Intent(NewEasyBuyAddressListActivity.this,LoginActivity.class);
+					intent.setFlags(Constant.LOGIN_MSG);
+					startActivityForResult(intent,Constant.LOGIN_MSG);
+				}
+		}).create().show();
+    }
 	private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg){
@@ -367,9 +496,10 @@ public class NewEasyBuyAddressListActivity extends Activity {
             		JSONObject jsonout = (JSONObject) msg.obj;
 					int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
 					String strErrDesc = (String) jsonout.get(Constant.ERRDESC);
-					
-					if(Constant.ERR_CODE_SUCCESS == iErrorCode)
+										
+					switch(iErrorCode)
 					{
+					case Constant.ERR_CODE_SUCCESS:
 						JSONArray jsonAddrs = jsonout.getJSONArray("Addrs");
 						for(int shopid = 0 ; shopid < jsonAddrs.length() ; shopid++)
 						{
@@ -396,13 +526,15 @@ public class NewEasyBuyAddressListActivity extends Activity {
 							lvAddr.invalidate();
 							refreshView();
 						}
+						break;
+					case Constant.ERR_CODE_TOKEN_INVALID:
+						RedirectLogin();
+						break;
+					default:
 						
-						
+						break;
 					}
-					else
-					{
-						
-					}
+					
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					String str = e.getMessage();
@@ -415,4 +547,16 @@ public class NewEasyBuyAddressListActivity extends Activity {
             }
         }
     };
+    
+    private void showDialog(String msg){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(msg)
+		       .setCancelable(false)
+		       .setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		           }
+		       });
+		AlertDialog alert = builder.create();
+		alert.show();
+	}
 }

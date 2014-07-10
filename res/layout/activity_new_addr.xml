@@ -37,7 +37,7 @@
                         android:layout_marginRight="15.0dip"
                         android:background="@drawable/fill_order_virtual_check_selector"
                         android:button="@null"                        
-						android:defaultValue="true"/>
+						android:checked="true"/>
                 </RelativeLayout>
 
                 <View
