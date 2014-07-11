@@ -160,8 +160,8 @@ public class MyOderListActivity extends Activity {
 			            	calendar.add(Calendar.MONTH, -1);
 			            	Date monthago = calendar.getTime();
 			            	String str2 = formatter.format(monthago);  
-			            	postParameters.add(new BasicNameValuePair("start_date", str));
-			            	postParameters.add(new BasicNameValuePair("end_date", str2));
+			            	postParameters.add(new BasicNameValuePair("start_date", str2));
+			            	postParameters.add(new BasicNameValuePair("end_date", str));
 			            }
 			            else if(R.id.my_order_pre_month_orders == iType)
 			            {
@@ -174,8 +174,8 @@ public class MyOderListActivity extends Activity {
 			            	Date monthsago = calendar.getTime();
 			            	String str3 = formatter.format(monthsago);  
 			            	
-			            	postParameters.add(new BasicNameValuePair("start_date", str2));
-			            	postParameters.add(new BasicNameValuePair("end_date", str3));			            	
+			            	postParameters.add(new BasicNameValuePair("start_date", str3));
+			            	postParameters.add(new BasicNameValuePair("end_date", str2));			            	
 			            }
 			            jsonout = HttpUtil.queryStringForPost(Constant.GETORDERSSERVLET, postParameters);
 			    	} catch (Exception e) { 

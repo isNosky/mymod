@@ -61,6 +61,7 @@ public class ModPassActivity extends Activity {
 		cbShowPass = (CheckBox)findViewById(R.id.show_password);
 		GlobalVar app = GlobalVar.getInstance();
 		etUserName.setText(app.getCellphoneNumber());
+		etUserName.setEnabled(false);
 		btnModPass.setOnClickListener(new OnClickListener(){
 
 			@Override
