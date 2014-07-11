@@ -756,7 +756,7 @@ public class MenuActivity extends Activity {
 	        HashMap<String, Object> map = (HashMap<String, Object>) mlistData.get(position);
 	        final String strTag = (String) map.get("cart_single_product_image");
 	        image.setTag(strTag);
-	        new AsyncViewTask().execute(image);
+	        new AsyncViewTask(MenuActivity.this).execute(image);
 	        String name = (String)map.get("cart_single_product_name");
 	        product_item_name.setText(name);
 	        String id = (String)map.get("cart_single_product_id");
@@ -771,6 +771,8 @@ public class MenuActivity extends Activity {
 	        CheckBox cb = (CheckBox) convertView.findViewById(R.id.cart_single_product_cb);
 	        ImageButton btnReduce=(ImageButton)convertView.findViewById(R.id.cart_single_product_num_reduce);
 	        ImageButton btnAdd=(ImageButton)convertView.findViewById(R.id.cart_single_product_num_add);
+	        
+	        
 	        cb.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 
 				@Override
@@ -820,8 +822,14 @@ public class MenuActivity extends Activity {
 					}
 				    tvTotalPrice.setText("×Ü¼Æ:RMB " + String.valueOf(getTotalPrice()));
 				}});
-	        
-	        btnReduce.setEnabled(false);
+	        if(etnum.intValue() > 0)
+	        {
+	        	btnReduce.setEnabled(true);
+	        }
+	        else
+	        {
+	        	btnReduce.setEnabled(false);
+	        }
 	        btnReduce.setOnClickListener(new OnClickListener() {
                 
                 @Override

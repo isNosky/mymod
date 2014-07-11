@@ -16,7 +16,8 @@
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="10dp"
             android:gravity="center"
-            android:orientation="horizontal" >
+            android:orientation="horizontal" 
+            android:id="@+id/logo_and_title">
 
             <ImageView
                 android:layout_width="30dp"

@@ -28,8 +28,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.View.OnKeyListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -63,6 +67,8 @@ public class PersonelActivity extends Activity {
 			
 			setContentView(R.layout.personel_activity);
 	
+			setDebugPara();
+			
 			Button btnLogin = (Button)findViewById(R.id.personal_click_for_login);
 			btnLogin.setOnClickListener(new View.OnClickListener() {
 				
@@ -92,7 +98,20 @@ public class PersonelActivity extends Activity {
 			e.printStackTrace();
 		}
 	}
-		
+	
+	private void setDebugPara()
+	{
+		LinearLayout ll = (LinearLayout) findViewById(R.id.logo_and_title);
+		ll.setOnLongClickListener(new OnLongClickListener(){
+
+			@Override
+			public boolean onLongClick(View arg0) {
+				Intent intent = new Intent(PersonelActivity.this,SoftwareParamActivity.class);
+				startActivity(intent);
+				return false;
+			}});
+	}
+	
 	private void initPopuWindows() {
 		
 		menulistview = new ListView(this);
