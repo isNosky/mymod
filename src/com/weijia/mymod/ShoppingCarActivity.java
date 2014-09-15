@@ -447,7 +447,7 @@ public class ShoppingCarActivity extends Activity {
 						if( (arg0 instanceof ImageView) & (arg1 instanceof String) ) {  
 				            ImageView iv = (ImageView) arg0;  
 				            iv.setTag(arg1);
-					        new AsyncViewTask().execute(iv);
+					        new AsyncViewTask(ShoppingCarActivity.this).execute(iv);
 				            return true;  
 				            }  
 				        return false;

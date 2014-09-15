@@ -25,7 +25,8 @@ public class DatabaseManager {
 //                    + DB_SUBFDL;  //在手机里存放数据库的位置  
     public static final String DB_PATH = Environment.getDataDirectory().getAbsolutePath();
     private Context context;  
-
+    private static final String CACHDIR = "mymodcache/";	
+    
     DatabaseManager(Context context) {  
             this.context = context;  
             
@@ -48,6 +49,63 @@ public class DatabaseManager {
 		return this.openDatabase(strFilePath + "/db" + "/" + DB_NAME);  
     }  
 
+    private void CopyAssetsFile()
+    {
+    	String savePath = getDirectory();
+    	File dir = new File(savePath);
+    	if (!dir.exists())
+    		dir.mkdir();
+  	  
+    	String[] strFiles;
+		try {
+			strFiles = context.getResources().getAssets().list("json");
+		
+	    	for(int i = 0 ; i < strFiles.length ; i++)
+	    	{
+	    		String filename = savePath + "/" + strFiles[i];
+	    		try {
+	    				if (!(new File(filename)).exists()) {
+							InputStream is = context.getResources().getAssets().open(strFiles[i]);
+							FileOutputStream fos = new FileOutputStream(filename);
+							byte[] buffer = new byte[7168];
+							int count = 0;
+							while ((count = is.read(buffer)) > 0) {
+								fos.write(buffer, 0, count);
+							}
+	    		  	    fos.close();
+	    		  	    is.close();
+	    		  	   }
+	    		  	  } catch (Exception e) {
+	    		  	   e.printStackTrace();
+	    		  	  }
+	    	}
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+    	  
+    }
+    
+    /** 获得缓存目录 **/
+    private String getDirectory() {
+        String dir = getSDPath() + "/" + CACHDIR;
+        return dir;
+    }
+                                                                
+    /** 取SD卡路径 **/
+    private String getSDPath() {
+        File sdDir = null;
+        boolean sdCardExist = Environment.getExternalStorageState().equals(
+                android.os.Environment.MEDIA_MOUNTED);  //判断sd卡是否存在
+        if (sdCardExist) {
+            sdDir = Environment.getExternalStorageDirectory();  //获取根目录
+        }
+        if (sdDir != null) {
+            return sdDir.toString();
+        } else {
+            return "";
+        }
+    } 
     private SQLiteDatabase openDatabase(String dbfile)  {  
             try {
             		

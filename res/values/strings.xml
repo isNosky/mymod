@@ -1687,4 +1687,7 @@
 	<string name="token_invalid_login_tip">您的登录信息已经失效，请重新登录</string>
     <string name="goto_network_setting">去设置网络</string>
     <string name="no_network_tip">网络未连接</string>
+    <string name="debug_web_app">调试用webapp名称</string>
+    <string name="debug_web_app_hint">不需要全路径，仅需要webapp名称，区分大小写</string>
+    <string name="debug_web_app_path">DcSystemTest</string>
 </resources>

@@ -27,11 +27,12 @@ import org.apache.http.util.EntityUtils;
 import com.rqmod.util.Constant;
 public class HttpUtil {
 	
-	public static HttpClient httpClient=new DefaultHttpClient();
+	//public static HttpClient httpClient=new DefaultHttpClient();
+	public static HttpClient httpClient=new DemoHttpClient();
 	static String DEFAULT_ENCODING = "UTF-8";
 		// 获得Get请求对象request
 	public static HttpGet getHttpGet(String servlet){
-		String url = Constant.URL + servlet;
+		String url = Constant.getURL() + servlet;
 		HttpGet request = new HttpGet(url);
 		
 		return request;
@@ -39,7 +40,7 @@ public class HttpUtil {
 	// 获得Post请求对象request
 	public static HttpPost getHttpPost(String servlet,JSONObject jso){
 		
-		String url = Constant.URL + servlet;
+		String url = Constant.getURL() + servlet;
 		HttpPost request = new HttpPost(url);
 		ByteArrayEntity arrayEntity = null;
 		try {
@@ -61,7 +62,7 @@ public class HttpUtil {
 	
 	public static HttpPost getHttpPost(String servlet,List<NameValuePair> postParameters){
 		
-		String url = Constant.URL + servlet;
+		String url = Constant.getURL() + servlet;
 		HttpPost request = new HttpPost(url);
 		UrlEncodedFormEntity formEntity = null;
 		try {

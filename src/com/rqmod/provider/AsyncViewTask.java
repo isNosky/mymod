@@ -26,52 +26,53 @@ import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.ImageView;
 
-public class AsyncViewTask extends AsyncTask<View, Void, Drawable> {
+public class AsyncViewTask extends AsyncTask<View, Void, Bitmap> {
     private ImageView mView;
+    private ImageMemoryCache memoryCache;
+    private ImageFileCache fileCache;
     private HashMap<String, SoftReference<Drawable>> imageCache;
  
-    public AsyncViewTask() {
+    public AsyncViewTask(Context context) {
         imageCache = new HashMap<String, SoftReference<Drawable>>();
+        memoryCache = new ImageMemoryCache(context);
+        fileCache = new ImageFileCache();
     }
  
-    protected Drawable doInBackground(View... views) {
-        Drawable drawable = null;
+    protected Bitmap doInBackground(View... views) {
+   	
         View view = views[0];
-        if (view.getTag() != null) {
-            if (imageCache.containsKey(view.getTag())) {
-                SoftReference<Drawable> cache = imageCache.get(view.getTag().toString());
-                drawable = cache.get();
-                if (drawable != null) {
-                    return drawable;
-                }
-            }
-            try {
-            	String strURL = Constant.URL + view.getTag().toString();	
-                if (URLUtil.isHttpUrl(strURL)) {// 如果为网络地址。则连接url下载图片
-                    URL url = new URL(strURL);
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setDoInput(true);
-                    conn.connect();
-                    InputStream stream = conn.getInputStream();
-                    drawable = Drawable.createFromStream(stream, "src");
-                    stream.close();
-                } else {// 如果为本地数据，直接解析
-                    drawable = Drawable.createFromPath(view.getTag().toString());
-                }
-            } catch (Exception e) {
-                Log.v("img", e.getMessage());
-                return null;
-            }
-        }
+        String strURL = Constant.getURL() + view.getTag().toString();	
+    	Bitmap bm = getBitmap(strURL);        
         this.mView = (ImageView) view;
-        return drawable;
+        return bm;
     }
  
-    protected void onPostExecute(Drawable drawable) {
-        if (drawable != null) {
-            this.mView.setImageDrawable(drawable);
+    protected void onPostExecute(Bitmap bm) {
+        if (bm != null) {
+            this.mView.setImageBitmap(bm);
             this.mView = null;
         }
+    }
+    
+    public Bitmap getBitmap(String url) {
+        // 从内存缓存中获取图片
+        Bitmap result = memoryCache.getBitmapFromCache(url);
+        if (result == null) {
+            // 文件缓存中获取
+            result = fileCache.getImage(url);
+            if (result == null) {
+                // 从网络获取
+                result = ImageGetFromHttp.downloadBitmap(url);
+                if (result != null) {
+                    fileCache.saveBitmap(result, url);
+                    memoryCache.addBitmapToCache(url, result);
+                }
+            } else {
+                // 添加到内存缓存
+                memoryCache.addBitmapToCache(url, result);
+            }
+        }
+        return result;
     }
     
     public static class ImageLoader {  

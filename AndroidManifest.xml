@@ -94,7 +94,8 @@
         </activity>
         <activity
             android:name="com.weijia.mymod.SoftwareParamActivity"
-            android:label="@string/title_activity_software_param" >
+            android:label="@string/title_activity_software_param"
+            android:theme="@android:style/Theme.Light.NoTitleBar" >
         </activity>
     </application>
 

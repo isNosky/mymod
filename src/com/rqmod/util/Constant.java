@@ -19,8 +19,22 @@ public class Constant {
 	 public final static String GETADDRSERVLET = "GetAddrServlet";
 
 	 //public final static String URL = "http://192.168.1.100:8080/DcSystem/";
-	 public final static String URL = "http://42.96.203.30:8080/DcSystem/";
-	 public final static String ERRDESC = "ErrorDesc";
+	 public final static String URI = "http://42.96.203.30:8080/";
+	 public static String WebApp = "DcSystem/";
+	 public static String URL = URI + WebApp;
+	 public static String getWebApp() {
+		return WebApp;
+	}
+
+	public static void setWebApp(String webApp) {
+		WebApp = webApp  + "/";
+	}
+
+	public static String getURL() {
+		return URI + WebApp;
+	}
+
+	public final static String ERRDESC = "ErrorDesc";
 	 public final static String ERRCODE = "ErrorCode";
 	 
 	 public final static int ERR_CODE_SUCCESS = 0;

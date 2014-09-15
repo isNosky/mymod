@@ -20,7 +20,7 @@ public class ImageActivity extends Activity {
 		String strTag = intent.getStringExtra("image_tag");
 		ImageView iv = (ImageView)findViewById(R.id.menu_img_view);
 		iv.setTag(strTag);
-		new AsyncViewTask().execute(iv);
+		new AsyncViewTask(ImageActivity.this).execute(iv);
 		
 		iv.setOnClickListener(new OnClickListener(){
 

@@ -545,6 +545,11 @@ public class MyOderListActivity extends Activity {
         public void handleMessage(Message msg){
         	
         	JSONObject jsonout = (JSONObject) msg.obj;
+        	if(null == jsonout)
+        	{
+        		return;
+        	}
+        	
 			try {
 				int iErrorCode = (Integer) jsonout.get(Constant.ERRCODE);
 				
@@ -655,7 +660,7 @@ public class MyOderListActivity extends Activity {
 				//Bitmap bmp = (Bitmap) map2.get("product_list_item_image");
 				String pic = (String) map2.get("product_list_item_image");
 				iv.setTag(pic);
-				new AsyncViewTask().execute(iv);
+				new AsyncViewTask(MyOderListActivity.this).execute(iv);
 				String name = (String) map2.get("order_product_item_name");
 				//iv.setImageBitmap(bmp);
 				tv.setText(name);
@@ -675,7 +680,7 @@ public class MyOderListActivity extends Activity {
 						e.printStackTrace();
 					}
 					iivv.setTag(pic);
-					new AsyncViewTask().execute(iivv);
+					new AsyncViewTask(MyOderListActivity.this).execute(iivv);
 					String name = (String) map2.get("order_product_item_name");
 					//iv.setImageBitmap(bmp);
 					iivv.setId(i+4096);

@@ -447,7 +447,7 @@ public class FillOrderActivity extends Activity {
 							|| ((iCurTime >= (Integer)map.get("nosalestarttime_b")) &&  (iCurTime <= (Integer)map.get("nosaleendtime_b"))
 							||(iInterval > 10)))
 					{
-						continue;
+						//continue;
 					}
 					ll.add((String) map.get("shopname"));
 				}
@@ -666,6 +666,7 @@ public class FillOrderActivity extends Activity {
 					e.printStackTrace();
 				} catch (Throwable e) {
 					// TODO Auto-generated catch block
+					String str = e.getMessage();
 					e.printStackTrace();
 				}            	
                 break;

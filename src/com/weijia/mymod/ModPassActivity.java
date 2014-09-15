@@ -120,6 +120,7 @@ public class ModPassActivity extends Activity {
 					            postParameters.add(new BasicNameValuePair("UserID",String.valueOf(app.getUserId())));
 					            postParameters.add(new BasicNameValuePair("OldPassword", app.getPassword()));
 					            postParameters.add(new BasicNameValuePair("NewPassword", strPass));
+					            postParameters.add(new BasicNameValuePair("Token", GlobalVar.getInstance().getToken()));
 					            
 					            jsonout = HttpUtil.queryStringForPost(Constant.MODIFYPASSWORDSERVLET, postParameters);
 					    	} catch (Exception e) { 
